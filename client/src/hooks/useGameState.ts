@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { socketService } from '../services/socketService';
+import socketService from '../services/socketService';
 import type { GameRoom, Solution, Card } from '../types/game.types';
 import { GameState } from '../types/game.types';
 

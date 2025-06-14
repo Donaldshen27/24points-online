@@ -4,3 +4,6 @@ export { Card } from './Card/Card';
 export { PlayerHand } from './PlayerHand/PlayerHand';
 export { CenterTable } from './CenterTable/CenterTable';
 export { DeckTest } from './DeckTest/DeckTest';
+export { GameScreen } from './GameScreen/GameScreen';
+export { RoundTimer } from './RoundTimer/RoundTimer';
+export { RoundResult } from './RoundResult/RoundResult';

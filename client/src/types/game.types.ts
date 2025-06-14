@@ -23,7 +23,7 @@ export interface GameRoom {
   };
 }
 
-export const enum GameState {
+export enum GameState {
   WAITING = 'waiting',
   PLAYING = 'playing',
   SOLVING = 'solving',

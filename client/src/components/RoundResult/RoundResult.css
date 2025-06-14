@@ -1,0 +1,227 @@
+.round-result-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.round-result-overlay.visible {
+  opacity: 1;
+}
+
+.round-result-content {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+  border: 3px solid transparent;
+}
+
+.round-result-overlay.visible .round-result-content {
+  transform: scale(1);
+}
+
+/* Result Types */
+.round-result-content.success {
+  border-color: #2ecc71;
+  box-shadow: 0 10px 40px rgba(46, 204, 113, 0.2);
+}
+
+.round-result-content.failure {
+  border-color: #e74c3c;
+  box-shadow: 0 10px 40px rgba(231, 76, 60, 0.2);
+}
+
+.round-result-content.neutral {
+  border-color: #95a5a6;
+  box-shadow: 0 10px 40px rgba(149, 165, 166, 0.2);
+}
+
+/* Header */
+.result-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.result-header h2 {
+  margin: 0;
+  font-size: 2rem;
+  color: white;
+}
+
+.round-result-content.success .result-header h2 {
+  color: #2ecc71;
+}
+
+.round-result-content.failure .result-header h2 {
+  color: #e74c3c;
+}
+
+/* Players Info */
+.result-players {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.winner-info, .loser-info {
+  text-align: center;
+}
+
+.result-label {
+  display: block;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.player-name {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+}
+
+.winner-info .player-name {
+  color: #2ecc71;
+}
+
+.loser-info .player-name {
+  color: #e74c3c;
+}
+
+/* Solution Display */
+.solution-display {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.solution-display h3 {
+  margin: 0 0 1rem 0;
+  color: #3498db;
+  font-size: 1.2rem;
+}
+
+.solution-steps {
+  margin-bottom: 1rem;
+}
+
+.solution-step {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.step-number {
+  color: #3498db;
+  margin-right: 1rem;
+  font-weight: bold;
+}
+
+.step-expression {
+  font-family: 'Courier New', monospace;
+  background: rgba(52, 152, 219, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+}
+
+.solution-final {
+  text-align: center;
+  font-size: 1.3rem;
+  color: white;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.solution-final strong {
+  color: #f39c12;
+  font-size: 1.5rem;
+}
+
+/* Footer */
+.result-footer {
+  text-align: center;
+}
+
+.auto-continue {
+  margin: 0 0 1rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.continue-button {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.continue-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.solution-step {
+  animation: slideIn 0.3s ease-out both;
+  animation-delay: calc(var(--step-index, 0) * 0.1s);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .round-result-content {
+    padding: 1.5rem;
+  }
+
+  .result-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .result-players {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .solution-step {
+    font-size: 1rem;
+  }
+
+  .step-expression {
+    font-size: 0.9rem;
+  }
+}

@@ -75,4 +75,19 @@ export class CardUtils {
   static getCardColor(owner: 'player1' | 'player2'): string {
     return owner === 'player1' ? '#2196F3' : '#f44336';
   }
+
+  static initializePlayerDecks(): { player1Deck: Card[], player2Deck: Card[] } {
+    const player1Deck = CardUtils.shuffleDeck(CardUtils.createDeck('player1'));
+    const player2Deck = CardUtils.shuffleDeck(CardUtils.createDeck('player2'));
+    
+    return { player1Deck, player2Deck };
+  }
+
+  static transferCards(cards: Card[], newOwner: 'player1' | 'player2'): Card[] {
+    return cards.map(card => ({
+      ...card,
+      owner: newOwner,
+      id: `${newOwner}-${card.id}-${Date.now()}`
+    }));
+  }
 }

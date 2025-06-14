@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import socketService from './services/socketService'
 import { Lobby } from './components/Lobby/Lobby'
 import { WaitingRoom } from './components/WaitingRoom/WaitingRoom'
+import { GameScreen } from './components/GameScreen/GameScreen'
 import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import type { GameRoom } from './types/game.types'
 import './App.css'
 
-enum AppState {
+const enum AppState {
   CONNECTING = 'connecting',
   LOBBY = 'lobby',
   WAITING_ROOM = 'waiting_room',
@@ -100,12 +101,12 @@ function App() {
           />
         )}
 
-        {appState === AppState.IN_GAME && (
-          <div className="game-placeholder">
-            <h2>Game will be implemented here</h2>
-            <p>Room: {currentRoom?.id}</p>
-            <button onClick={handleLeaveRoom}>Leave Game</button>
-          </div>
+        {appState === AppState.IN_GAME && currentRoom && (
+          <GameScreen 
+            room={currentRoom}
+            playerId={playerId}
+            onLeaveGame={handleLeaveRoom}
+          />
         )}
 
         {appState === AppState.TEST_MODE && (

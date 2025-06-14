@@ -1,0 +1,123 @@
+.card {
+  position: relative;
+  background-color: white;
+  border: 3px solid var(--card-color, #333);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  user-select: none;
+}
+
+/* Size variants */
+.card.small {
+  width: 60px;
+  height: 80px;
+  font-size: 1.5rem;
+}
+
+.card.medium {
+  width: 80px;
+  height: 100px;
+  font-size: 2rem;
+}
+
+.card.large {
+  width: 100px;
+  height: 130px;
+  font-size: 2.5rem;
+}
+
+/* Hover and interaction states */
+.card:hover:not(.disabled) {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card:active:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.card.selected {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  background-color: #f0f8ff;
+}
+
+.card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: var(--card-color);
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.card.disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Card content */
+.card-value {
+  font-weight: bold;
+  color: var(--card-color);
+  margin-bottom: 0.25rem;
+}
+
+.card-owner {
+  position: absolute;
+  bottom: 4px;
+  font-size: 0.7em;
+  color: var(--card-color);
+  opacity: 0.7;
+  font-weight: 600;
+}
+
+/* Animation for dealing cards */
+@keyframes dealCard {
+  from {
+    transform: translateY(-200px) rotate(180deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) rotate(0);
+    opacity: 1;
+  }
+}
+
+.card.dealing {
+  animation: dealCard 0.5s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card.large {
+    width: 80px;
+    height: 100px;
+    font-size: 2rem;
+  }
+  
+  .card.medium {
+    width: 60px;
+    height: 80px;
+    font-size: 1.5rem;
+  }
+  
+  .card.small {
+    width: 50px;
+    height: 65px;
+    font-size: 1.2rem;
+  }
+}

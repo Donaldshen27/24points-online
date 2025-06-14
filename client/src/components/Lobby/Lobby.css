@@ -1,0 +1,167 @@
+.lobby {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.lobby h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.player-name-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.player-name-section input {
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 300px;
+  max-width: 90%;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.player-name-section input:focus {
+  border-color: #4CAF50;
+}
+
+.lobby-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.create-room-btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-room-btn:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.create-room-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.join-with-code {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.join-with-code input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  width: 150px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.join-with-code button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.join-with-code button:hover:not(:disabled) {
+  background-color: #0b7dda;
+}
+
+.join-with-code button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.available-rooms {
+  background-color: #f5f5f5;
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.available-rooms h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.rooms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.room-item {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.room-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.room-id {
+  font-weight: bold;
+  color: #333;
+}
+
+.player-count {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.host-name {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.join-btn {
+  padding: 0.5rem 1.5rem;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.join-btn:hover:not(:disabled) {
+  background-color: #0b7dda;
+}
+
+.join-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

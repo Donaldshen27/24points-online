@@ -1,0 +1,99 @@
+.deck-test {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.deck-test h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.test-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.test-controls button {
+  padding: 0.5rem 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.test-controls button:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.test-controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.game-stats {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #666;
+}
+
+.game-stats p {
+  margin: 0.25rem 0;
+}
+
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.selected-cards-display {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #e3f2fd;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.selected-cards-display h3 {
+  margin: 0 0 0.5rem 0;
+  color: #1976d2;
+}
+
+.selected-cards-display p {
+  margin: 0;
+  color: #666;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .deck-test {
+    padding: 1rem;
+  }
+  
+  .test-controls {
+    gap: 0.5rem;
+  }
+  
+  .test-controls button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}

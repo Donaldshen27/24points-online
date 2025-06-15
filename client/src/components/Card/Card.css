@@ -85,6 +85,50 @@
   font-weight: 600;
 }
 
+/* Keyboard shortcut indicator */
+.keyboard-shortcut {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.75rem;
+  color: #666;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.card:hover .keyboard-shortcut {
+  opacity: 1;
+  color: #333;
+}
+
+.card.selected .keyboard-shortcut {
+  color: var(--card-color);
+  opacity: 1;
+  font-weight: 700;
+}
+
+/* Keyboard focus state */
+.card.keyboard-focused {
+  animation: keyboardPulse 0.4s ease-out;
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.3), 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes keyboardPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* Animation for dealing cards */
 @keyframes dealCard {
   from {

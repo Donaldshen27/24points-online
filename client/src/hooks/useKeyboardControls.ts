@@ -63,12 +63,27 @@ export const useKeyboardControls = ({
       const cardNumber = parseInt(key);
       const card = cardNumberMap.get(cardNumber);
       if (card) {
+        // Add keyboard focus animation
+        const cardElement = document.querySelector(`[data-card-id="${card.id}"] .card`);
+        if (cardElement) {
+          cardElement.classList.add('keyboard-focused');
+          setTimeout(() => {
+            cardElement.classList.remove('keyboard-focused');
+          }, 400);
+        }
         onCardSelect(card);
       }
     } else if (key === '0') {
       // Use 0 for 10th card
       const card = cardNumberMap.get(10);
       if (card) {
+        const cardElement = document.querySelector(`[data-card-id="${card.id}"] .card`);
+        if (cardElement) {
+          cardElement.classList.add('keyboard-focused');
+          setTimeout(() => {
+            cardElement.classList.remove('keyboard-focused');
+          }, 400);
+        }
         onCardSelect(card);
       }
     }

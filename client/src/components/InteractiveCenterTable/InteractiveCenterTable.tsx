@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { Card as CardType, Operation } from '../../types/game.types';
 import { Card } from '../Card/Card';
 import { OperationMenu } from '../OperationMenu/OperationMenu';
+import { useKeyboardControls } from '../../hooks/useKeyboardControls';
+import { KeyboardHelp } from '../KeyboardHelp/KeyboardHelp';
 import './InteractiveCenterTable.css';
 
 interface InteractiveCenterTableProps {
@@ -40,7 +42,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
     setOperationHistory([]);
   }, [initialCards]);
 
-  const handleCardClick = (card: CardType | MergedCard, event: React.MouseEvent) => {
+  const handleCardClick = (card: CardType | MergedCard, event?: React.MouseEvent) => {
     if (disabled || !allowInteraction) return;
 
     // If clicking on already selected card, deselect
@@ -56,13 +58,26 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
       setSelectedCard(card);
       setOperationMenuPosition(null); // Don't show menu yet
     } else if (selectedCard.id !== card.id && !operationMenuPosition) {
-      // Second card selection - now show operation menu
+      // Second card selection
       setSecondCard(card);
-      const rect = event.currentTarget.getBoundingClientRect();
-      setOperationMenuPosition({
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-      });
+      
+      // For keyboard selection, position menu in center
+      if (!event) {
+        const tableRect = document.querySelector('.center-cards')?.getBoundingClientRect();
+        if (tableRect) {
+          setOperationMenuPosition({
+            x: tableRect.left + tableRect.width / 2,
+            y: tableRect.top + tableRect.height / 2
+          });
+        }
+      } else {
+        // For mouse click, position at click location
+        const rect = event.currentTarget.getBoundingClientRect();
+        setOperationMenuPosition({
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        });
+      }
     }
   };
 
@@ -186,14 +201,35 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
     return 'expression' in card;
   };
 
+  // Setup keyboard controls
+  const { showHelp, setShowHelp } = useKeyboardControls({
+    cards,
+    onCardSelect: (card) => handleCardClick(card),
+    onOperatorSelect: (operator) => {
+      if (selectedCard && secondCard) {
+        handleOperationSelect(operator);
+      }
+    },
+    onConfirm: () => {
+      // Confirm is handled automatically after operation selection
+    },
+    onUndo: handleReset,
+    onReset: () => {
+      setSelectedCard(null);
+      setSecondCard(null);
+      setOperationMenuPosition(null);
+    },
+    enabled: allowInteraction && !disabled
+  });
+
   return (
     <div className="interactive-center-table">
       <div className="table-surface">
         <div className="table-header">
           <h3>
-            {!selectedCard ? 'Click a card to start' : 
+            {!selectedCard ? 'Click a card or press 1-9' : 
              !secondCard ? 'Click another card' : 
-             'Choose an operation'}
+             'Choose an operation (+, -, *, /)'}
           </h3>
           {history.length > 0 && allowInteraction && (
             <button className="reset-btn" onClick={handleReset}>
@@ -221,6 +257,8 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
                   disabled={disabled || !allowInteraction}
                   className={`center-card card-${index}`}
                   onClick={() => {}} // Handle click in wrapper
+                  keyboardShortcut={index + 1}
+                  showKeyboardHint={true}
                 />
                 {isMergedCard(card) && (
                   <div className="card-expression">{card.expression}</div>
@@ -246,6 +284,14 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
           onClose={closeOperationMenu}
         />
       )}
+      
+      {/* Keyboard shortcut hint */}
+      <div className="keyboard-hint">
+        Press <kbd>H</kbd> for keyboard shortcuts
+      </div>
+      
+      {/* Keyboard help modal */}
+      <KeyboardHelp show={showHelp} onClose={() => setShowHelp(false)} />
     </div>
   );
 };

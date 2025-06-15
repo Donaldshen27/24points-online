@@ -11,6 +11,8 @@ interface CardProps {
   size?: 'small' | 'medium' | 'large';
   showOwner?: boolean;
   className?: string;
+  keyboardShortcut?: number;
+  showKeyboardHint?: boolean;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -20,7 +22,9 @@ export const Card: React.FC<CardProps> = ({
   disabled = false,
   size = 'medium',
   showOwner = true,
-  className = ''
+  className = '',
+  keyboardShortcut,
+  showKeyboardHint = true
 }) => {
   const handleClick = () => {
     if (!disabled && onClick) {
@@ -38,6 +42,11 @@ export const Card: React.FC<CardProps> = ({
         '--card-color': cardColor
       } as React.CSSProperties}
     >
+      {showKeyboardHint && keyboardShortcut !== undefined && (
+        <div className="keyboard-shortcut">
+          {keyboardShortcut === 10 ? '0' : keyboardShortcut}
+        </div>
+      )}
       <div className="card-value">
         {card.value}
       </div>

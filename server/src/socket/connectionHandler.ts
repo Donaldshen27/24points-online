@@ -47,6 +47,9 @@ export const handleConnection = (io: Server, socket: Socket) => {
       const playerState = roomManager.getGameStateForPlayer(data.roomId, playerId);
       socket.emit('reconnected-to-game', { room: playerState, playerId });
       
+      // Also emit game-state-updated to ensure hooks are synced
+      socket.emit('game-state-updated', playerState);
+      
       // Notify other players
       socket.to(data.roomId).emit('player-reconnected', { 
         playerId: playerId,

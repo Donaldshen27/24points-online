@@ -16,10 +16,10 @@ interface GameStateHook {
   resetGame: () => void;
 }
 
-export const useGameState = (playerId: string | null): GameStateHook => {
-  const [gameState, setGameState] = useState<GameRoom | null>(null);
-  const [currentRound, setCurrentRound] = useState(0);
-  const [centerCards, setCenterCards] = useState<Card[]>([]);
+export const useGameState = (playerId: string | null, initialRoom?: GameRoom | null): GameStateHook => {
+  const [gameState, setGameState] = useState<GameRoom | null>(initialRoom || null);
+  const [currentRound, setCurrentRound] = useState(initialRoom?.currentRound || 0);
+  const [centerCards, setCenterCards] = useState<Card[]>(initialRoom?.centerCards || []);
   const [isSolving, setIsSolving] = useState(false);
 
   // Check if it's player's turn to solve

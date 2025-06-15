@@ -26,7 +26,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     currentRound,
     centerCards,
     resetGame
-  } = useGameState(playerId);
+  } = useGameState(playerId, room);
 
   const [roundResult, setRoundResult] = useState<{
     winnerId: string | null;

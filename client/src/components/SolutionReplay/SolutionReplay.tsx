@@ -32,7 +32,7 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
   const [showResult, setShowResult] = useState<number>(-1);
   const [waitingForOtherPlayer, setWaitingForOtherPlayer] = useState(false);
   const [animationComplete, setAnimationComplete] = useState(false);
-  const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const animationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Create animation steps
   const steps: AnimationStep[] = [

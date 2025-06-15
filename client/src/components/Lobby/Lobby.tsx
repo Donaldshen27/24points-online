@@ -131,7 +131,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                 <div className="room-info">
                   <span className="room-id">Room: {room.id}</span>
                   <span className="player-count">
-                    Players: {room.players.length}/2
+                    Players: {room.players.filter(p => p.socketId).length}/2
                   </span>
                   {room.players[0] && (
                     <span className="host-name">

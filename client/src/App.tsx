@@ -58,6 +58,9 @@ function App() {
   }
 
   const handleLeaveRoom = () => {
+    // Emit leave-room event to server
+    socketService.emit('leave-room')
+    
     setCurrentRoom(null)
     setPlayerId('')
     setAppState(AppState.LOBBY)

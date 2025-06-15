@@ -62,14 +62,39 @@ export const handleConnection = (io: Server, socket: Socket) => {
   });
 
   socket.on('leave-room', () => {
-    const { room, roomId } = roomManager.leaveRoom(socket.id);
+    // Get the room and player info before leaving
+    const currentRoom = roomManager.getRoomBySocketId(socket.id);
+    const leavingPlayer = currentRoom?.players.find(p => p.socketId === socket.id);
+    const roomId = currentRoom?.id;
+    
+    const isGameActive = currentRoom && (
+      currentRoom.state === GameState.PLAYING || 
+      currentRoom.state === GameState.SOLVING || 
+      currentRoom.state === GameState.ROUND_END ||
+      currentRoom.state === GameState.REPLAY
+    );
+    
+    // Emit disconnect notification BEFORE leaving room
+    if (roomId && currentRoom && leavingPlayer && isGameActive) {
+      // Send to all players in room except the leaving one
+      socket.to(roomId).emit('player-disconnected-active-game', { 
+        playerId: leavingPlayer.id,
+        playerName: leavingPlayer.name,
+        timeoutSeconds: 30
+      });
+    }
+    
+    // Now leave the room
+    const { room } = roomManager.leaveRoom(socket.id);
     
     if (roomId) {
       socket.leave(roomId);
       
       if (room) {
         io.to(roomId).emit('room-updated', room);
-        io.to(roomId).emit('player-left', { socketId: socket.id });
+        if (!isGameActive) {
+          io.to(roomId).emit('player-left', { socketId: socket.id });
+        }
       }
       
       io.emit('rooms-updated', roomManager.getOpenRooms());

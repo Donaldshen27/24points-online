@@ -3,8 +3,10 @@ import { io, Socket } from 'socket.io-client';
 class SocketService {
   private socket: Socket | null = null;
 
-  connect(url: string = window.location.hostname === 'localhost' ? 'http://localhost:3024' : `http://${window.location.hostname}:3024`): void {
-    this.socket = io(url, {
+  connect(url?: string): void {
+    // Use environment variable or fallback to localhost for development
+    const serverUrl = url || import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
+    this.socket = io(serverUrl, {
       autoConnect: true,
     });
 

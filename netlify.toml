@@ -1,0 +1,23 @@
+[build]
+  # Directory to change to before starting a build
+  base = "client/"
+  
+  # Directory that contains the deploy-ready HTML files
+  publish = "dist/"
+  
+  # Build command
+  command = "npm run build"
+
+# Redirects for SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for better performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"

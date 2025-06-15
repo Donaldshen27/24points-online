@@ -50,6 +50,11 @@ export class RoomManager {
       }
     });
     
+    // Set up replay end callback
+    gameManager.setOnReplayEndCallback(() => {
+      this.handleReplayEnd(roomId);
+    });
+    
     this.gameManagers.set(roomId, gameManager);
     this.playerToRoom.set(socketId, roomId);
     
@@ -313,6 +318,30 @@ export class RoomManager {
     }
 
     return gameManager.requestSkipReplay(playerId);
+  }
+
+  private handleReplayEnd(roomId: string): void {
+    console.log('[RoomManager] Handling replay end for room:', roomId);
+    
+    if (!this.io) return;
+    
+    const gameState = this.getGameState(roomId);
+    if (!gameState) return;
+    
+    // Emit updated game state to all players
+    gameState.players.forEach(p => {
+      const playerState = this.getGameStateForPlayer(roomId, p.id);
+      this.io!.to(p.socketId).emit('game-state-updated', playerState);
+    });
+    
+    // If we're now in playing state, emit round started
+    if (gameState.state === GameState.PLAYING) {
+      console.log('[RoomManager] Emitting round-started for round:', gameState.currentRound);
+      this.io.to(roomId).emit('round-started', {
+        round: gameState.currentRound,
+        centerCards: gameState.centerCards
+      });
+    }
   }
 }
 

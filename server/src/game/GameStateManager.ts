@@ -32,6 +32,7 @@ export class GameStateManager {
   private lastRoundResult: RoundResult | null = null;
   private gameOverResult: GameOverResult | null = null;
   private onRedealCallback?: () => void;
+  private onReplayEndCallback?: () => void;
   private replaySkipRequests: Set<string> = new Set();
   private replayTimeout?: NodeJS.Timeout;
 
@@ -45,6 +46,13 @@ export class GameStateManager {
    */
   setOnRedealCallback(callback: () => void): void {
     this.onRedealCallback = callback;
+  }
+
+  /**
+   * Set callback for when replay ends
+   */
+  setOnReplayEndCallback(callback: () => void): void {
+    this.onReplayEndCallback = callback;
   }
 
   /**
@@ -492,8 +500,7 @@ export class GameStateManager {
       return;
     }
 
-    console.log('[GameStateManager] Ending replay, starting next round');
-    this.room.state = GameState.ROUND_END;
+    console.log('[GameStateManager] Ending replay, transitioning to next round');
     this.replaySkipRequests.clear();
     
     // Clear timeout if it exists
@@ -502,11 +509,13 @@ export class GameStateManager {
       this.replayTimeout = undefined;
     }
 
-    // Start next round
-    setTimeout(() => {
-      if (this.room.state === GameState.ROUND_END) {
-        this.startNewRound();
-      }
-    }, 500); // Short delay after replay
+    // Transition directly to playing state and start new round
+    this.room.state = GameState.PLAYING;
+    this.startNewRound();
+    
+    // Notify that replay ended
+    if (this.onReplayEndCallback) {
+      this.onReplayEndCallback();
+    }
   }
 }

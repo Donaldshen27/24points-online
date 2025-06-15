@@ -209,25 +209,25 @@ export const handleConnection = (io: Server, socket: Socket) => {
       // Both players skipped, notify them
       io.to(room.id).emit('replay-skipped');
       
-      // Update game state for next round
-      const gameState = roomManager.getGameState(room.id);
-      if (gameState) {
-        gameState.players.forEach(p => {
-          const playerState = roomManager.getGameStateForPlayer(room.id, p.id);
-          io.to(p.socketId).emit('game-state-updated', playerState);
-        });
-        
-        // Start next round
-        setTimeout(() => {
-          const currentState = roomManager.getGameState(room.id);
-          if (currentState && currentState.state === 'playing') {
+      // Give the game state manager time to transition and start new round
+      setTimeout(() => {
+        const gameState = roomManager.getGameState(room.id);
+        if (gameState) {
+          // Send updated game state
+          gameState.players.forEach(p => {
+            const playerState = roomManager.getGameStateForPlayer(room.id, p.id);
+            io.to(p.socketId).emit('game-state-updated', playerState);
+          });
+          
+          // If we're in playing state, announce the new round
+          if (gameState.state === 'playing') {
             io.to(room.id).emit('round-started', {
-              round: currentState.currentRound,
-              centerCards: currentState.centerCards
+              round: gameState.currentRound,
+              centerCards: gameState.centerCards
             });
           }
-        }, 600);
-      }
+        }
+      }, 600);
     } else {
       // Notify others that this player wants to skip
       socket.to(room.id).emit('player-wants-skip', { playerId: player.id });

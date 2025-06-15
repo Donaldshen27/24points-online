@@ -74,7 +74,6 @@ export const DeckTest: React.FC = () => {
         <PlayerHand
           player={player1}
           isCurrentPlayer={true}
-          showCards={true}
         />
         
         <CenterTable
@@ -86,7 +85,6 @@ export const DeckTest: React.FC = () => {
         <PlayerHand
           player={player2}
           isCurrentPlayer={false}
-          showCards={false}
         />
       </div>
 

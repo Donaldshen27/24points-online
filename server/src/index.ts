@@ -8,9 +8,19 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+// Allow origins from environment variable or default to development URLs
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:4173'];
+
+// Add Netlify deployment URL
+if (process.env.NODE_ENV === 'production') {
+  allowedOrigins.push('https://verdant-flan-eeb30e.netlify.app');
+}
+
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:5173', 'http://192.168.0.83:5173', 'http://172.29.240.200:5173'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -19,7 +29,7 @@ const io = new Server(server, {
 const PORT = process.env.PORT || 3024;
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://192.168.0.83:5173', 'http://172.29.240.200:5173'],
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(express.json());

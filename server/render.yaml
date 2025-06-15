@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: 24points-server
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: https://verdant-flan-eeb30e.netlify.app

@@ -13,7 +13,7 @@ interface CardTransferProps {
 
 export const CardTransfer: React.FC<CardTransferProps> = ({
   cards,
-  fromPosition,
+  fromPosition: _fromPosition,
   toPosition,
   onComplete,
   duration = 1000

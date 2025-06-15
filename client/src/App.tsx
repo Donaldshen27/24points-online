@@ -8,13 +8,15 @@ import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import type { GameRoom } from './types/game.types'
 import './App.css'
 
-const enum AppState {
-  CONNECTING = 'connecting',
-  LOBBY = 'lobby',
-  WAITING_ROOM = 'waiting_room',
-  IN_GAME = 'in_game',
-  TEST_MODE = 'test_mode'
-}
+const AppState = {
+  CONNECTING: 'connecting',
+  LOBBY: 'lobby',
+  WAITING_ROOM: 'waiting_room',
+  IN_GAME: 'in_game',
+  TEST_MODE: 'test_mode'
+} as const;
+
+type AppState = typeof AppState[keyof typeof AppState];
 
 function App() {
   const [isConnected, setIsConnected] = useState(false)

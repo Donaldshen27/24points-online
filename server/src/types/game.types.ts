@@ -24,13 +24,15 @@ export interface GameRoom {
   rematchRequests?: Set<string>;
 }
 
-export enum GameState {
-  WAITING = 'waiting',
-  PLAYING = 'playing',
-  SOLVING = 'solving',
-  ROUND_END = 'round_end',
-  GAME_OVER = 'game_over'
-}
+export const GameState = {
+  WAITING: 'waiting',
+  PLAYING: 'playing',
+  SOLVING: 'solving',
+  ROUND_END: 'round_end',
+  GAME_OVER: 'game_over'
+} as const;
+
+export type GameState = typeof GameState[keyof typeof GameState];
 
 export interface Solution {
   cards: Card[];

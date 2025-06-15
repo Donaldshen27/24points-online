@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import socketService from '../../services/socketService';
-import type { GameRoom, Player } from '../../types/game.types';
+import type { GameRoom } from '../../types/game.types';
 import './WaitingRoom.css';
 
 interface WaitingRoomProps {

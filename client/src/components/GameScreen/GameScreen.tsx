@@ -78,7 +78,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   };
 
   // Handle direct solution from interactive table
-  const handleDirectSolution = (expression: string, result: number) => {
+  const handleDirectSolution = (_expression: string, result: number) => {
     // Auto-claim and submit solution
     if (canClaimSolution) {
       claimSolution();

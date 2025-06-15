@@ -164,22 +164,34 @@
 }
 
 /* Animation for card merging */
-.card-merge-animation {
-  animation: mergeCards 0.5s ease-out;
+.card-wrapper.merging-out {
+  animation: mergeOut 0.3s ease-out forwards;
+  pointer-events: none;
 }
 
-@keyframes mergeCards {
+@keyframes mergeOut {
   0% {
-    transform: scale(1);
+    transform: scale(1) translate(0, 0);
     opacity: 1;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
   }
   100% {
-    transform: scale(1);
+    transform: scale(0.5) translate(var(--merge-x, 0), var(--merge-y, 0));
+    opacity: 0;
+  }
+}
+
+.card-wrapper:not(.merging-out) {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
     opacity: 1;
+    transform: scale(1);
   }
 }
 

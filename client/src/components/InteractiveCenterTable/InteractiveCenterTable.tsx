@@ -14,6 +14,7 @@ interface InteractiveCenterTableProps {
 interface MergedCard extends CardType {
   expression: string;
   sourceCards: string[]; // IDs of cards used to create this
+  owner: 'player1' | 'player2';
 }
 
 export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
@@ -92,7 +93,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
     const mergedCard: MergedCard = {
       id: `merged-${Date.now()}`,
       value: result,
-      ownerId: selectedCard.ownerId, // Use first card's owner
+      owner: selectedCard.owner, // Use first card's owner
       expression,
       sourceCards: [
         ...('sourceCards' in selectedCard ? selectedCard.sourceCards : [selectedCard.id]),
@@ -100,15 +101,40 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
       ]
     };
 
-    // Remove used cards and add merged card
+    // Add merging class to the cards being merged
+    const mergeElement1 = document.querySelector(`[data-card-id="${selectedCard.id}"]`) as HTMLElement;
+    const mergeElement2 = document.querySelector(`[data-card-id="${secondCard.id}"]`) as HTMLElement;
+    
+    if (mergeElement1 && mergeElement2) {
+      mergeElement1.classList.add('merging-out');
+      mergeElement2.classList.add('merging-out');
+      
+      // Get positions for animation
+      const rect1 = mergeElement1.getBoundingClientRect();
+      const rect2 = mergeElement2.getBoundingClientRect();
+      const centerX = (rect1.left + rect2.left + rect1.width) / 2;
+      const centerY = (rect1.top + rect2.top + rect1.height) / 2;
+      
+      // Apply transform to merge towards center
+      mergeElement1.style.setProperty('--merge-x', `${centerX - rect1.left - rect1.width / 2}px`);
+      mergeElement1.style.setProperty('--merge-y', `${centerY - rect1.top - rect1.height / 2}px`);
+      mergeElement2.style.setProperty('--merge-x', `${centerX - rect2.left - rect2.width / 2}px`);
+      mergeElement2.style.setProperty('--merge-y', `${centerY - rect2.top - rect2.height / 2}px`);
+    }
+    
+    // Calculate new cards array
     const newCards = cards.filter(c => c.id !== selectedCard.id && c.id !== secondCard.id);
     newCards.push(mergedCard);
-    setCards(newCards);
-
-    // Check if we have a solution (only one card left with value 24)
-    if (newCards.length === 1 && Math.abs(newCards[0].value - 24) < 0.0001) {
-      onSolutionFound(mergedCard.expression, result);
-    }
+    
+    // Wait for animation then update cards
+    setTimeout(() => {
+      setCards(newCards);
+      
+      // Check if we have a solution (only one card left with value 24)
+      if (newCards.length === 1 && Math.abs(newCards[0].value - 24) < 0.0001) {
+        onSolutionFound(mergedCard.expression, result);
+      }
+    }, 300);
 
     closeOperationMenu();
   };
@@ -151,6 +177,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
             cards.map((card, index) => (
               <div
                 key={card.id}
+                data-card-id={card.id}
                 className={`card-wrapper ${selectedCard?.id === card.id ? 'selected' : ''} ${secondCard?.id === card.id ? 'selected-second' : ''}`}
                 onClick={(e) => handleCardClick(card, e)}
               >

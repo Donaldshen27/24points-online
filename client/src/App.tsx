@@ -48,15 +48,17 @@ function App() {
     }
   }, [])
 
-  const handleRoomJoined = (room: GameRoom, playerId: string) => {
+  const handleRoomJoined = (room: GameRoom, playerId: string, isReconnection: boolean = false) => {
     setCurrentRoom(room)
     setPlayerId(playerId)
-    // Check if game is already in progress (for reconnections)
-    if (room.state === GameState.PLAYING || 
+    
+    // Only go directly to game if this is a reconnection AND game is active
+    if (isReconnection && (
+        room.state === GameState.PLAYING || 
         room.state === GameState.SOLVING || 
         room.state === GameState.ROUND_END || 
         room.state === GameState.REPLAY ||
-        room.state === GameState.GAME_OVER) {
+        room.state === GameState.GAME_OVER)) {
       setAppState(AppState.IN_GAME)
     } else {
       setAppState(AppState.WAITING_ROOM)

@@ -128,22 +128,53 @@ export class RoomManager {
     }
 
     const player = room.players.find(p => p.socketId === socketId);
-    if (player && gameManager) {
+    if (!player) {
+      return { room: null, roomId: null };
+    }
+
+    // Check if game is active
+    const isGameActive = room.state === GameState.PLAYING || 
+                        room.state === GameState.SOLVING || 
+                        room.state === GameState.ROUND_END ||
+                        room.state === GameState.REPLAY;
+
+    if (isGameActive && gameManager) {
+      // Game is active - just disconnect, don't remove
       gameManager.handleDisconnect(player.id);
+      player.socketId = ''; // Clear socket but keep player
+      this.playerToRoom.delete(socketId);
+      
+      // Check if all players are disconnected
+      const hasActivePlayer = room.players.some(p => p.socketId);
+      if (!hasActivePlayer) {
+        // No active players left - delete room after a delay
+        setTimeout(() => {
+          // Check again in case someone reconnected
+          const stillNoActivePlayers = room.players.every(p => !p.socketId);
+          if (stillNoActivePlayers) {
+            this.rooms.delete(roomId);
+            this.gameManagers.delete(roomId);
+          }
+        }, 35000); // Wait slightly longer than forfeit timer
+      }
+      
+      return { room, roomId };
+    } else {
+      // Game not active - remove player completely
+      room.players = room.players.filter(p => p.socketId !== socketId);
+      this.playerToRoom.delete(socketId);
+
+      if (room.players.length === 0) {
+        // No players left - delete room immediately
+        this.rooms.delete(roomId);
+        this.gameManagers.delete(roomId);
+        return { room: null, roomId };
+      }
+
+      // Reset to waiting if players remain
+      room.state = GameState.WAITING;
+      return { room, roomId };
     }
-
-    room.players = room.players.filter(player => player.socketId !== socketId);
-    this.playerToRoom.delete(socketId);
-
-    if (room.players.length === 0) {
-      this.rooms.delete(roomId);
-      this.gameManagers.delete(roomId);
-      return { room: null, roomId };
-    }
-
-    room.state = GameState.WAITING;
-    
-    return { room, roomId };
   }
 
   getRoom(roomId: string): GameRoom | undefined {

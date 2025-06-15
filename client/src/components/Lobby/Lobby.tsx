@@ -4,7 +4,7 @@ import type { GameRoom } from '../../types/game.types';
 import './Lobby.css';
 
 interface LobbyProps {
-  onRoomJoined: (room: GameRoom, playerId: string) => void;
+  onRoomJoined: (room: GameRoom, playerId: string, isReconnection?: boolean) => void;
 }
 
 export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
@@ -23,16 +23,16 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
     });
 
     socketService.on('room-created', (data: { room: GameRoom; playerId: string }) => {
-      onRoomJoined(data.room, data.playerId);
+      onRoomJoined(data.room, data.playerId, false);
     });
 
     socketService.on('room-joined', (data: { room: GameRoom; playerId: string }) => {
-      onRoomJoined(data.room, data.playerId);
+      onRoomJoined(data.room, data.playerId, false);
     });
 
     socketService.on('reconnected-to-game', (data: { room: GameRoom; playerId: string }) => {
       console.log('Reconnected to game:', data);
-      onRoomJoined(data.room, data.playerId);
+      onRoomJoined(data.room, data.playerId, true);
     });
 
     socketService.on('join-room-error', (data: { message: string }) => {

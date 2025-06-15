@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 class SocketService {
   private socket: Socket | null = null;
 
-  connect(url: string = 'http://localhost:3024'): void {
+  connect(url: string = window.location.hostname === 'localhost' ? 'http://localhost:3024' : `http://${window.location.hostname}:3024`): void {
     this.socket = io(url, {
       autoConnect: true,
     });

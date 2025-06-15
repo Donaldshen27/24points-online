@@ -31,10 +31,18 @@ export class GameStateManager {
   private roundStartTime: number = 0;
   private lastRoundResult: RoundResult | null = null;
   private gameOverResult: GameOverResult | null = null;
+  private onRedealCallback?: () => void;
 
   constructor(room: GameRoom) {
     this.room = room;
     this.deckManager = new DeckManager();
+  }
+
+  /**
+   * Set callback for when cards are redealt
+   */
+  setOnRedealCallback(callback: () => void): void {
+    this.onRedealCallback = callback;
   }
 
   /**
@@ -90,18 +98,37 @@ export class GameStateManager {
       this.room.players[1].deck
     );
     
-    this.room.centerCards = dealtCards;
-    this.room.state = GameState.PLAYING;
-    
-    // Check if cards have a solution
+    // Double-check if these cards have a solution
     const cardValues = dealtCards.map(c => c.value);
     const hasSolution = Calculator.hasSolution(cardValues);
     
     if (!hasSolution) {
-      // If no solution exists, we'll let players discover this
-      // They can skip or the game continues with these cards
-      console.log('No solution exists for these cards:', cardValues);
+      console.log('No solution found for cards:', cardValues, '- returning cards and redealing');
+      
+      // Return cards to their respective owners
+      const player1Cards = dealtCards.filter(c => c.owner === 'player1');
+      const player2Cards = dealtCards.filter(c => c.owner === 'player2');
+      
+      // Add cards back to the bottom of each player's deck
+      this.room.players[0].deck.push(...player1Cards);
+      this.room.players[1].deck.push(...player2Cards);
+      
+      // Notify about redeal if callback is set
+      if (this.onRedealCallback) {
+        this.onRedealCallback();
+      }
+      
+      // Try again with a small delay
+      setTimeout(() => {
+        this.startNewRound();
+      }, 100);
+      
+      return;
     }
+    
+    this.room.centerCards = dealtCards;
+    this.room.state = GameState.PLAYING;
+    console.log('New round started with cards:', cardValues);
   }
 
   /**

@@ -1,5 +1,6 @@
 import { Card, Player, GameRoom } from '../types/game.types';
 import { CardUtils } from '../utils/cardUtils';
+import { Calculator } from '../utils/calculator';
 
 export class DeckManager {
   private room?: GameRoom;
@@ -25,18 +26,56 @@ export class DeckManager {
       throw new Error('Not enough cards to deal');
     }
 
-    // Draw 2 cards from each deck
-    const { drawn: p1Cards, remaining: p1Remaining } = CardUtils.drawCards(deck1, 2);
-    const { drawn: p2Cards, remaining: p2Remaining } = CardUtils.drawCards(deck2, 2);
+    let attempts = 0;
+    const maxAttempts = 100; // Increased attempts
+    let centerCards: Card[] = [];
+    
+    // Create shuffled copies of the decks for random selection
+    const deck1Copy = CardUtils.shuffleDeck([...deck1]);
+    const deck2Copy = CardUtils.shuffleDeck([...deck2]);
 
-    // Update the decks in place
+    while (attempts < maxAttempts) {
+      // Try different combinations by shuffling
+      const shuffled1 = attempts % 10 === 0 ? CardUtils.shuffleDeck([...deck1]) : deck1Copy;
+      const shuffled2 = attempts % 10 === 0 ? CardUtils.shuffleDeck([...deck2]) : deck2Copy;
+      
+      // Draw 2 cards from each deck
+      const { drawn: p1Cards, remaining: p1Rem } = CardUtils.drawCards(shuffled1, 2);
+      const { drawn: p2Cards, remaining: p2Rem } = CardUtils.drawCards(shuffled2, 2);
+      
+      centerCards = [...p1Cards, ...p2Cards];
+      const cardValues = centerCards.map(c => c.value);
+      
+      // Check if these cards have a solution
+      if (Calculator.hasSolution(cardValues)) {
+        // Update the decks in place
+        deck1.length = 0;
+        deck1.push(...p1Rem);
+        
+        deck2.length = 0;
+        deck2.push(...p2Rem);
+        
+        console.log(`Found solvable cards after ${attempts + 1} attempts:`, cardValues);
+        return centerCards;
+      }
+      
+      attempts++;
+    }
+
+    // If no solvable combination found after max attempts, 
+    // fall back to the last combination (rare case)
+    console.warn('Could not find solvable cards after', maxAttempts, 'attempts. Using last combination.');
+    
+    // Update the decks with the last attempt
+    const { drawn: p1Cards, remaining: p1Rem } = CardUtils.drawCards(deck1, 2);
+    const { drawn: p2Cards, remaining: p2Rem } = CardUtils.drawCards(deck2, 2);
+    
     deck1.length = 0;
-    deck1.push(...p1Remaining);
+    deck1.push(...p1Rem);
     
     deck2.length = 0;
-    deck2.push(...p2Remaining);
-
-    // Return the center cards
+    deck2.push(...p2Rem);
+    
     return [...p1Cards, ...p2Cards];
   }
 

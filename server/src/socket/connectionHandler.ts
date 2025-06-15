@@ -4,6 +4,9 @@ import { Solution, GameState } from '../types/game.types';
 
 export const handleConnection = (io: Server, socket: Socket) => {
   console.log('New client connected:', socket.id);
+  
+  // Set io instance in RoomManager if not already set
+  roomManager.setIo(io);
 
   socket.on('create-room', (data: { playerName: string }) => {
     const playerId = `player-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;

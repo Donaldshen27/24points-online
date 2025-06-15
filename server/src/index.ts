@@ -10,14 +10,18 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST']
+    origin: ['http://localhost:5173', 'http://192.168.0.83:5173', 'http://172.29.240.200:5173'],
+    methods: ['GET', 'POST'],
+    credentials: true
   }
 });
 
 const PORT = process.env.PORT || 3024;
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://192.168.0.83:5173', 'http://172.29.240.200:5173'],
+  credentials: true
+}));
 app.use(express.json());
 
 app.get('/health', (req, res) => {
@@ -30,6 +34,8 @@ io.on('connection', (socket) => {
   handleConnection(io, socket);
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const port = typeof PORT === 'string' ? parseInt(PORT, 10) : PORT;
+server.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
+  console.log(`Server accessible on local network at http://192.168.0.83:${port}`);
 });

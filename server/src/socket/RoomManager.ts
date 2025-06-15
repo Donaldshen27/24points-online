@@ -7,6 +7,11 @@ export class RoomManager {
   private rooms: Map<string, GameRoom> = new Map();
   private gameManagers: Map<string, GameStateManager> = new Map();
   private playerToRoom: Map<string, string> = new Map();
+  private io: Server | null = null;
+
+  setIo(io: Server): void {
+    this.io = io;
+  }
   
   generateRoomId(): string {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -34,7 +39,18 @@ export class RoomManager {
     };
 
     this.rooms.set(roomId, room);
-    this.gameManagers.set(roomId, new GameStateManager(room));
+    const gameManager = new GameStateManager(room);
+    
+    // Set up redeal callback
+    gameManager.setOnRedealCallback(() => {
+      if (this.io) {
+        this.io.to(roomId).emit('cards-redealing', {
+          message: 'No solution found, redealing cards...'
+        });
+      }
+    });
+    
+    this.gameManagers.set(roomId, gameManager);
     this.playerToRoom.set(socketId, roomId);
     
     return room;

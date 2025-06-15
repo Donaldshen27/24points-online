@@ -2,6 +2,8 @@
 
 A real-time multiplayer card game where two players race to solve mathematical puzzles by combining 4 cards to reach exactly 24 using arithmetic operations.
 
+🎮 **Play Now**: https://verdant-flan-eeb30e.netlify.app/
+
 ## 🎮 Game Features
 
 - **Real-time Multiplayer**: Two players compete in real-time via WebSocket connections
@@ -9,6 +11,7 @@ A real-time multiplayer card game where two players race to solve mathematical p
 - **Auto-balancing**: Cards automatically redistribute based on who solves each round
 - **Network Play**: Accessible on local network for multiplayer gaming across devices
 - **Responsive Design**: Works on desktop and mobile browsers
+- **Simplified UI**: Players see only their card count, not the actual cards in hand
 
 ## 📁 Project Structure
 
@@ -122,6 +125,11 @@ For WSL users, additional Windows firewall configuration may be required (see do
 - **Auto-discovery**: Clients automatically connect to the correct backend
 - **CORS support**: Configured for local network play
 - **WSL compatibility**: Special configuration for Windows Subsystem for Linux
+
+### Recent Updates
+- **Victory Celebration**: Glorious animation when you solve 24 points correctly
+- **Simplified Card Display**: Players now see only card counts instead of actual cards in hand for cleaner UI
+- **Interactive Calculator**: Drag and combine cards to create expressions and find solutions
 
 ## 📚 Documentation
 

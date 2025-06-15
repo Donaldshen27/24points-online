@@ -10,6 +10,7 @@ interface RoundResultProps {
   solution?: Solution;
   reason: 'correct_solution' | 'incorrect_solution' | 'no_solution' | 'timeout';
   onContinue: () => void;
+  hideForReplay?: boolean;
 }
 
 export const RoundResult: React.FC<RoundResultProps> = ({
@@ -19,7 +20,8 @@ export const RoundResult: React.FC<RoundResultProps> = ({
   loserName,
   solution,
   reason,
-  onContinue
+  onContinue,
+  hideForReplay = false
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -80,6 +82,11 @@ export const RoundResult: React.FC<RoundResultProps> = ({
     if (reason === 'incorrect_solution') return 'failure';
     return 'neutral';
   };
+
+  // Don't render if we're showing the replay
+  if (hideForReplay && reason === 'correct_solution' && solution && solution.operations && solution.operations.length > 0) {
+    return null;
+  }
 
   return (
     <div className={`round-result-overlay ${isVisible ? 'visible' : ''}`}>

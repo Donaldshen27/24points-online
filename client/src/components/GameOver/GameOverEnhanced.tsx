@@ -74,7 +74,6 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
 
     // Calculate longest winning streak
     let longestStreak = 0;
-    let currentStreak = 0;
     // This would need round-by-round data to calculate properly
     
     const totalCardsWon = playerScore * 4; // Each round win = 4 cards

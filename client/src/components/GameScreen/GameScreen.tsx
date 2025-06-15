@@ -5,6 +5,7 @@ import { PlayerHand } from '../PlayerHand/PlayerHand';
 import { RoundResult } from '../RoundResult/RoundResult';
 import { GameOverEnhanced } from '../GameOver/GameOverEnhanced';
 import { CardTransfer } from '../CardTransfer/CardTransfer';
+import { SolutionReplay } from '../SolutionReplay/SolutionReplay';
 import socketService from '../../services/socketService';
 import type { GameRoom, Solution, Card } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
@@ -35,6 +36,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     cards: Card[];
     toPlayer: 'current' | 'opponent';
   } | null>(null);
+  const [showingSolutionReplay, setShowingSolutionReplay] = useState(false);
+  const [replaySolution, setReplaySolution] = useState<Solution | null>(null);
 
   // Get current player and opponent
   const currentPlayer = gameState?.players.find(p => p.id === playerId);
@@ -124,17 +127,35 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         reason: data.reason as any || (data.correct ? 'correct_solution' : 'incorrect_solution')
       });
       
-      
-      // Show card transfer animation after round result
-      if (data.winnerId && data.loserId && centerCards.length > 0) {
+      // If there's a valid solution, show the replay first
+      if (data.solution && data.correct && data.solution.operations && data.solution.operations.length > 0) {
+        console.log('[GameScreen] Showing solution replay');
+        setReplaySolution(data.solution);
+        setShowingSolutionReplay(true);
+        
+        // After replay, show card transfer
         setTimeout(() => {
-          const transferTo = data.loserId === playerId ? 'current' : 'opponent';
-          console.log('[GameScreen] Transferring cards to:', transferTo, 'because loser is', data.loserId === playerId ? 'me' : 'opponent');
-          setTransferringCards({
-            cards: [...centerCards],
-            toPlayer: transferTo
-          });
-        }, 2500);
+          if (data.winnerId && data.loserId && centerCards.length > 0) {
+            const transferTo = data.loserId === playerId ? 'current' : 'opponent';
+            console.log('[GameScreen] Transferring cards to:', transferTo);
+            setTransferringCards({
+              cards: [...centerCards],
+              toPlayer: transferTo
+            });
+          }
+        }, 7000); // Wait for replay to complete
+      } else {
+        // No replay, just show card transfer
+        if (data.winnerId && data.loserId && centerCards.length > 0) {
+          setTimeout(() => {
+            const transferTo = data.loserId === playerId ? 'current' : 'opponent';
+            console.log('[GameScreen] Transferring cards to:', transferTo, 'because loser is', data.loserId === playerId ? 'me' : 'opponent');
+            setTransferringCards({
+              cards: [...centerCards],
+              toPlayer: transferTo
+            });
+          }, 2500);
+        }
       }
     };
 
@@ -226,6 +247,20 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           solution={roundResult.solution}
           reason={roundResult.reason}
           onContinue={() => setRoundResult(null)}
+          hideForReplay={showingSolutionReplay}
+        />
+      )}
+
+      {/* Solution Replay */}
+      {showingSolutionReplay && replaySolution && (
+        <SolutionReplay
+          solution={replaySolution}
+          onComplete={() => {
+            setShowingSolutionReplay(false);
+            setReplaySolution(null);
+          }}
+          autoPlay={true}
+          speed={1}
         />
       )}
 

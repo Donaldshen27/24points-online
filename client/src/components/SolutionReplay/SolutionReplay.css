@@ -1,0 +1,373 @@
+/* Solution Replay Overlay */
+.solution-replay-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+/* Main Container */
+.solution-replay-container {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  border-radius: 20px;
+  padding: 40px;
+  min-width: 600px;
+  max-width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+              0 0 100px rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Header */
+.replay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.replay-header h2 {
+  margin: 0;
+  font-size: 32px;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
+}
+
+/* Controls */
+.replay-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.skip-btn {
+  background: rgba(255, 170, 0, 0.3);
+  border-color: rgba(255, 170, 0, 0.5);
+}
+
+.skip-btn:hover {
+  background: rgba(255, 170, 0, 0.4);
+}
+
+/* Content Area */
+.replay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  min-height: 400px;
+}
+
+/* Cards Row */
+.cards-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.replay-card {
+  width: 80px;
+  height: 110px;
+  background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.replay-card.highlighted {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.6),
+              0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.replay-card.used {
+  transform: scale(0.9);
+  filter: grayscale(100%);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.card-value {
+  position: relative;
+  z-index: 1;
+}
+
+/* Operations Display */
+.operations-display {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.operation-step {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px 40px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.calculation {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 48px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.operand {
+  min-width: 60px;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.operator {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 36px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: operatorAppear 0.3s ease-out;
+}
+
+@keyframes operatorAppear {
+  from {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+.operator-green {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+}
+
+.operator-blue {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+}
+
+.operator-orange {
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+}
+
+.operator-red {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+}
+
+.equals {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 10px;
+  color: #fff;
+}
+
+.result {
+  font-size: 56px;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  animation: resultPop 0.4s ease-out;
+}
+
+@keyframes resultPop {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Results History */
+.results-history {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  min-height: 60px;
+}
+
+.result-bubble {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffd700;
+  backdrop-filter: blur(10px);
+  animation: bubbleAppear 0.4s ease-out;
+}
+
+@keyframes bubbleAppear {
+  from {
+    transform: scale(0) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Final Result */
+.final-result {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.equals-24 {
+  font-size: 72px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
+               0 0 60px rgba(255, 215, 0, 0.4);
+  display: block;
+  animation: finalReveal 0.6s ease-out;
+}
+
+@keyframes finalReveal {
+  from {
+    transform: scale(0) rotate(360deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+.success-message {
+  font-size: 28px;
+  color: #4ade80;
+  margin-top: 10px;
+  font-weight: 600;
+  text-shadow: 0 2px 10px rgba(74, 222, 128, 0.5);
+  animation: fadeInUp 0.5s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .solution-replay-container {
+    padding: 20px;
+    min-width: unset;
+    width: 95%;
+  }
+  
+  .replay-header h2 {
+    font-size: 24px;
+  }
+  
+  .cards-row {
+    gap: 10px;
+  }
+  
+  .replay-card {
+    width: 60px;
+    height: 85px;
+    font-size: 28px;
+  }
+  
+  .calculation {
+    font-size: 32px;
+    gap: 15px;
+  }
+  
+  .operator {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+  }
+  
+  .result {
+    font-size: 40px;
+  }
+  
+  .equals-24 {
+    font-size: 48px;
+  }
+  
+  .success-message {
+    font-size: 20px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .replay-card,
+  .operation-step,
+  .result-bubble,
+  .final-result,
+  .operator {
+    animation: none !important;
+    transition: opacity 0.2s ease !important;
+  }
+}

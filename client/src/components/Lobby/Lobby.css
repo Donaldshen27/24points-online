@@ -188,3 +188,113 @@
     opacity: 0.6;
   }
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .lobby {
+    padding: 1rem;
+  }
+
+  .lobby h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .player-name-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .player-name-section input {
+    width: 100%;
+    max-width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .lobby-actions {
+    gap: 1rem;
+    margin-bottom: 2rem;
+    width: 100%;
+  }
+
+  .create-room-btn {
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .join-with-code {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .join-with-code input {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .join-with-code button {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+
+  .available-rooms {
+    padding: 1rem;
+  }
+
+  .available-rooms h2 {
+    font-size: 1.25rem;
+  }
+
+  .room-item {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+    padding: 0.75rem;
+  }
+
+  .room-info {
+    text-align: center;
+  }
+
+  .join-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .lobby {
+    padding: 0.75rem;
+  }
+
+  .lobby h1 {
+    font-size: 1.5rem;
+  }
+
+  .player-name-section input {
+    padding: 0.6rem;
+  }
+
+  .create-room-btn {
+    font-size: 0.95rem;
+    padding: 0.8rem 1.25rem;
+  }
+
+  .available-rooms {
+    padding: 0.75rem;
+  }
+
+  .room-item {
+    padding: 0.6rem;
+  }
+
+  .room-id {
+    font-size: 0.95rem;
+  }
+
+  .player-count,
+  .host-name {
+    font-size: 0.85rem;
+  }
+}

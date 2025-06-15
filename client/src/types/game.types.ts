@@ -26,6 +26,9 @@ export interface GameRoom {
   firstSolves?: { [playerId: string]: number }; // Count of who solved first
   correctSolutions?: { [playerId: string]: number }; // Count of correct solutions
   incorrectAttempts?: { [playerId: string]: number }; // Count of incorrect attempts
+  // Room type support
+  roomType?: string;
+  config?: any;
 }
 
 export const GameState = {

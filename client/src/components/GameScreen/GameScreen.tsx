@@ -9,7 +9,7 @@ import { SolutionReplay } from '../SolutionReplay/SolutionReplay';
 import { VictoryCelebration } from '../VictoryCelebration/VictoryCelebration';
 import DisconnectNotification from '../DisconnectNotification/DisconnectNotification';
 import socketService from '../../services/socketService';
-import type { GameRoom, Solution, Card } from '../../types/game.types';
+import type { GameRoom, Solution, Card, Operation } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
 import { Calculator } from '../../utils/calculator';
 import './GameScreen.css';
@@ -54,8 +54,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
 
   // Handle direct solution from interactive table
-  const handleDirectSolution = (expression: string, result: number) => {
-    console.log('Solution found!', { expression, result });
+  const handleDirectSolution = (expression: string, result: number, usedCards: Card[], operations: Operation[]) => {
+    console.log('Solution found!', { expression, result, usedCards, operations });
     
     // Check if it's exactly 24
     if (Math.abs(result - 24) < 0.0001 && gameState?.state === GameState.PLAYING) {
@@ -68,28 +68,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       
       // Small delay to ensure claim is processed
       setTimeout(() => {
-        // Find a valid solution with operations
-        const operations = Calculator.findSolutionOperations(centerCards);
-        
-        if (operations) {
-          const solution: Solution = {
-            cards: centerCards,
-            operations: operations,
-            result: 24
-          };
-          console.log('Submitting solution:', solution);
-          socket.emit('submit-solution', { solution });
-        } else {
-          console.error('Could not find valid operations for 24');
-          // This should not happen since we already verified result is 24
-          // But as a fallback, submit empty operations
-          const solution: Solution = {
-            cards: centerCards,
-            operations: [],
-            result: result
-          };
-          socket.emit('submit-solution', { solution });
-        }
+        const solution: Solution = {
+          cards: usedCards,
+          operations: operations,
+          result: 24
+        };
+        console.log('Submitting solution:', solution);
+        socket.emit('submit-solution', { solution });
       }, 50);
     }
   };
@@ -307,9 +292,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
             cards={centerCards}
             onSolutionFound={handleDirectSolution}
             disabled={gameState?.state !== GameState.PLAYING}
-            allowInteraction={gameState?.state === GameState.PLAYING && centerCards.length === 4}
+            allowInteraction={gameState?.state === GameState.PLAYING && centerCards.length > 0}
           />
-
+          {room.roomType === 'super' && (
+            <div className="super-mode-hint">
+              <svg className="hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2v6m0 4v6m0 4v2m0-18a2 2 0 110 4 2 2 0 010-4zm0 8a2 2 0 110 4 2 2 0 010-4z" />
+              </svg>
+              <span>Use any combination of the 8 cards to make 24!</span>
+            </div>
+          )}
         </div>
       </div>
 

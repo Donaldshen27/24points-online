@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import type { Card as CardType } from '../../types/game.types';
+import type { Card as CardType, Operation } from '../../types/game.types';
 import { Card } from '../Card/Card';
 import { OperationMenu } from '../OperationMenu/OperationMenu';
 import './InteractiveCenterTable.css';
 
 interface InteractiveCenterTableProps {
   cards: CardType[];
-  onSolutionFound: (expression: string, result: number) => void;
+  onSolutionFound: (expression: string, result: number, usedCards: CardType[], operations: Operation[]) => void;
   disabled?: boolean;
   allowInteraction?: boolean;
 }
@@ -28,6 +28,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
   const [secondCard, setSecondCard] = useState<CardType | MergedCard | null>(null);
   const [operationMenuPosition, setOperationMenuPosition] = useState<{ x: number; y: number } | null>(null);
   const [history, setHistory] = useState<{ cards: (CardType | MergedCard)[], expression: string }[]>([]);
+  const [operationHistory, setOperationHistory] = useState<Operation[]>([]);
 
   // Reset cards when initial cards change
   useEffect(() => {
@@ -36,6 +37,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
     setSecondCard(null);
     setOperationMenuPosition(null);
     setHistory([]);
+    setOperationHistory([]);
   }, [initialCards]);
 
   const handleCardClick = (card: CardType | MergedCard, event: React.MouseEvent) => {
@@ -64,7 +66,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
     }
   };
 
-  const handleOperationSelect = (operation: '+' | '-' | '*' | '/') => {
+  const handleOperationSelect = (operator: '+' | '-' | '*' | '/') => {
     if (!selectedCard || !secondCard) return;
 
     // Calculate result
@@ -76,7 +78,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
     const expr1 = 'expression' in selectedCard ? `(${selectedCard.expression})` : String(value1);
     const expr2 = 'expression' in secondCard ? `(${secondCard.expression})` : String(value2);
 
-    switch (operation) {
+    switch (operator) {
       case '+':
         result = value1 + value2;
         expression = `${expr1} + ${expr2}`;
@@ -97,6 +99,15 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
 
     // Save current state to history
     setHistory(prev => [...prev, { cards: [...cards], expression }]);
+    
+    // Create and save the operation
+    const operation: Operation = {
+      operator: operator as '+' | '-' | '*' | '/',
+      left: value1,
+      right: value2,
+      result
+    };
+    setOperationHistory(prev => [...prev, operation]);
 
     // Create merged card
     const mergedCard: MergedCard = {
@@ -141,7 +152,12 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
       
       // Check if we have a solution (only one card left with value 24)
       if (newCards.length === 1 && Math.abs(newCards[0].value - 24) < 0.0001) {
-        onSolutionFound(mergedCard.expression, result);
+        // Collect all used cards from the merged card
+        const usedCardIds = mergedCard.sourceCards;
+        const usedCards = initialCards.filter(card => usedCardIds.includes(card.id));
+        const allOperations = [...operationHistory, operation];
+        
+        onSolutionFound(mergedCard.expression, result, usedCards, allOperations);
       }
     }, 300);
 
@@ -159,6 +175,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
       const previousState = history[history.length - 1];
       setCards(previousState.cards);
       setHistory(history.slice(0, -1));
+      setOperationHistory(operationHistory.slice(0, -1));
       setSelectedCard(null);
       setSecondCard(null);
       setOperationMenuPosition(null);

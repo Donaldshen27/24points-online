@@ -7,6 +7,36 @@
   color: #fff;
 }
 
+/* Super Mode Hint */
+.super-mode-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  color: #ffc107;
+  font-size: 1rem;
+  font-weight: 500;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.hint-icon {
+  width: 24px;
+  height: 24px;
+  color: #ffc107;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
 /* Game Header */
 .game-header {
   display: flex;

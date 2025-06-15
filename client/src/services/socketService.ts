@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import type { RoomTypeInfo } from '../types/roomTypes';
 
 class SocketService {
   private socket: Socket | null = null;
@@ -48,6 +49,25 @@ class SocketService {
   off(event: string, callback?: (...args: any[]) => void): void {
     if (this.socket) {
       this.socket.off(event, callback);
+    }
+  }
+
+  // Room type methods
+  getRoomTypes(callback: (roomTypes: RoomTypeInfo[]) => void): void {
+    if (this.socket) {
+      this.socket.emit('get-room-types', callback);
+    }
+  }
+
+  createRoom(playerName: string, roomType: string = 'classic', callback?: (response: any) => void): void {
+    if (this.socket) {
+      this.socket.emit('create-room', { playerName, roomType }, callback);
+    }
+  }
+
+  joinRoom(roomId: string, playerName: string, callback?: (response: any) => void): void {
+    if (this.socket) {
+      this.socket.emit('join-room', { roomId, playerName }, callback);
     }
   }
 }

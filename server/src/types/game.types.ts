@@ -27,6 +27,8 @@ export interface GameRoom {
   firstSolves?: { [playerId: string]: number };
   correctSolutions?: { [playerId: string]: number };
   incorrectAttempts?: { [playerId: string]: number };
+  // Room type support
+  roomType?: string;
 }
 
 export const GameState = {

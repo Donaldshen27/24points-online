@@ -1,0 +1,262 @@
+/* Room Type Selector */
+.room-type-selector {
+  padding: 2rem;
+  text-align: center;
+}
+
+.room-type-selector h2 {
+  color: #000;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.room-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Room Type Cards */
+.room-type-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.room-type-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.room-type-card.selected {
+  border-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.room-type-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  animation: pulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.room-type-card.classic::before {
+  background: radial-gradient(circle, rgba(255, 107, 107, 0.1) 0%, transparent 70%);
+}
+
+.room-type-card.super::before {
+  background: radial-gradient(circle, rgba(255, 195, 0, 0.1) 0%, transparent 70%);
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.icon-wrapper {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  color: #00d4ff;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+/* Card Content */
+.card-content {
+  text-align: left;
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.mode-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+}
+
+.detail-icon {
+  width: 20px;
+  height: 20px;
+  color: #00d4ff;
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.feature-tag {
+  background: rgba(0, 212, 255, 0.2);
+  color: #00d4ff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Card Footer */
+.card-footer {
+  text-align: center;
+}
+
+.select-button {
+  background: transparent;
+  border: 2px solid #00d4ff;
+  color: #00d4ff;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.room-type-card.selected .select-button {
+  background: #00d4ff;
+  color: #1a1a2e;
+}
+
+.select-button:hover {
+  background: #00d4ff;
+  color: #1a1a2e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 0.5; 
+  }
+  50% { 
+    transform: scale(1.1); 
+    opacity: 0.8; 
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .room-type-selector {
+    padding: 1rem;
+  }
+
+  .room-type-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .room-type-selector h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .room-type-card {
+    padding: 1.25rem;
+  }
+
+  .card-header h3 {
+    font-size: 1.25rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+
+  .detail-item {
+    font-size: 0.85rem;
+  }
+
+  .feature-tag {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .room-type-selector {
+    padding: 0.75rem;
+  }
+
+  .room-type-selector h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .room-type-card {
+    padding: 1rem;
+  }
+
+  .icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .card-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .description {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .mode-details {
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .select-button {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}

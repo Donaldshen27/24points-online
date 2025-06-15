@@ -8,14 +8,23 @@ export const handleConnection = (io: Server, socket: Socket) => {
   // Set io instance in RoomManager if not already set
   roomManager.setIo(io);
 
-  socket.on('create-room', (data: { playerName: string }) => {
+  socket.on('create-room', (data: { playerName: string; roomType?: string }) => {
     const playerId = `player-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-    const room = roomManager.createRoom(playerId, socket.id, data.playerName);
+    const roomType = data.roomType || 'classic';
     
-    socket.join(room.id);
-    socket.emit('room-created', { room, playerId });
-    
-    io.emit('rooms-updated', roomManager.getOpenRooms());
+    try {
+      const room = roomManager.createRoom(playerId, socket.id, data.playerName, roomType);
+      
+      socket.join(room.id);
+      socket.emit('room-created', { 
+        room: roomManager.getRoomInfo(room.id), 
+        playerId 
+      });
+      
+      io.emit('rooms-updated', roomManager.getOpenRooms());
+    } catch (error: any) {
+      socket.emit('room-creation-error', { message: error.message });
+    }
   });
 
   socket.on('join-room', (data: { roomId: string; playerName: string }) => {
@@ -379,6 +388,20 @@ export const handleConnection = (io: Server, socket: Socket) => {
     } else {
       socket.emit('reconnect-error', { message: 'Failed to reconnect' });
     }
+  });
+
+  socket.on('get-room-types', (callback) => {
+    const { ROOM_TYPE_CONFIGS } = require('../config/roomTypes');
+    const roomTypes = Object.values(ROOM_TYPE_CONFIGS).map((config: any) => ({
+      id: config.id,
+      displayName: config.displayName,
+      description: config.description,
+      playerCount: config.playerCount,
+      teamBased: config.teamBased,
+      features: config.features
+    }));
+    
+    callback(roomTypes);
   });
 
   socket.on('disconnect', () => {

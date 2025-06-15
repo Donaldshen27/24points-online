@@ -1,0 +1,99 @@
+/* Super Mode Table */
+.super-mode-table {
+  position: relative;
+  padding: 2rem;
+}
+
+.cards-grid.super-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Card positioning for 8 cards */
+.super-card {
+  transition: all 0.3s ease;
+}
+
+.super-card-0 { grid-column: 1; grid-row: 1; }
+.super-card-1 { grid-column: 2; grid-row: 1; }
+.super-card-2 { grid-column: 3; grid-row: 1; }
+.super-card-3 { grid-column: 4; grid-row: 1; }
+.super-card-4 { grid-column: 1; grid-row: 2; }
+.super-card-5 { grid-column: 2; grid-row: 2; }
+.super-card-6 { grid-column: 3; grid-row: 2; }
+.super-card-7 { grid-column: 4; grid-row: 2; }
+
+/* Animations */
+@keyframes slideInSuper {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.super-card {
+  animation: slideInSuper 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* Super Mode Hint */
+.super-mode-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  color: #ffc107;
+  font-size: 1rem;
+  font-weight: 500;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.hint-icon {
+  width: 24px;
+  height: 24px;
+  color: #ffc107;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .cards-grid.super-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 0.75rem;
+    max-width: 400px;
+  }
+  
+  .super-card-0 { grid-column: 1; grid-row: 1; }
+  .super-card-1 { grid-column: 2; grid-row: 1; }
+  .super-card-2 { grid-column: 3; grid-row: 1; }
+  .super-card-3 { grid-column: 1; grid-row: 2; }
+  .super-card-4 { grid-column: 2; grid-row: 2; }
+  .super-card-5 { grid-column: 3; grid-row: 2; }
+  .super-card-6 { grid-column: 1.5 / 2.5; grid-row: 3; }
+  .super-card-7 { grid-column: 2.5 / 3.5; grid-row: 3; }
+  
+  .super-mode-hint {
+    font-size: 0.9rem;
+  }
+}

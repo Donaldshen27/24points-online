@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import socketService from '../../services/socketService';
 import type { GameRoom } from '../../types/game.types';
+import { RoomTypeSelector } from '../RoomTypeSelector/RoomTypeSelector';
 import './Lobby.css';
 
 interface LobbyProps {
@@ -12,6 +13,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
   const [rooms, setRooms] = useState<GameRoom[]>([]);
   const [joinRoomId, setJoinRoomId] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [selectedRoomType, setSelectedRoomType] = useState('classic');
 
   useEffect(() => {
     socketService.on('rooms-list', (roomsList: GameRoom[]) => {
@@ -57,7 +59,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
       return;
     }
     setIsCreating(true);
-    socketService.emit('create-room', { playerName });
+    socketService.createRoom(playerName, selectedRoomType);
   };
 
   const handleJoinRoom = (roomId: string) => {
@@ -82,7 +84,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
 
   return (
     <div className="lobby">
-      <h1>24 Points Game Lobby</h1>
+      <h1>24 Points Arena</h1>
       
       <div className="player-name-section">
         <input
@@ -93,6 +95,11 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
           maxLength={20}
         />
       </div>
+
+      <RoomTypeSelector
+        selectedType={selectedRoomType}
+        onSelectType={setSelectedRoomType}
+      />
 
       <div className="lobby-actions">
         <button 

@@ -2,6 +2,8 @@ import { Server, Socket } from 'socket.io';
 import { GameRoom, Player, GameState, Solution } from '../types/game.types';
 import { DeckManager } from '../game/DeckManager';
 import { GameStateManager, GameEvent, RoundResult } from '../game/GameStateManager';
+import { getRoomTypeConfig } from '../config/roomTypes';
+import { RoomCreationOptions } from '../types/roomTypes';
 
 export class RoomManager {
   private rooms: Map<string, GameRoom> = new Map();
@@ -17,7 +19,12 @@ export class RoomManager {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
-  createRoom(playerId: string, socketId: string, playerName: string): GameRoom {
+  createRoom(playerId: string, socketId: string, playerName: string, roomType: string = 'classic'): GameRoom {
+    const config = getRoomTypeConfig(roomType);
+    if (!config) {
+      throw new Error(`Invalid room type: ${roomType}`);
+    }
+
     const roomId = this.generateRoomId();
     const player: Player = {
       id: playerId,
@@ -35,11 +42,15 @@ export class RoomManager {
       currentRound: 0,
       scores: {
         [playerId]: 0
-      }
+      },
+      roomType
     };
 
     this.rooms.set(roomId, room);
-    const gameManager = new GameStateManager(room);
+    
+    // Create appropriate game manager based on room type
+    const GameManagerClass = this.getGameManagerClass(roomType);
+    const gameManager = new GameManagerClass(room, config);
     
     // Set up redeal callback
     gameManager.setOnRedealCallback(() => {
@@ -431,6 +442,34 @@ export class RoomManager {
         finalDecks: gameOverResult.finalDecks
       });
     }
+  }
+
+  private getGameManagerClass(roomType: string): typeof GameStateManager {
+    // For now, return the standard GameStateManager
+    // We'll create SuperGameStateManager next
+    return GameStateManager;
+  }
+
+  getRoomInfo(roomId: string): any {
+    const room = this.rooms.get(roomId);
+    if (!room) return null;
+    
+    const config = room.roomType ? getRoomTypeConfig(room.roomType) : null;
+    
+    return {
+      id: room.id,
+      roomType: room.roomType || 'classic',
+      config,
+      players: room.players.map(p => ({
+        id: p.id,
+        name: p.name,
+        isReady: p.isReady,
+        isConnected: !!p.socketId,
+        deckSize: p.deck.length
+      })),
+      state: room.state,
+      currentRound: room.currentRound
+    };
   }
 }
 

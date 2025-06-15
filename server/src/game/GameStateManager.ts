@@ -2,6 +2,10 @@ import { GameRoom, GameState, Player, Card, Solution } from '../types/game.types
 import { DeckManager } from './DeckManager';
 import { Calculator } from '../utils/calculator';
 import { v4 as uuidv4 } from 'uuid';
+import { RoomTypeConfig } from '../types/roomTypes';
+import { BaseGameRules } from './rules/BaseGameRules';
+import { ClassicGameRules } from './rules/ClassicGameRules';
+import { SuperGameRules } from './rules/SuperGameRules';
 
 export interface GameEvent {
   type: 'round_start' | 'player_claim' | 'solution_attempt' | 'round_end' | 'game_over';
@@ -25,23 +29,61 @@ export interface GameOverResult {
 }
 
 export class GameStateManager {
-  private room: GameRoom;
-  private deckManager: DeckManager;
-  private currentClaimant: string | null = null;
-  private roundStartTime: number = 0;
-  private lastRoundResult: RoundResult | null = null;
-  private gameOverResult: GameOverResult | null = null;
-  private onRedealCallback?: () => void;
-  private onReplayEndCallback?: () => void;
-  private onGameOverCallback?: () => void;
-  private replaySkipRequests: Set<string> = new Set();
-  private replayTimeout?: NodeJS.Timeout;
-  private disconnectTimers: Map<string, NodeJS.Timeout> = new Map();
-  private static readonly DISCONNECT_TIMEOUT_MS = 30000; // 30 seconds
+  protected room: GameRoom;
+  protected deckManager: DeckManager;
+  protected currentClaimant: string | null = null;
+  protected roundStartTime: number = 0;
+  protected lastRoundResult: RoundResult | null = null;
+  protected gameOverResult: GameOverResult | null = null;
+  protected onRedealCallback?: () => void;
+  protected onReplayEndCallback?: () => void;
+  protected onGameOverCallback?: () => void;
+  protected replaySkipRequests: Set<string> = new Set();
+  protected replayTimeout?: NodeJS.Timeout;
+  protected disconnectTimers: Map<string, NodeJS.Timeout> = new Map();
+  protected static readonly DISCONNECT_TIMEOUT_MS = 30000; // 30 seconds
+  protected config: RoomTypeConfig;
+  protected gameRules: BaseGameRules;
 
-  constructor(room: GameRoom) {
+  constructor(room: GameRoom, config?: RoomTypeConfig) {
     this.room = room;
     this.deckManager = new DeckManager();
+    
+    // Use provided config or default to classic
+    this.config = config || {
+      id: 'classic',
+      displayName: 'Classic 1v1',
+      description: 'Traditional 2-player 24 points game',
+      playerCount: 2,
+      cardsPerPlayer: 10,
+      cardsPerDraw: 2,
+      teamBased: false,
+      minPlayers: 2,
+      maxPlayers: 2,
+      rules: {
+        turnTimeLimit: 120,
+        solutionTimeLimit: 30,
+        scoringSystem: 'classic',
+        winCondition: 'no_cards',
+        allowSpectators: false,
+        requireExactMatch: true,
+      },
+      features: {
+        hasTimer: true,
+        hasChat: true,
+        hasVoice: false,
+        hasReplay: true,
+        hasStatistics: true,
+        hasTournamentMode: false,
+      }
+    };
+    
+    // Create appropriate game rules based on room type
+    if (this.config.id === 'super') {
+      this.gameRules = new SuperGameRules(this.config);
+    } else {
+      this.gameRules = new ClassicGameRules(this.config);
+    }
   }
 
   /**
@@ -69,13 +111,10 @@ export class GameStateManager {
    * Initialize game with two players
    */
   initializeGame(player1: Player, player2: Player): void {
-    // Initialize decks
-    const { deck1, deck2 } = this.deckManager.initializeDecks();
-    
-    player1.deck = deck1;
-    player2.deck = deck2;
-    
+    // Use game rules to initialize decks
     this.room.players = [player1, player2];
+    this.gameRules.initializeDecks(this.room.players);
+    
     this.room.state = GameState.WAITING;
     this.room.currentRound = 0;
     this.room.scores = {
@@ -132,8 +171,10 @@ export class GameStateManager {
     const player2 = this.room.players[1];
     
     // Check if either player would have insufficient cards for a new round
-    console.log(`[GameStateManager] Pre-round check - P1 deck: ${player1.deck.length}, P2 deck: ${player2.deck.length}`);
-    if (player1.deck.length < 2 || player2.deck.length < 2) {
+    const minCardsNeeded = Math.ceil(this.config.cardsPerDraw / this.room.players.length);
+    console.log(`[GameStateManager] Pre-round check - P1 deck: ${player1.deck.length}, P2 deck: ${player2.deck.length}, min needed: ${minCardsNeeded}`);
+    
+    if (player1.deck.length < minCardsNeeded || player2.deck.length < minCardsNeeded) {
       // Determine winner based on who has fewer cards
       console.log(`[GameStateManager] Insufficient cards for new round - ending game`);
       if (player1.deck.length < player2.deck.length) {
@@ -147,11 +188,8 @@ export class GameStateManager {
     this.room.currentRound++;
     this.roundStartTime = Date.now();
     
-    // Deal cards to center
-    const dealtCards = this.deckManager.dealCards(
-      this.room.players[0].deck,
-      this.room.players[1].deck
-    );
+    // Use game rules to deal cards
+    const dealtCards = this.gameRules.dealCards(this.room);
     
     // Double-check if these cards have a solution
     const cardValues = dealtCards.map(c => c.value);
@@ -229,11 +267,17 @@ export class GameStateManager {
     // Calculate solve time
     const solveTime = (Date.now() - this.roundStartTime) / 1000; // in seconds
     
-    // Validate solution
-    const validation = Calculator.validateSolution(solution.cards, solution.operations);
-    console.log(`[GameStateManager] Solution submitted by ${playerId}: result=${validation.result}, valid=${validation.isValid}`);
+    // Log the solution details
+    console.log(`[GameStateManager] Solution submitted by ${playerId}:`);
+    console.log('  Solution cards:', solution.cards?.map(c => ({ value: c.value, id: c.id })));
+    console.log('  Solution operations:', solution.operations);
+    console.log('  Center cards:', this.room.centerCards.map(c => ({ value: c.value, id: c.id })));
     
-    if (validation.isValid) {
+    // Validate solution using game rules
+    const isValid = this.gameRules.validateSolution(solution, this.room.centerCards);
+    console.log(`[GameStateManager] Solution validation result: valid=${isValid}`);
+    
+    if (isValid) {
       // Player wins
       const otherPlayer = this.room.players.find(p => p.id !== playerId);
       
@@ -290,20 +334,18 @@ export class GameStateManager {
         loser.deck.push(...result.cards);
         console.log(`[GameStateManager] After transfer - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length} (added ${result.cards.length} cards)`);
         
-        // Update scores
-        this.room.scores[result.winnerId]++;
+        // Update scores using game rules scoring
+        const timeElapsed = Date.now() - this.roundStartTime;
+        const points = result.solution ? 
+          this.gameRules.calculateScore(result.solution, timeElapsed) : 1;
+        this.room.scores[result.winnerId] += points;
         
-        // Check win condition
+        // Check win condition using game rules
         console.log(`[GameStateManager] Checking win condition - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length}`);
-        if (winner.deck.length === 0) {
-          // Winner has no cards left - they win!
-          console.log(`[GameStateManager] Game Over - ${result.winnerId} wins (no cards)`);
-          this.endGame(result.winnerId, 'no_cards');
-          return;
-        } else if (loser.deck.length === 20) {
-          // Loser has all cards - they lose!
-          console.log(`[GameStateManager] Game Over - ${result.winnerId} wins (opponent has all cards)`);
-          this.endGame(result.winnerId, 'all_cards');
+        const winResult = this.gameRules.checkWinCondition(this.room);
+        if (winResult) {
+          console.log(`[GameStateManager] Game Over - ${winResult.winnerId} wins (${winResult.reason})`);
+          this.endGame(winResult.winnerId, winResult.reason as any);
           return;
         }
       }

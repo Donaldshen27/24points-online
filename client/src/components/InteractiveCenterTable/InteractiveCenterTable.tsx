@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Card as CardType, Operation } from '../../types/game.types';
 import { Card } from '../Card/Card';
 import { OperationMenu } from '../OperationMenu/OperationMenu';

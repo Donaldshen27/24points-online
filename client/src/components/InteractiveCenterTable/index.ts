@@ -1,0 +1,1 @@
+export { InteractiveCenterTable } from './InteractiveCenterTable';

@@ -21,6 +21,7 @@ export interface GameRoom {
   scores: {
     [playerId: string]: number;
   };
+  rematchRequests?: Set<string>;
 }
 
 export enum GameState {

@@ -7,3 +7,5 @@ export { DeckTest } from './DeckTest/DeckTest';
 export { GameScreen } from './GameScreen/GameScreen';
 export { RoundTimer } from './RoundTimer/RoundTimer';
 export { RoundResult } from './RoundResult/RoundResult';
+export { GameOver } from './GameOver/GameOver';
+export { CardTransfer } from './CardTransfer/CardTransfer';

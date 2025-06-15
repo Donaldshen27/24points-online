@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import roomManager from './RoomManager';
-import { Solution } from '../types/game.types';
+import { Solution, GameState } from '../types/game.types';
 
 export const handleConnection = (io: Server, socket: Socket) => {
   console.log('New client connected:', socket.id);
@@ -115,12 +115,18 @@ export const handleConnection = (io: Server, socket: Socket) => {
       const gameState = roomManager.getGameState(room.id);
       if (!gameState) return;
 
-      // Emit round result
+      // Determine round result
+      const isCorrect = data.solution.result === 24;
+      const winnerId = isCorrect ? player.id : room.players.find(p => p.id !== player.id)?.id || null;
+      const loserId = isCorrect ? room.players.find(p => p.id !== player.id)?.id || null : player.id;
+      
+      // Emit round result with proper reason
       io.to(room.id).emit('round-ended', {
-        winnerId: data.solution.result === 24 ? player.id : room.players.find(p => p.id !== player.id)?.id,
-        loserId: data.solution.result === 24 ? room.players.find(p => p.id !== player.id)?.id : player.id,
+        winnerId,
+        loserId,
         solution: data.solution,
-        correct: data.solution.result === 24
+        correct: isCorrect,
+        reason: isCorrect ? 'correct_solution' : 'incorrect_solution'
       });
 
       // Update game state for all players
@@ -128,9 +134,28 @@ export const handleConnection = (io: Server, socket: Socket) => {
         const currentState = roomManager.getGameState(room.id);
         if (currentState) {
           if (currentState.state === 'game_over') {
+            // Determine final winner based on card count
+            const player1 = currentState.players[0];
+            const player2 = currentState.players[1];
+            let gameWinnerId: string;
+            
+            if (player1.deck.length === 0) {
+              gameWinnerId = player1.id;
+            } else if (player2.deck.length === 0) {
+              gameWinnerId = player2.id;
+            } else if (player1.deck.length === 20) {
+              gameWinnerId = player2.id;
+            } else {
+              gameWinnerId = player1.id;
+            }
+            
             io.to(room.id).emit('game-over', {
-              winnerId: currentState.scores[player.id] > currentState.scores[room.players.find(p => p.id !== player.id)?.id || ''] ? player.id : room.players.find(p => p.id !== player.id)?.id,
-              scores: currentState.scores
+              winnerId: gameWinnerId,
+              scores: currentState.scores,
+              finalDecks: {
+                [player1.id]: player1.deck.length,
+                [player2.id]: player2.deck.length
+              }
             });
           } else {
             currentState.players.forEach(p => {
@@ -170,6 +195,40 @@ export const handleConnection = (io: Server, socket: Socket) => {
       const gameState = roomManager.getGameState(room.id);
       if (gameState) {
         io.to(room.id).emit('game-reset', gameState);
+      }
+    }
+  });
+
+  socket.on('request-rematch', () => {
+    const room = roomManager.getRoomBySocketId(socket.id);
+    if (!room || room.state !== GameState.GAME_OVER) return;
+
+    const player = room.players.find(p => p.socketId === socket.id);
+    if (!player) return;
+
+    // Track rematch request
+    if (!room.rematchRequests) {
+      room.rematchRequests = new Set();
+    }
+    
+    room.rematchRequests.add(player.id);
+    
+    // Notify other player
+    const otherPlayer = room.players.find(p => p.id !== player.id);
+    if (otherPlayer) {
+      io.to(otherPlayer.socketId).emit('opponent-wants-rematch', { playerId: player.id });
+    }
+
+    // Check if both players want rematch
+    if (room.rematchRequests.size === 2) {
+      // Reset game
+      room.rematchRequests.clear();
+      if (roomManager.resetGame(room.id)) {
+        const gameState = roomManager.getGameState(room.id);
+        if (gameState) {
+          io.to(room.id).emit('game-reset', gameState);
+          io.to(room.id).emit('rematch-started');
+        }
       }
     }
   });

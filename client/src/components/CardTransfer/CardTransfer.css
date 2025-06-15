@@ -1,0 +1,67 @@
+.card-transfer-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 500;
+}
+
+.transferring-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: forwards;
+}
+
+/* Transfer to top player (opponent) */
+.transferring-card.top {
+  animation-name: transferToTop;
+}
+
+/* Transfer to bottom player (current player) */
+.transferring-card.bottom {
+  animation-name: transferToBottom;
+}
+
+@keyframes transferToTop {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -350%) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes transferToBottom {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, 250%) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Stagger effect for multiple cards */
+.transferring-card:nth-child(1) {
+  left: calc(50% - 30px);
+}
+
+.transferring-card:nth-child(2) {
+  left: calc(50% - 10px);
+}
+
+.transferring-card:nth-child(3) {
+  left: calc(50% + 10px);
+}
+
+.transferring-card:nth-child(4) {
+  left: calc(50% + 30px);
+}

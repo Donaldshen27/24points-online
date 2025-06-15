@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useGameState } from '../../hooks/useGameState';
-import { CenterTable } from '../CenterTable/CenterTable';
+import { InteractiveCenterTable } from '../InteractiveCenterTable/InteractiveCenterTable';
 import { PlayerHand } from '../PlayerHand/PlayerHand';
 import { SolutionBuilder } from '../SolutionBuilder/SolutionBuilder';
 import { RoundTimer } from '../RoundTimer/RoundTimer';
 import { RoundResult } from '../RoundResult/RoundResult';
+import { GameOver } from '../GameOver/GameOver';
+import { CardTransfer } from '../CardTransfer/CardTransfer';
 import socketService from '../../services/socketService';
-import type { GameRoom, Solution } from '../../types/game.types';
+import type { GameRoom, Solution, Card, Operation } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
 import './GameScreen.css';
 
@@ -32,6 +34,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   const [showSolutionBuilder, setShowSolutionBuilder] = useState(false);
   const [solutionResult, setSolutionResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [roundResult, setRoundResult] = useState<{
+    winnerId: string | null;
+    loserId: string | null;
+    solution?: Solution;
+    reason: 'correct_solution' | 'incorrect_solution' | 'no_solution' | 'timeout';
+  } | null>(null);
+  const [transferringCards, setTransferringCards] = useState<{
+    cards: Card[];
+    toPlayer: 'current' | 'opponent';
+  } | null>(null);
 
   // Get current player and opponent
   const currentPlayer = gameState?.players.find(p => p.id === playerId);
@@ -48,7 +60,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   }, [isMyTurn, isSolving]);
 
   // Handle solution submission
-  const handleSubmitSolution = (solution: Solution) => {
+  const handleSubmitSolution = (operations: Operation[]) => {
+    // Construct a proper Solution object from the operations
+    const solution: Solution = {
+      cards: centerCards,
+      operations: operations,
+      result: operations.length > 0 ? operations[operations.length - 1].result : 0
+    };
+    
     submitSolution(solution);
     setShowSolutionBuilder(false);
   };
@@ -56,6 +75,25 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   // Handle solution builder cancel
   const handleCancelSolution = () => {
     setShowSolutionBuilder(false);
+  };
+
+  // Handle direct solution from interactive table
+  const handleDirectSolution = (expression: string, result: number) => {
+    // Auto-claim and submit solution
+    if (canClaimSolution) {
+      claimSolution();
+      // Submit the solution after a brief delay to allow state update
+      setTimeout(() => {
+        // For direct solutions, we need to parse the expression to create operations
+        // For now, just create a minimal solution with the result
+        const solution: Solution = {
+          cards: centerCards,
+          operations: [], // TODO: Parse expression to create operations
+          result: result
+        };
+        submitSolution(solution);
+      }, 100);
+    }
   };
 
   // Format time display
@@ -91,19 +129,28 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   // Listen for solution results
   useEffect(() => {
-    const handleRoundEnded = (data: { winnerId: string; loserId: string; solution: Solution; correct: boolean }) => {
-      const message = data.winnerId === playerId 
-        ? '✅ Correct! You won this round!' 
-        : data.correct 
-          ? '❌ Your opponent solved it!' 
-          : '❌ Wrong answer! You get the cards.';
-      
-      setSolutionResult({ 
-        success: data.winnerId === playerId, 
-        message 
+    const handleRoundEnded = (data: { winnerId: string; loserId: string; solution: Solution; correct: boolean; reason?: string }) => {
+      // Show round result screen
+      setRoundResult({
+        winnerId: data.winnerId,
+        loserId: data.loserId,
+        solution: data.solution,
+        reason: data.reason as any || (data.correct ? 'correct_solution' : 'incorrect_solution')
       });
       
-      setTimeout(() => setSolutionResult(null), 3000);
+      // Clear solution builder
+      setShowSolutionBuilder(false);
+      setSolutionResult(null);
+      
+      // Show card transfer animation after round result
+      if (data.winnerId && data.loserId && centerCards.length > 0) {
+        setTimeout(() => {
+          setTransferringCards({
+            cards: [...centerCards],
+            toPlayer: data.loserId === playerId ? 'current' : 'opponent'
+          });
+        }, 2500);
+      }
     };
 
     const handleClaimError = (data: { message: string }) => {
@@ -172,17 +219,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       <div className="game-board">
         {/* Center Table */}
         <div className="center-area">
-          <CenterTable cards={centerCards} />
-          
-          {/* Action Button */}
-          {canClaimSolution && centerCards.length === 4 && (
-            <button 
-              className="claim-solution-btn"
-              onClick={claimSolution}
-            >
-              I know it! 🎯
-            </button>
-          )}
+          <InteractiveCenterTable 
+            cards={centerCards}
+            onSolutionFound={handleDirectSolution}
+            disabled={!canClaimSolution || gameState.state !== GameState.PLAYING}
+            allowInteraction={gameState.state === GameState.PLAYING && centerCards.length === 4}
+          />
 
           {/* Solution Result Message */}
           {solutionResult && (
@@ -219,23 +261,38 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         </div>
       )}
 
+      {/* Round Result Modal */}
+      {roundResult && gameState.state === GameState.ROUND_END && (
+        <RoundResult
+          winnerId={roundResult.winnerId}
+          winnerName={roundResult.winnerId === playerId ? currentPlayer.name : opponent.name}
+          loserId={roundResult.loserId}
+          loserName={roundResult.loserId === playerId ? currentPlayer.name : opponent.name}
+          solution={roundResult.solution}
+          reason={roundResult.reason}
+          onContinue={() => setRoundResult(null)}
+        />
+      )}
+
+      {/* Card Transfer Animation */}
+      {transferringCards && (
+        <CardTransfer
+          cards={transferringCards.cards}
+          fromPosition="center"
+          toPosition={transferringCards.toPlayer === 'current' ? 'bottom' : 'top'}
+          onComplete={() => setTransferringCards(null)}
+          duration={1000}
+        />
+      )}
+
       {/* Game Over Modal */}
       {gameState.state === GameState.GAME_OVER && (
-        <div className="game-over-modal">
-          <div className="game-over-content">
-            <h2>Game Over!</h2>
-            <div className="winner-info">
-              {gameState.scores[playerId] > gameState.scores[opponent.id] ? '🎉 You Win! 🎉' : '😢 You Lose 😢'}
-            </div>
-            <div className="final-stats">
-              <div>Your cards: {currentPlayer.deck.length}</div>
-              <div>Opponent cards: {opponent.deck.length}</div>
-            </div>
-            <button className="play-again-btn" onClick={resetGame}>
-              Play Again
-            </button>
-          </div>
-        </div>
+        <GameOver
+          gameState={gameState}
+          playerId={playerId}
+          onRematch={resetGame}
+          onLeaveGame={onLeaveGame}
+        />
       )}
     </div>
   );

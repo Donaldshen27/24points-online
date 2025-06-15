@@ -11,10 +11,19 @@
     "build:server": "cd server && npm run build",
     "build:client": "cd client && npm run build"
   },
-  "keywords": ["game", "multiplayer", "socket.io", "react", "typescript"],
+  "keywords": [
+    "game",
+    "multiplayer",
+    "socket.io",
+    "react",
+    "typescript"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.1"
   }
 }

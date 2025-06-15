@@ -268,6 +268,26 @@ export class RoomManager {
       return false;
     }
   }
+
+  getLastRoundResult(roomId: string): any {
+    const gameManager = this.gameManagers.get(roomId);
+    
+    if (!gameManager) {
+      return null;
+    }
+
+    return gameManager.getLastRoundResult();
+  }
+
+  getGameOverResult(roomId: string): any {
+    const gameManager = this.gameManagers.get(roomId);
+    
+    if (!gameManager) {
+      return null;
+    }
+
+    return gameManager.getGameOverResult();
+  }
 }
 
 export default new RoomManager();

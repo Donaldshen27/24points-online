@@ -404,6 +404,11 @@ export const handleConnection = (io: Server, socket: Socket) => {
     callback(roomTypes);
   });
 
+  socket.on('get-game-count', (callback) => {
+    const count = roomManager.getTotalGamesPlayed();
+    callback({ count });
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
     

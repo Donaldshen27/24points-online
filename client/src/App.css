@@ -10,11 +10,27 @@
   width: 100%;
 }
 
+/* Game counter */
+.game-counter {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #666;
+  font-size: 0.75rem;
+  padding: 0.25rem 1rem;
+  text-align: center;
+  z-index: 100;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  margin-top: 1.5rem; /* Add space for game counter */
   padding-bottom: 1rem;
   border-bottom: 2px solid #e0e0e0;
 }

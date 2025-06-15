@@ -10,6 +10,7 @@ export class RoomManager {
   private gameManagers: Map<string, GameStateManager> = new Map();
   private playerToRoom: Map<string, string> = new Map();
   private io: Server | null = null;
+  private totalGamesPlayed: number = 0;
 
   setIo(io: Server): void {
     this.io = io;
@@ -270,6 +271,8 @@ export class RoomManager {
 
     try {
       gameManager.startGame();
+      this.totalGamesPlayed++;
+      console.log(`Game started! Total games played: ${this.totalGamesPlayed}`);
       return true;
     } catch (error) {
       console.error('Failed to start game:', error);
@@ -470,6 +473,10 @@ export class RoomManager {
       state: room.state,
       currentRound: room.currentRound
     };
+  }
+
+  getTotalGamesPlayed(): number {
+    return this.totalGamesPlayed;
   }
 }
 

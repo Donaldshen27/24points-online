@@ -26,6 +26,7 @@ function App() {
   const [currentRoom, setCurrentRoom] = useState<GameRoom | null>(null)
   const [playerId, setPlayerId] = useState<string>('')
   const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | null>(null)
+  const [gameCount, setGameCount] = useState<number>(0)
 
   useEffect(() => {
     socketService.connect()
@@ -33,6 +34,11 @@ function App() {
     socketService.on('connect', () => {
       setIsConnected(true)
       setAppState(AppState.LOBBY)
+      
+      // Get initial game count
+      socketService.emit('get-game-count', (data: { count: number }) => {
+        setGameCount(data.count)
+      })
     })
 
     socketService.on('disconnect', () => {
@@ -47,6 +53,19 @@ function App() {
       socketService.disconnect()
     }
   }, [])
+
+  // Poll for game count updates
+  useEffect(() => {
+    if (!isConnected) return
+
+    const interval = setInterval(() => {
+      socketService.emit('get-game-count', (data: { count: number }) => {
+        setGameCount(data.count)
+      })
+    }, 5000) // Update every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [isConnected])
 
   const handleRoomJoined = (room: GameRoom, playerId: string, isReconnection: boolean = false) => {
     setCurrentRoom(room)
@@ -80,6 +99,11 @@ function App() {
 
   return (
     <div className="App">
+      {/* Game counter at the very top */}
+      <div className="game-counter">
+        {gameCount} games played since server start
+      </div>
+      
       <header className="app-header">
         <h1>24 Points Game</h1>
         <div className="header-actions">

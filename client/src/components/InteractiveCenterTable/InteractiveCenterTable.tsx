@@ -39,7 +39,6 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
   }, [initialCards]);
 
   const handleCardClick = (card: CardType | MergedCard, event: React.MouseEvent) => {
-    console.log('Card clicked:', card, { selectedCard, secondCard, operationMenuPosition });
     if (disabled || !allowInteraction) return;
 
     // If clicking on already selected card, deselect
@@ -52,12 +51,10 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
 
     if (!selectedCard) {
       // First card selection
-      console.log('First card selected:', card);
       setSelectedCard(card);
       setOperationMenuPosition(null); // Don't show menu yet
     } else if (selectedCard.id !== card.id && !operationMenuPosition) {
       // Second card selection - now show operation menu
-      console.log('Second card selected:', card);
       setSecondCard(card);
       const rect = event.currentTarget.getBoundingClientRect();
       setOperationMenuPosition({
@@ -68,7 +65,6 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
   };
 
   const handleOperationSelect = (operation: '+' | '-' | '*' | '/') => {
-    console.log('handleOperationSelect called:', { operation, selectedCard, secondCard });
     if (!selectedCard || !secondCard) return;
 
     // Calculate result

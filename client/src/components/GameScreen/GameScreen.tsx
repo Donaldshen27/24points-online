@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useGameState } from '../../hooks/useGameState';
 import { InteractiveCenterTable } from '../InteractiveCenterTable/InteractiveCenterTable';
 import { PlayerHand } from '../PlayerHand/PlayerHand';
-import { SolutionBuilder } from '../SolutionBuilder/SolutionBuilder';
 import { RoundTimer } from '../RoundTimer/RoundTimer';
 import { RoundResult } from '../RoundResult/RoundResult';
 import { GameOver } from '../GameOver/GameOver';
 import { CardTransfer } from '../CardTransfer/CardTransfer';
 import socketService from '../../services/socketService';
-import type { GameRoom, Solution, Card, Operation } from '../../types/game.types';
+import type { GameRoom, Solution, Card } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
 import './GameScreen.css';
 
@@ -23,17 +22,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     gameState,
     currentRound,
     centerCards,
-    isMyTurn,
-    canClaimSolution,
-    isSolving,
     timeRemaining,
-    claimSolution,
-    submitSolution,
     resetGame
   } = useGameState(playerId);
 
-  const [showSolutionBuilder, setShowSolutionBuilder] = useState(false);
-  const [solutionResult, setSolutionResult] = useState<{ success: boolean; message: string } | null>(null);
   const [roundResult, setRoundResult] = useState<{
     winnerId: string | null;
     loserId: string | null;
@@ -49,59 +41,34 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const currentPlayer = gameState?.players.find(p => p.id === playerId);
   const opponent = gameState?.players.find(p => p.id !== playerId);
 
-  // Show solution builder when it's player's turn
-  useEffect(() => {
-    if (isMyTurn && isSolving) {
-      setShowSolutionBuilder(true);
-      setSolutionResult(null);
-    } else {
-      setShowSolutionBuilder(false);
-    }
-  }, [isMyTurn, isSolving]);
 
-  // Handle solution submission
-  const handleSubmitSolution = (operations: Operation[]) => {
-    // Construct a proper Solution object from the operations
-    const solution: Solution = {
-      cards: centerCards,
-      operations: operations,
-      result: operations.length > 0 ? operations[operations.length - 1].result : 0
-    };
-    
-    submitSolution(solution);
-    setShowSolutionBuilder(false);
-  };
-
-  // Handle solution builder cancel
-  const handleCancelSolution = () => {
-    setShowSolutionBuilder(false);
-  };
 
   // Handle direct solution from interactive table
-  const handleDirectSolution = (_expression: string, result: number) => {
-    // Auto-claim and submit solution
-    if (canClaimSolution) {
-      claimSolution();
-      // Submit the solution after a brief delay to allow state update
+  const handleDirectSolution = (expression: string, result: number) => {
+    console.log('Solution found!', { expression, result });
+    
+    // Check if it's exactly 24
+    if (Math.abs(result - 24) < 0.0001 && gameState?.state === GameState.PLAYING) {
+      // First claim the solution
+      const socket = socketService.getSocket();
+      if (!socket) return;
+      
+      // Emit claim and solution together
+      socket.emit('claim-solution');
+      
+      // Small delay to ensure claim is processed
       setTimeout(() => {
-        // For direct solutions, we need to parse the expression to create operations
-        // For now, just create a minimal solution with the result
+        // For now, create a minimal solution - in production, you'd parse the expression
         const solution: Solution = {
           cards: centerCards,
-          operations: [], // TODO: Parse expression to create operations
-          result: result
+          operations: [], // The server mainly cares about the result being 24
+          result: 24
         };
-        submitSolution(solution);
-      }, 100);
+        socket.emit('submit-solution', { solution });
+      }, 50);
     }
   };
 
-  // Format time display
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   // Get status message
   const getStatusMessage = (): string => {
@@ -113,11 +80,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       case GameState.PLAYING:
         return `Round ${currentRound} - Find a solution!`;
       case GameState.SOLVING:
-        if (isSolving) {
-          return 'Submit your solution!';
-        } else {
-          return 'Opponent is solving...';
-        }
+        return 'Race to solve!';
       case GameState.ROUND_END:
         return 'Round ended!';
       case GameState.GAME_OVER:
@@ -138,9 +101,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         reason: data.reason as any || (data.correct ? 'correct_solution' : 'incorrect_solution')
       });
       
-      // Clear solution builder
-      setShowSolutionBuilder(false);
-      setSolutionResult(null);
       
       // Show card transfer animation after round result
       if (data.winnerId && data.loserId && centerCards.length > 0) {
@@ -154,13 +114,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     };
 
     const handleClaimError = (data: { message: string }) => {
-      setSolutionResult({ success: false, message: data.message });
-      setTimeout(() => setSolutionResult(null), 3000);
+      console.error('Claim error:', data.message);
     };
 
     const handleSubmitError = (data: { message: string }) => {
-      setSolutionResult({ success: false, message: data.message });
-      setTimeout(() => setSolutionResult(null), 3000);
+      console.error('Submit error:', data.message);
     };
 
     socketService.on('round-ended', handleRoundEnded);
@@ -222,16 +180,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           <InteractiveCenterTable 
             cards={centerCards}
             onSolutionFound={handleDirectSolution}
-            disabled={!canClaimSolution || gameState.state !== GameState.PLAYING}
-            allowInteraction={gameState.state === GameState.PLAYING && centerCards.length === 4}
+            disabled={gameState?.state !== GameState.PLAYING}
+            allowInteraction={gameState?.state === GameState.PLAYING && centerCards.length === 4}
           />
 
-          {/* Solution Result Message */}
-          {solutionResult && (
-            <div className={`solution-result ${solutionResult.success ? 'success' : 'failure'}`}>
-              {solutionResult.message}
-            </div>
-          )}
         </div>
       </div>
 
@@ -244,22 +196,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         />
       </div>
 
-      {/* Solution Builder Modal */}
-      {showSolutionBuilder && (
-        <div className="solution-modal">
-          <div className="solution-modal-content">
-            <h2>Build Your Solution</h2>
-            <div className="solution-timer">
-              Time remaining: {timeRemaining ? formatTime(timeRemaining) : '0:00'}
-            </div>
-            <SolutionBuilder 
-              cards={centerCards}
-              onSubmit={handleSubmitSolution}
-              onCancel={handleCancelSolution}
-            />
-          </div>
-        </div>
-      )}
 
       {/* Round Result Modal */}
       {roundResult && gameState.state === GameState.ROUND_END && (

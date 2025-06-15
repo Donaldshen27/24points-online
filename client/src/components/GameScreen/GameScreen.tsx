@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useGameState } from '../../hooks/useGameState';
 import { InteractiveCenterTable } from '../InteractiveCenterTable/InteractiveCenterTable';
 import { PlayerHand } from '../PlayerHand/PlayerHand';
-import { RoundTimer } from '../RoundTimer/RoundTimer';
 import { RoundResult } from '../RoundResult/RoundResult';
 import { GameOver } from '../GameOver/GameOver';
 import { CardTransfer } from '../CardTransfer/CardTransfer';
@@ -22,7 +21,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     gameState,
     currentRound,
     centerCards,
-    timeRemaining,
     resetGame
   } = useGameState(playerId);
 
@@ -151,12 +149,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         
         <div className="game-status">
           <div className="status-message">{getStatusMessage()}</div>
-          {timeRemaining !== null && (
-            <RoundTimer 
-              timeRemaining={timeRemaining} 
-              isUrgent={timeRemaining <= 10}
-            />
-          )}
         </div>
 
         <button className="leave-btn" onClick={onLeaveGame}>

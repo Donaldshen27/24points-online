@@ -14,7 +14,7 @@ export interface RoundResult {
   loserId: string | null;
   cards: Card[];
   solution?: Solution;
-  reason: 'correct_solution' | 'incorrect_solution' | 'no_solution' | 'timeout';
+  reason: 'correct_solution' | 'incorrect_solution' | 'no_solution';
 }
 
 export interface GameOverResult {
@@ -27,8 +27,6 @@ export interface GameOverResult {
 export class GameStateManager {
   private room: GameRoom;
   private deckManager: DeckManager;
-  private roundTimer: NodeJS.Timeout | null = null;
-  private claimTimer: NodeJS.Timeout | null = null;
   private currentClaimant: string | null = null;
   private roundStartTime: number = 0;
   private lastRoundResult: RoundResult | null = null;
@@ -100,25 +98,9 @@ export class GameStateManager {
     const hasSolution = Calculator.hasSolution(cardValues);
     
     if (!hasSolution) {
-      // Auto-end round after 10 seconds if no solution exists
-      this.roundTimer = setTimeout(() => {
-        this.endRound({
-          winnerId: null,
-          loserId: null,
-          cards: dealtCards,
-          reason: 'no_solution'
-        });
-      }, 10000);
-    } else {
-      // Set a 2-minute timeout for the round
-      this.roundTimer = setTimeout(() => {
-        this.endRound({
-          winnerId: null,
-          loserId: null,
-          cards: dealtCards,
-          reason: 'timeout'
-        });
-      }, 120000);
+      // If no solution exists, we'll let players discover this
+      // They can skip or the game continues with these cards
+      console.log('No solution exists for these cards:', cardValues);
     }
   }
 
@@ -141,24 +123,6 @@ export class GameStateManager {
 
     this.currentClaimant = playerId;
     this.room.state = GameState.SOLVING;
-    
-    // Clear round timer
-    if (this.roundTimer) {
-      clearTimeout(this.roundTimer);
-      this.roundTimer = null;
-    }
-    
-    // Give player 30 seconds to submit solution
-    this.claimTimer = setTimeout(() => {
-      // Timeout - player loses
-      const otherPlayer = this.room.players.find(p => p.id !== playerId);
-      this.endRound({
-        winnerId: otherPlayer?.id || null,
-        loserId: playerId,
-        cards: this.room.centerCards,
-        reason: 'incorrect_solution'
-      });
-    }, 30000);
   }
 
   /**
@@ -173,11 +137,6 @@ export class GameStateManager {
       throw new Error('Player did not claim solution');
     }
 
-    // Clear claim timer
-    if (this.claimTimer) {
-      clearTimeout(this.claimTimer);
-      this.claimTimer = null;
-    }
 
     // Validate solution
     const validation = Calculator.validateSolution(solution.cards, solution.operations);
@@ -208,16 +167,6 @@ export class GameStateManager {
    * End the current round
    */
   private endRound(result: RoundResult): void {
-    // Clear timers
-    if (this.roundTimer) {
-      clearTimeout(this.roundTimer);
-      this.roundTimer = null;
-    }
-    if (this.claimTimer) {
-      clearTimeout(this.claimTimer);
-      this.claimTimer = null;
-    }
-
     this.currentClaimant = null;
     this.room.state = GameState.ROUND_END;
     this.lastRoundResult = result;
@@ -270,16 +219,6 @@ export class GameStateManager {
    */
   private endGame(winnerId: string): void {
     this.room.state = GameState.GAME_OVER;
-    
-    // Clear any remaining timers
-    if (this.roundTimer) {
-      clearTimeout(this.roundTimer);
-      this.roundTimer = null;
-    }
-    if (this.claimTimer) {
-      clearTimeout(this.claimTimer);
-      this.claimTimer = null;
-    }
     
     // Determine game over reason
     const winner = this.room.players.find(p => p.id === winnerId);
@@ -381,16 +320,6 @@ export class GameStateManager {
    * Reset game to initial state
    */
   resetGame(): void {
-    // Clear timers
-    if (this.roundTimer) {
-      clearTimeout(this.roundTimer);
-      this.roundTimer = null;
-    }
-    if (this.claimTimer) {
-      clearTimeout(this.claimTimer);
-      this.claimTimer = null;
-    }
-
     // Reset state
     this.room.state = GameState.WAITING;
     this.room.currentRound = 0;

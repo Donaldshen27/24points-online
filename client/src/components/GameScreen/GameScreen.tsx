@@ -11,7 +11,6 @@ import DisconnectNotification from '../DisconnectNotification/DisconnectNotifica
 import socketService from '../../services/socketService';
 import type { GameRoom, Solution, Card, Operation } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
-import { Calculator } from '../../utils/calculator';
 import './GameScreen.css';
 
 interface GameScreenProps {

@@ -19,18 +19,45 @@ export const handleConnection = (io: Server, socket: Socket) => {
   });
 
   socket.on('join-room', (data: { roomId: string; playerName: string }) => {
-    const playerId = `player-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-    const room = roomManager.joinRoom(data.roomId, playerId, socket.id, data.playerName);
+    // Check if this is a reconnection first
+    const room = roomManager.getRoom(data.roomId);
+    const existingPlayer = room?.players.find(p => !p.socketId && p.name === data.playerName);
     
-    if (!room) {
+    let playerId: string;
+    if (existingPlayer) {
+      // Reconnection - use existing player ID
+      playerId = existingPlayer.id;
+      console.log(`[ConnectionHandler] Reconnection detected for player ${data.playerName}`);
+    } else {
+      // New player - generate new ID
+      playerId = `player-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    }
+    
+    const joinedRoom = roomManager.joinRoom(data.roomId, playerId, socket.id, data.playerName);
+    
+    if (!joinedRoom) {
       socket.emit('join-room-error', { message: 'Room not found or full' });
       return;
     }
 
     socket.join(data.roomId);
-    socket.emit('room-joined', { room, playerId });
     
-    io.to(data.roomId).emit('room-updated', room);
+    if (existingPlayer) {
+      // Reconnection - send game state
+      const playerState = roomManager.getGameStateForPlayer(data.roomId, playerId);
+      socket.emit('reconnected-to-game', { room: playerState, playerId });
+      
+      // Notify other players
+      socket.to(data.roomId).emit('player-reconnected', { 
+        playerId: playerId,
+        playerName: data.playerName 
+      });
+    } else {
+      // New player
+      socket.emit('room-joined', { room: joinedRoom, playerId });
+    }
+    
+    io.to(data.roomId).emit('room-updated', joinedRoom);
     io.emit('rooms-updated', roomManager.getOpenRooms());
   });
 

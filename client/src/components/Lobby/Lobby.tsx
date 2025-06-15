@@ -30,6 +30,11 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
       onRoomJoined(data.room, data.playerId);
     });
 
+    socketService.on('reconnected-to-game', (data: { room: GameRoom; playerId: string }) => {
+      console.log('Reconnected to game:', data);
+      onRoomJoined(data.room, data.playerId);
+    });
+
     socketService.on('join-room-error', (data: { message: string }) => {
       alert(data.message);
     });
@@ -41,6 +46,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
       socketService.off('rooms-updated');
       socketService.off('room-created');
       socketService.off('room-joined');
+      socketService.off('reconnected-to-game');
       socketService.off('join-room-error');
     };
   }, [onRoomJoined]);
@@ -130,6 +136,14 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                   {room.players[0] && (
                     <span className="host-name">
                       Host: {room.players[0].name}
+                    </span>
+                  )}
+                  {room.players.some(p => !p.socketId) && (
+                    <span className="reconnect-available">
+                      🔄 Reconnect Available
+                      {room.players.filter(p => !p.socketId).map(p => (
+                        <span key={p.id} className="reconnect-name"> ({p.name})</span>
+                      ))}
                     </span>
                   )}
                 </div>

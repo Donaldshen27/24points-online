@@ -73,10 +73,27 @@ export class RoomManager {
       return null;
     }
 
+    // Check if this is a reconnection - look for disconnected player with same name
+    const disconnectedPlayer = room.players.find(p => !p.socketId && p.name === playerName);
+    
+    if (disconnectedPlayer) {
+      // Reconnection - update existing player
+      console.log(`[RoomManager] Player ${playerName} reconnecting to room ${roomId}`);
+      disconnectedPlayer.socketId = socketId;
+      this.playerToRoom.set(socketId, roomId);
+      
+      // Handle reconnection in game manager
+      this.handleReconnect(roomId, disconnectedPlayer.id, socketId);
+      
+      return room;
+    }
+
+    // Not a reconnection - check if room is full
     if (room.players.length >= 2) {
       return null;
     }
 
+    // New player joining
     const player: Player = {
       id: playerId,
       socketId,
@@ -148,7 +165,15 @@ export class RoomManager {
   }
 
   getOpenRooms(): GameRoom[] {
-    return this.getAllRooms().filter(room => room.players.length < 2);
+    return this.getAllRooms().filter(room => {
+      // Show rooms with less than 2 players
+      if (room.players.length < 2) return true;
+      
+      // Also show rooms where a player has disconnected (empty socketId)
+      // This allows reconnection
+      const hasDisconnectedPlayer = room.players.some(p => !p.socketId);
+      return hasDisconnectedPlayer;
+    });
   }
 
   updatePlayerReady(socketId: string, isReady: boolean): GameRoom | null {

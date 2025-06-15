@@ -165,3 +165,26 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+.reconnect-available {
+  color: #ffc107;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: pulse 2s infinite;
+}
+
+.reconnect-name {
+  color: #ff9800;
+  font-weight: bold;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}

@@ -3,11 +3,12 @@ import { useGameState } from '../../hooks/useGameState';
 import { InteractiveCenterTable } from '../InteractiveCenterTable/InteractiveCenterTable';
 import { PlayerHand } from '../PlayerHand/PlayerHand';
 import { RoundResult } from '../RoundResult/RoundResult';
-import { GameOver } from '../GameOver/GameOver';
+import { GameOverEnhanced } from '../GameOver/GameOverEnhanced';
 import { CardTransfer } from '../CardTransfer/CardTransfer';
 import socketService from '../../services/socketService';
 import type { GameRoom, Solution, Card } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
+import { Calculator } from '../../utils/calculator';
 import './GameScreen.css';
 
 interface GameScreenProps {
@@ -56,13 +57,28 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       
       // Small delay to ensure claim is processed
       setTimeout(() => {
-        // For now, create a minimal solution - in production, you'd parse the expression
-        const solution: Solution = {
-          cards: centerCards,
-          operations: [], // The server mainly cares about the result being 24
-          result: 24
-        };
-        socket.emit('submit-solution', { solution });
+        // Find a valid solution with operations
+        const operations = Calculator.findSolutionOperations(centerCards);
+        
+        if (operations) {
+          const solution: Solution = {
+            cards: centerCards,
+            operations: operations,
+            result: 24
+          };
+          console.log('Submitting solution:', solution);
+          socket.emit('submit-solution', { solution });
+        } else {
+          console.error('Could not find valid operations for 24');
+          // This should not happen since we already verified result is 24
+          // But as a fallback, submit empty operations
+          const solution: Solution = {
+            cards: centerCards,
+            operations: [],
+            result: result
+          };
+          socket.emit('submit-solution', { solution });
+        }
       }, 50);
     }
   };
@@ -91,6 +107,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   // Listen for solution results
   useEffect(() => {
     const handleRoundEnded = (data: { winnerId: string; loserId: string; solution: Solution; correct: boolean; reason?: string }) => {
+      console.log('[GameScreen] Round ended:', {
+        winnerId: data.winnerId,
+        loserId: data.loserId,
+        myPlayerId: playerId,
+        amIWinner: data.winnerId === playerId,
+        amILoser: data.loserId === playerId,
+        correct: data.correct
+      });
+      
       // Show round result screen
       setRoundResult({
         winnerId: data.winnerId,
@@ -103,9 +128,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       // Show card transfer animation after round result
       if (data.winnerId && data.loserId && centerCards.length > 0) {
         setTimeout(() => {
+          const transferTo = data.loserId === playerId ? 'current' : 'opponent';
+          console.log('[GameScreen] Transferring cards to:', transferTo, 'because loser is', data.loserId === playerId ? 'me' : 'opponent');
           setTransferringCards({
             cards: [...centerCards],
-            toPlayer: data.loserId === playerId ? 'current' : 'opponent'
+            toPlayer: transferTo
           });
         }, 2500);
       }
@@ -215,7 +242,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
       {/* Game Over Modal */}
       {gameState.state === GameState.GAME_OVER && (
-        <GameOver
+        <GameOverEnhanced
           gameState={gameState}
           playerId={playerId}
           onRematch={resetGame}

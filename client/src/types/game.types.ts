@@ -21,6 +21,11 @@ export interface GameRoom {
   scores: {
     [playerId: string]: number;
   };
+  // Battle statistics
+  roundTimes?: { [playerId: string]: number[] }; // Array of solve times per player
+  firstSolves?: { [playerId: string]: number }; // Count of who solved first
+  correctSolutions?: { [playerId: string]: number }; // Count of correct solutions
+  incorrectAttempts?: { [playerId: string]: number }; // Count of incorrect attempts
 }
 
 export const GameState = {

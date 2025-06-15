@@ -22,6 +22,11 @@ export interface GameRoom {
     [playerId: string]: number;
   };
   rematchRequests?: Set<string>;
+  // Battle statistics
+  roundTimes?: { [playerId: string]: number[] };
+  firstSolves?: { [playerId: string]: number };
+  correctSolutions?: { [playerId: string]: number };
+  incorrectAttempts?: { [playerId: string]: number };
 }
 
 export const GameState = {

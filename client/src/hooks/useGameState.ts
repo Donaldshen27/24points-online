@@ -34,6 +34,12 @@ export const useGameState = (playerId: string | null): GameStateHook => {
 
     // Game state update handler
     const handleGameStateUpdate = (state: GameRoom) => {
+      console.log('[useGameState] Game state updated:', {
+        state: state.state,
+        myDeckSize: state.players.find(p => p.id === playerId)?.deck.length,
+        opponentDeckSize: state.players.find(p => p.id !== playerId)?.deck.length,
+        centerCards: state.centerCards.length
+      });
       setGameState(state);
       setCenterCards(state.centerCards);
       
@@ -63,8 +69,11 @@ export const useGameState = (playerId: string | null): GameStateHook => {
     };
 
     // Game over handler
-    const handleGameOver = () => {
+    const handleGameOver = (data: { winnerId: string; scores: any; finalDecks: any }) => {
       setIsSolving(false);
+      // Note: The game state should already be updated via game-state-updated event
+      // This handler is just for additional game over specific data
+      console.log('[useGameState] Game over received:', data);
     };
 
     // Game reset handler

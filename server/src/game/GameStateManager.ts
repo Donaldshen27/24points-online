@@ -63,6 +63,24 @@ export class GameStateManager {
       [player2.id]: 0
     };
     this.room.centerCards = [];
+    
+    // Initialize battle statistics
+    this.room.roundTimes = {
+      [player1.id]: [],
+      [player2.id]: []
+    };
+    this.room.firstSolves = {
+      [player1.id]: 0,
+      [player2.id]: 0
+    };
+    this.room.correctSolutions = {
+      [player1.id]: 0,
+      [player2.id]: 0
+    };
+    this.room.incorrectAttempts = {
+      [player1.id]: 0,
+      [player2.id]: 0
+    };
   }
 
   /**
@@ -89,6 +107,23 @@ export class GameStateManager {
    * Start a new round
    */
   private startNewRound(): void {
+    // Check if game should end before starting new round
+    const player1 = this.room.players[0];
+    const player2 = this.room.players[1];
+    
+    // Check if either player would have insufficient cards for a new round
+    console.log(`[GameStateManager] Pre-round check - P1 deck: ${player1.deck.length}, P2 deck: ${player2.deck.length}`);
+    if (player1.deck.length < 2 || player2.deck.length < 2) {
+      // Determine winner based on who has fewer cards
+      console.log(`[GameStateManager] Insufficient cards for new round - ending game`);
+      if (player1.deck.length < player2.deck.length) {
+        this.endGame(player1.id);
+      } else {
+        this.endGame(player2.id);
+      }
+      return;
+    }
+    
     this.room.currentRound++;
     this.roundStartTime = Date.now();
     
@@ -148,7 +183,14 @@ export class GameStateManager {
       throw new Error('Player not found');
     }
 
+    console.log(`[GameStateManager] Solution claimed by ${player.name} (${playerId})`);
     this.currentClaimant = playerId;
+    
+    // Track who claimed first
+    if (this.room.firstSolves) {
+      this.room.firstSolves[playerId]++;
+    }
+    
     this.room.state = GameState.SOLVING;
   }
 
@@ -164,13 +206,25 @@ export class GameStateManager {
       throw new Error('Player did not claim solution');
     }
 
-
+    // Calculate solve time
+    const solveTime = (Date.now() - this.roundStartTime) / 1000; // in seconds
+    
     // Validate solution
     const validation = Calculator.validateSolution(solution.cards, solution.operations);
+    console.log(`[GameStateManager] Solution submitted by ${playerId}: result=${validation.result}, valid=${validation.isValid}`);
     
     if (validation.isValid) {
       // Player wins
       const otherPlayer = this.room.players.find(p => p.id !== playerId);
+      
+      // Track statistics
+      if (this.room.roundTimes && this.room.roundTimes[playerId]) {
+        this.room.roundTimes[playerId].push(solveTime);
+      }
+      if (this.room.correctSolutions) {
+        this.room.correctSolutions[playerId]++;
+      }
+      
       this.endRound({
         winnerId: playerId,
         loserId: otherPlayer?.id || null,
@@ -181,6 +235,12 @@ export class GameStateManager {
     } else {
       // Player loses
       const otherPlayer = this.room.players.find(p => p.id !== playerId);
+      
+      // Track incorrect attempts
+      if (this.room.incorrectAttempts) {
+        this.room.incorrectAttempts[playerId]++;
+      }
+      
       this.endRound({
         winnerId: otherPlayer?.id || null,
         loserId: playerId,
@@ -205,18 +265,24 @@ export class GameStateManager {
       
       if (winner && loser) {
         // Loser takes all center cards
+        console.log(`[GameStateManager] Round ended - Winner: ${winner.name} (${winner.id}), Loser: ${loser.name} (${loser.id})`);
+        console.log(`[GameStateManager] Before transfer - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length}`);
         loser.deck.push(...result.cards);
+        console.log(`[GameStateManager] After transfer - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length} (added ${result.cards.length} cards)`);
         
         // Update scores
         this.room.scores[result.winnerId]++;
         
         // Check win condition
+        console.log(`[GameStateManager] Checking win condition - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length}`);
         if (winner.deck.length === 0) {
           // Winner has no cards left - they win!
+          console.log(`[GameStateManager] Game Over - ${result.winnerId} wins (no cards)`);
           this.endGame(result.winnerId);
           return;
         } else if (loser.deck.length === 20) {
           // Loser has all cards - they lose!
+          console.log(`[GameStateManager] Game Over - ${result.winnerId} wins (opponent has all cards)`);
           this.endGame(result.winnerId);
           return;
         }
@@ -245,7 +311,14 @@ export class GameStateManager {
    * End the game
    */
   private endGame(winnerId: string): void {
+    // Clear any pending timers
     this.room.state = GameState.GAME_OVER;
+    
+    // Ensure center cards are cleared (they should have been transferred already)
+    console.log(`[GameStateManager] Game ending - Center cards: ${this.room.centerCards.length}`);
+    if (this.room.centerCards.length > 0) {
+      console.warn('[GameStateManager] WARNING: Center cards not empty at game end!');
+    }
     
     // Determine game over reason
     const winner = this.room.players.find(p => p.id === winnerId);
@@ -257,6 +330,9 @@ export class GameStateManager {
     } else if (loser && loser.deck.length === 20) {
       reason = 'all_cards';
     }
+    
+    console.log(`[GameStateManager] Game Over - Winner: ${winnerId}, Reason: ${reason}`);
+    console.log(`[GameStateManager] Final decks - P1: ${this.room.players[0].deck.length}, P2: ${this.room.players[1].deck.length}`);
     
     // Store game over result
     this.gameOverResult = {

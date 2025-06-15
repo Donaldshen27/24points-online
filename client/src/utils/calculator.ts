@@ -237,6 +237,73 @@ export class Calculator {
   }
 
   /**
+   * Find a solution that equals 24 and return the operations
+   */
+  static findSolutionOperations(cards: Card[]): Operation[] | null {
+    if (cards.length !== 4) return null;
+    
+    const values = cards.map(c => c.value);
+    const operators = ['+', '-', '*', '/'];
+    
+    // Try all permutations
+    const permutations = Calculator.getPermutations(values);
+    
+    for (const perm of permutations) {
+      const [a, b, c, d] = perm;
+      
+      // Try pattern: ((a op1 b) op2 c) op3 d
+      for (const op1 of operators) {
+        for (const op2 of operators) {
+          for (const op3 of operators) {
+            try {
+              const result1 = Calculator.evaluate(a, op1, b);
+              const result2 = Calculator.evaluate(result1, op2, c);
+              const result3 = Calculator.evaluate(result2, op3, d);
+              
+              if (Math.abs(result3 - 24) < 0.0001) {
+                return [
+                  { operator: op1 as any, left: a, right: b, result: result1 },
+                  { operator: op2 as any, left: result1, right: c, result: result2 },
+                  { operator: op3 as any, left: result2, right: d, result: result3 }
+                ];
+              }
+            } catch {
+              // Continue on error
+            }
+          }
+        }
+      }
+      
+      // Try pattern: (a op1 b) op2 (c op3 d)
+      for (const op1 of operators) {
+        for (const op2 of operators) {
+          for (const op3 of operators) {
+            try {
+              const result1 = Calculator.evaluate(a, op1, b);
+              const result2 = Calculator.evaluate(c, op3, d);
+              const result3 = Calculator.evaluate(result1, op2, result2);
+              
+              if (Math.abs(result3 - 24) < 0.0001) {
+                // Server expects sequential operations, so we need to reorder
+                // We'll use the first pattern style for consistency
+                return [
+                  { operator: op1 as any, left: a, right: b, result: result1 },
+                  { operator: op3 as any, left: c, right: d, result: result2 },
+                  { operator: op2 as any, left: result1, right: result2, result: result3 }
+                ];
+              }
+            } catch {
+              // Continue on error
+            }
+          }
+        }
+      }
+    }
+    
+    return null;
+  }
+
+  /**
    * Checks if cards can make 24 (quick check without finding all solutions)
    */
   static canMake24(cards: number[]): boolean {

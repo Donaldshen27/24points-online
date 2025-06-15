@@ -137,6 +137,12 @@ export const handleConnection = (io: Server, socket: Socket) => {
         const currentState = roomManager.getGameState(room.id);
         if (currentState) {
           if (currentState.state === 'game_over') {
+            // First emit the updated game state so clients know it's game over
+            currentState.players.forEach(p => {
+              const playerState = roomManager.getGameStateForPlayer(room.id, p.id);
+              io.to(p.socketId).emit('game-state-updated', playerState);
+            });
+            
             // Determine final winner based on card count
             const player1 = currentState.players[0];
             const player2 = currentState.players[1];

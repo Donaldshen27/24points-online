@@ -316,10 +316,10 @@ export class GameStateManager {
       this.room.state = GameState.REPLAY;
       this.replaySkipRequests.clear();
       
-      // Set a timeout for replay duration (7 seconds)
+      // Set a timeout for replay duration (15 seconds to ensure animations complete)
       this.replayTimeout = setTimeout(() => {
         this.endReplay();
-      }, 7000);
+      }, 15000);
     } else {
       // No replay needed, start next round after a delay
       setTimeout(() => {

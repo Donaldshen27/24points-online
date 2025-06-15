@@ -38,6 +38,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   } | null>(null);
   const [showingSolutionReplay, setShowingSolutionReplay] = useState(false);
   const [replaySolution, setReplaySolution] = useState<Solution | null>(null);
+  const [replayCompleting, setReplayCompleting] = useState(false);
 
   // Get current player and opponent
   const currentPlayer = gameState?.players.find(p => p.id === playerId);
@@ -112,11 +113,18 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     if (gameState?.state === GameState.REPLAY && replaySolution) {
       console.log('[GameScreen] Game entered REPLAY state, showing replay');
       setShowingSolutionReplay(true);
-    } else if (showingSolutionReplay && gameState?.state !== GameState.REPLAY) {
-      console.log('[GameScreen] Game left REPLAY state, hiding replay');
-      setShowingSolutionReplay(false);
+    } else if (showingSolutionReplay && gameState?.state !== GameState.REPLAY && !replayCompleting) {
+      console.log('[GameScreen] Game left REPLAY state while not completing');
+      // Don't immediately hide if replay is completing
+      if (!replayCompleting) {
+        setTimeout(() => {
+          if (!replayCompleting) {
+            setShowingSolutionReplay(false);
+          }
+        }, 1000);
+      }
     }
-  }, [gameState?.state, replaySolution, showingSolutionReplay]);
+  }, [gameState?.state, replaySolution, showingSolutionReplay, replayCompleting]);
 
   // Listen for solution results
   useEffect(() => {
@@ -240,7 +248,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
 
       {/* Round Result Modal */}
-      {roundResult && gameState.state === GameState.ROUND_END && (
+      {roundResult && gameState.state === GameState.ROUND_END && !showingSolutionReplay && (
         <RoundResult
           winnerId={roundResult.winnerId}
           winnerName={roundResult.winnerId === playerId ? currentPlayer.name : opponent.name}
@@ -258,8 +266,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         <SolutionReplay
           solution={replaySolution}
           onComplete={() => {
-            setShowingSolutionReplay(false);
-            setReplaySolution(null);
+            console.log('[GameScreen] Solution replay completed');
+            setReplayCompleting(true);
+            // Add a small delay before hiding to ensure animations complete
+            setTimeout(() => {
+              setShowingSolutionReplay(false);
+              setReplaySolution(null);
+              setReplayCompleting(false);
+            }, 300);
           }}
           autoPlay={true}
           speed={1}

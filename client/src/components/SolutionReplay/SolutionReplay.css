@@ -11,6 +11,9 @@
   justify-content: center;
   z-index: 1000;
   backdrop-filter: blur(4px);
+  /* Ensure animations complete even during state changes */
+  will-change: opacity;
+  pointer-events: all;
 }
 
 /* Main Container */

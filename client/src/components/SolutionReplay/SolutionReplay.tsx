@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Solution } from '../../types/game.types';
 import { Calculator } from '../../utils/calculator';
@@ -31,6 +31,8 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
   const [currentOperation, setCurrentOperation] = useState<number>(-1);
   const [showResult, setShowResult] = useState<number>(-1);
   const [waitingForOtherPlayer, setWaitingForOtherPlayer] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
+  const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Create animation steps
   const steps: AnimationStep[] = [
@@ -90,8 +92,14 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
   // Handle step progression
   useEffect(() => {
     if (!isPlaying || currentStep >= steps.length) {
-      if (currentStep >= steps.length && onComplete) {
-        onComplete();
+      if (currentStep >= steps.length && !animationComplete) {
+        setAnimationComplete(true);
+        // Ensure final animation has time to render
+        animationTimeoutRef.current = setTimeout(() => {
+          if (onComplete) {
+            onComplete();
+          }
+        }, 1500); // Give time for final animation
       }
       return;
     }
@@ -158,7 +166,11 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
     const handleReplaySkipped = () => {
       console.log('[SolutionReplay] Both players skipped, ending replay');
       setCurrentStep(steps.length);
-      if (onComplete) onComplete();
+      setAnimationComplete(true);
+      // Still give some time for final state to render
+      animationTimeoutRef.current = setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 500);
     };
 
     socket.on('player-wants-skip', handlePlayerWantsSkip);
@@ -169,6 +181,15 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
       socket.off('replay-skipped', handleReplaySkipped);
     };
   }, [onComplete, steps.length]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (animationTimeoutRef.current) {
+        clearTimeout(animationTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleTogglePlay = () => {
     setIsPlaying(!isPlaying);
@@ -307,6 +328,9 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
                 type: "spring",
                 stiffness: 260,
                 damping: 20
+              }}
+              onAnimationComplete={() => {
+                console.log('[SolutionReplay] Final animation complete');
               }}
             >
               <span className="equals-24">= 24!</span>

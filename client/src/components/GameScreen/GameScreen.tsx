@@ -107,6 +107,17 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     }
   };
 
+  // Listen for game state changes to detect replay state
+  useEffect(() => {
+    if (gameState?.state === GameState.REPLAY && replaySolution) {
+      console.log('[GameScreen] Game entered REPLAY state, showing replay');
+      setShowingSolutionReplay(true);
+    } else if (showingSolutionReplay && gameState?.state !== GameState.REPLAY) {
+      console.log('[GameScreen] Game left REPLAY state, hiding replay');
+      setShowingSolutionReplay(false);
+    }
+  }, [gameState?.state, replaySolution, showingSolutionReplay]);
+
   // Listen for solution results
   useEffect(() => {
     const handleRoundEnded = (data: { winnerId: string; loserId: string; solution: Solution; correct: boolean; reason?: string }) => {
@@ -127,35 +138,26 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         reason: data.reason as any || (data.correct ? 'correct_solution' : 'incorrect_solution')
       });
       
-      // If there's a valid solution, show the replay first
+      // Store solution for replay if valid
       if (data.solution && data.correct && data.solution.operations && data.solution.operations.length > 0) {
-        console.log('[GameScreen] Showing solution replay');
+        console.log('[GameScreen] Valid solution received, waiting for server to trigger replay');
         setReplaySolution(data.solution);
-        setShowingSolutionReplay(true);
+      }
+      
+      // Show card transfer animation after round result
+      if (data.winnerId && data.loserId && centerCards.length > 0) {
+        // Don't transfer immediately if there will be a replay
+        const hasReplay = data.solution && data.correct && data.solution.operations && data.solution.operations.length > 0;
+        const transferDelay = hasReplay ? 8000 : 2500; // Longer delay if replay
         
-        // After replay, show card transfer
         setTimeout(() => {
-          if (data.winnerId && data.loserId && centerCards.length > 0) {
-            const transferTo = data.loserId === playerId ? 'current' : 'opponent';
-            console.log('[GameScreen] Transferring cards to:', transferTo);
-            setTransferringCards({
-              cards: [...centerCards],
-              toPlayer: transferTo
-            });
-          }
-        }, 7000); // Wait for replay to complete
-      } else {
-        // No replay, just show card transfer
-        if (data.winnerId && data.loserId && centerCards.length > 0) {
-          setTimeout(() => {
-            const transferTo = data.loserId === playerId ? 'current' : 'opponent';
-            console.log('[GameScreen] Transferring cards to:', transferTo, 'because loser is', data.loserId === playerId ? 'me' : 'opponent');
-            setTransferringCards({
-              cards: [...centerCards],
-              toPlayer: transferTo
-            });
-          }, 2500);
-        }
+          const transferTo = data.loserId === playerId ? 'current' : 'opponent';
+          console.log('[GameScreen] Transferring cards to:', transferTo);
+          setTransferringCards({
+            cards: [...centerCards],
+            toPlayer: transferTo
+          });
+        }, transferDelay);
       }
     };
 

@@ -32,6 +32,8 @@ export class GameStateManager {
   private lastRoundResult: RoundResult | null = null;
   private gameOverResult: GameOverResult | null = null;
   private onRedealCallback?: () => void;
+  private replaySkipRequests: Set<string> = new Set();
+  private replayTimeout?: NodeJS.Timeout;
 
   constructor(room: GameRoom) {
     this.room = room;
@@ -299,12 +301,25 @@ export class GameStateManager {
     // Clear center cards
     this.room.centerCards = [];
 
-    // Start next round after a delay
-    setTimeout(() => {
-      if (this.room.state === GameState.ROUND_END) {
-        this.startNewRound();
-      }
-    }, 3000);
+    // Check if we should show replay (only for correct solutions)
+    if (result.reason === 'correct_solution' && result.solution && 
+        result.solution.operations && result.solution.operations.length > 0) {
+      // Enter replay state
+      this.room.state = GameState.REPLAY;
+      this.replaySkipRequests.clear();
+      
+      // Set a timeout for replay duration (7 seconds)
+      this.replayTimeout = setTimeout(() => {
+        this.endReplay();
+      }, 7000);
+    } else {
+      // No replay needed, start next round after a delay
+      setTimeout(() => {
+        if (this.room.state === GameState.ROUND_END) {
+          this.startNewRound();
+        }
+      }, 3000);
+    }
   }
 
   /**
@@ -442,5 +457,56 @@ export class GameStateManager {
     this.room.players.forEach(player => {
       this.room.scores[player.id] = 0;
     });
+  }
+
+  /**
+   * Request to skip replay
+   */
+  requestSkipReplay(playerId: string): boolean {
+    if (this.room.state !== GameState.REPLAY) {
+      return false;
+    }
+
+    // Add player to skip requests
+    this.replaySkipRequests.add(playerId);
+    console.log(`[GameStateManager] Player ${playerId} requested to skip replay. Total requests: ${this.replaySkipRequests.size}/2`);
+
+    // If both players want to skip, end replay early
+    if (this.replaySkipRequests.size >= 2) {
+      if (this.replayTimeout) {
+        clearTimeout(this.replayTimeout);
+        this.replayTimeout = undefined;
+      }
+      this.endReplay();
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * End replay and start next round
+   */
+  private endReplay(): void {
+    if (this.room.state !== GameState.REPLAY) {
+      return;
+    }
+
+    console.log('[GameStateManager] Ending replay, starting next round');
+    this.room.state = GameState.ROUND_END;
+    this.replaySkipRequests.clear();
+    
+    // Clear timeout if it exists
+    if (this.replayTimeout) {
+      clearTimeout(this.replayTimeout);
+      this.replayTimeout = undefined;
+    }
+
+    // Start next round
+    setTimeout(() => {
+      if (this.room.state === GameState.ROUND_END) {
+        this.startNewRound();
+      }
+    }, 500); // Short delay after replay
   }
 }

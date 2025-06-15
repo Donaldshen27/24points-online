@@ -34,6 +34,7 @@ export const GameState = {
   PLAYING: 'playing',
   SOLVING: 'solving',
   ROUND_END: 'round_end',
+  REPLAY: 'replay',
   GAME_OVER: 'game_over'
 } as const;
 

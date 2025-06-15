@@ -74,6 +74,28 @@
   background: rgba(255, 170, 0, 0.4);
 }
 
+/* Waiting Message */
+.waiting-message {
+  color: #ffd700;
+  font-size: 16px;
+  padding: 10px 20px;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.8;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+}
+
 /* Content Area */
 .replay-content {
   display: flex;

@@ -304,6 +304,16 @@ export class RoomManager {
 
     return gameManager.getGameOverResult();
   }
+
+  requestSkipReplay(roomId: string, playerId: string): boolean {
+    const gameManager = this.gameManagers.get(roomId);
+    
+    if (!gameManager) {
+      return false;
+    }
+
+    return gameManager.requestSkipReplay(playerId);
+  }
 }
 
 export default new RoomManager();

@@ -136,13 +136,13 @@ export const handleConnection = (io: Server, socket: Socket) => {
       setTimeout(() => {
         const currentState = roomManager.getGameState(room.id);
         if (currentState) {
+          // Always emit the updated game state first
+          currentState.players.forEach(p => {
+            const playerState = roomManager.getGameStateForPlayer(room.id, p.id);
+            io.to(p.socketId).emit('game-state-updated', playerState);
+          });
+
           if (currentState.state === 'game_over') {
-            // First emit the updated game state so clients know it's game over
-            currentState.players.forEach(p => {
-              const playerState = roomManager.getGameStateForPlayer(room.id, p.id);
-              io.to(p.socketId).emit('game-state-updated', playerState);
-            });
-            
             // Determine final winner based on card count
             const player1 = currentState.players[0];
             const player2 = currentState.players[1];
@@ -194,6 +194,44 @@ export const handleConnection = (io: Server, socket: Socket) => {
     // This is where we could use the Calculator.getHint method
     // For now, just acknowledge the request
     socket.emit('hint-response', { message: 'Hint system not yet implemented' });
+  });
+
+  socket.on('skip-replay', () => {
+    const room = roomManager.getRoomBySocketId(socket.id);
+    if (!room) return;
+
+    const player = room.players.find(p => p.socketId === socket.id);
+    if (!player) return;
+
+    const bothSkipped = roomManager.requestSkipReplay(room.id, player.id);
+    
+    if (bothSkipped) {
+      // Both players skipped, notify them
+      io.to(room.id).emit('replay-skipped');
+      
+      // Update game state for next round
+      const gameState = roomManager.getGameState(room.id);
+      if (gameState) {
+        gameState.players.forEach(p => {
+          const playerState = roomManager.getGameStateForPlayer(room.id, p.id);
+          io.to(p.socketId).emit('game-state-updated', playerState);
+        });
+        
+        // Start next round
+        setTimeout(() => {
+          const currentState = roomManager.getGameState(room.id);
+          if (currentState && currentState.state === 'playing') {
+            io.to(room.id).emit('round-started', {
+              round: currentState.currentRound,
+              centerCards: currentState.centerCards
+            });
+          }
+        }, 600);
+      }
+    } else {
+      // Notify others that this player wants to skip
+      socket.to(room.id).emit('player-wants-skip', { playerId: player.id });
+    }
   });
 
   socket.on('reset-game', () => {

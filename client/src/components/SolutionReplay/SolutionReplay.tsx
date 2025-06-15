@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Solution } from '../../types/game.types';
 import { Calculator } from '../../utils/calculator';
+import socketService from '../../services/socketService';
 import './SolutionReplay.css';
 
 interface SolutionReplayProps {
@@ -29,6 +30,7 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
   const [usedCards, setUsedCards] = useState<Set<number>>(new Set());
   const [currentOperation, setCurrentOperation] = useState<number>(-1);
   const [showResult, setShowResult] = useState<number>(-1);
+  const [waitingForOtherPlayer, setWaitingForOtherPlayer] = useState(false);
 
   // Create animation steps
   const steps: AnimationStep[] = [
@@ -131,10 +133,42 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
   }, [currentStep, isPlaying, steps, speed, onComplete, getStepValues]);
 
   const handleSkip = () => {
+    // Emit skip request to server
+    const socket = socketService.getSocket();
+    if (socket) {
+      console.log('[SolutionReplay] Requesting skip from server');
+      socket.emit('skip-replay');
+      setWaitingForOtherPlayer(true);
+    }
+    
+    // Don't complete locally - wait for server response
     setIsPlaying(false);
-    setCurrentStep(steps.length);
-    if (onComplete) onComplete();
   };
+
+  // Listen for skip events
+  useEffect(() => {
+    const socket = socketService.getSocket();
+    if (!socket) return;
+
+    const handlePlayerWantsSkip = () => {
+      console.log('[SolutionReplay] Other player wants to skip');
+      // Could show a message that the other player wants to skip
+    };
+
+    const handleReplaySkipped = () => {
+      console.log('[SolutionReplay] Both players skipped, ending replay');
+      setCurrentStep(steps.length);
+      if (onComplete) onComplete();
+    };
+
+    socket.on('player-wants-skip', handlePlayerWantsSkip);
+    socket.on('replay-skipped', handleReplaySkipped);
+
+    return () => {
+      socket.off('player-wants-skip', handlePlayerWantsSkip);
+      socket.off('replay-skipped', handleReplaySkipped);
+    };
+  }, [onComplete, steps.length]);
 
   const handleTogglePlay = () => {
     setIsPlaying(!isPlaying);
@@ -171,12 +205,20 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
         <div className="replay-header">
           <h2>Solution Replay</h2>
           <div className="replay-controls">
-            <button onClick={handleTogglePlay} className="control-btn">
-              {isPlaying ? '⏸️' : '▶️'}
-            </button>
-            <button onClick={handleSkip} className="control-btn skip-btn">
-              Skip ⏭️
-            </button>
+            {waitingForOtherPlayer ? (
+              <div className="waiting-message">
+                Waiting for other player to skip...
+              </div>
+            ) : (
+              <>
+                <button onClick={handleTogglePlay} className="control-btn">
+                  {isPlaying ? '⏸️' : '▶️'}
+                </button>
+                <button onClick={handleSkip} className="control-btn skip-btn">
+                  Skip ⏭️
+                </button>
+              </>
+            )}
           </div>
         </div>
 

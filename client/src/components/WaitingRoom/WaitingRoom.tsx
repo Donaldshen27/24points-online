@@ -42,7 +42,8 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
           if (prev === null || prev <= 1) {
             clearInterval(timer);
             if (prev === 1) {
-              onGameStart();
+              // Call onGameStart outside of setState
+              setTimeout(() => onGameStart(), 0);
             }
             return null;
           }

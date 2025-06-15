@@ -1,0 +1,68 @@
+.victory-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.victory-celebration.visible {
+  opacity: 1;
+}
+
+/* Victory Message */
+.victory-message {
+  z-index: 1001;
+}
+
+.message-content {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  padding: 2rem 4rem;
+  border-radius: 20px;
+  box-shadow: 
+    0 10px 40px rgba(255, 215, 0, 0.4),
+    0 0 100px rgba(255, 215, 0, 0.2);
+  animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border: 3px solid #FF8C00;
+}
+
+.message-content h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: #8B4513;
+  text-align: center;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(255, 255, 255, 0.5);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0) rotate(10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .message-content {
+    padding: 1.5rem 2rem;
+  }
+  
+  .message-content h1 {
+    font-size: 1.8rem;
+  }
+}

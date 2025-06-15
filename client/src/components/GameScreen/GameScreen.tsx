@@ -6,6 +6,7 @@ import { RoundResult } from '../RoundResult/RoundResult';
 import { GameOverEnhanced } from '../GameOver/GameOverEnhanced';
 import { CardTransfer } from '../CardTransfer/CardTransfer';
 import { SolutionReplay } from '../SolutionReplay/SolutionReplay';
+import { VictoryCelebration } from '../VictoryCelebration/VictoryCelebration';
 import socketService from '../../services/socketService';
 import type { GameRoom, Solution, Card } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
@@ -39,6 +40,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const [showingSolutionReplay, setShowingSolutionReplay] = useState(false);
   const [replaySolution, setReplaySolution] = useState<Solution | null>(null);
   const [replayCompleting, setReplayCompleting] = useState(false);
+  const [showVictoryCelebration, setShowVictoryCelebration] = useState<string | null>(null);
 
   // Get current player and opponent
   const currentPlayer = gameState?.players.find(p => p.id === playerId);
@@ -138,6 +140,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         correct: data.correct
       });
       
+      // Show victory celebration for correct solutions
+      if (data.correct && data.winnerId) {
+        const winnerName = data.winnerId === playerId ? currentPlayer?.name : opponent?.name;
+        if (winnerName) {
+          setShowVictoryCelebration(winnerName);
+        }
+      }
+      
       // Show round result screen
       setRoundResult({
         winnerId: data.winnerId,
@@ -186,7 +196,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       socketService.off('claim-error', handleClaimError);
       socketService.off('submit-error', handleSubmitError);
     };
-  }, [playerId]);
+  }, [playerId, currentPlayer, opponent]);
 
   if (!gameState || !currentPlayer || !opponent) {
     return (
@@ -288,6 +298,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           toPosition={transferringCards.toPlayer === 'current' ? 'bottom' : 'top'}
           onComplete={() => setTransferringCards(null)}
           duration={1000}
+        />
+      )}
+
+      {/* Victory Celebration */}
+      {showVictoryCelebration && (
+        <VictoryCelebration
+          playerName={showVictoryCelebration}
+          onComplete={() => setShowVictoryCelebration(null)}
         />
       )}
 

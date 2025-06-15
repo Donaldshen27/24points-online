@@ -7,6 +7,7 @@ import { GameOverEnhanced } from '../GameOver/GameOverEnhanced';
 import { CardTransfer } from '../CardTransfer/CardTransfer';
 import { SolutionReplay } from '../SolutionReplay/SolutionReplay';
 import { VictoryCelebration } from '../VictoryCelebration/VictoryCelebration';
+import DisconnectNotification from '../DisconnectNotification/DisconnectNotification';
 import socketService from '../../services/socketService';
 import type { GameRoom, Solution, Card } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
@@ -41,6 +42,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const [replaySolution, setReplaySolution] = useState<Solution | null>(null);
   const [replayCompleting, setReplayCompleting] = useState(false);
   const [showVictoryCelebration, setShowVictoryCelebration] = useState<string | null>(null);
+  const [opponentDisconnected, setOpponentDisconnected] = useState(false);
+  const [gameOverReason, setGameOverReason] = useState<string | null>(null);
+  const [gameOverWinnerId, setGameOverWinnerId] = useState<string | null>(null);
+  const [opponentDisconnectedTime, setOpponentDisconnectedTime] = useState<number | null>(null);
 
   // Get current player and opponent
   const currentPlayer = gameState?.players.find(p => p.id === playerId);
@@ -198,6 +203,67 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     };
   }, [playerId, currentPlayer, opponent]);
 
+  // Listen for opponent disconnection
+  useEffect(() => {
+    const handlePlayerDisconnected = (data: { playerId: string }) => {
+      console.log('Player disconnected:', data.playerId);
+      // Don't show notification immediately for active games
+    };
+
+    const handlePlayerDisconnectedActiveGame = (data: { playerId: string; playerName: string; timeoutSeconds: number }) => {
+      console.log('Player disconnected during active game:', data);
+      if (data.playerId !== playerId) {
+        // Track disconnect time for status display
+        setOpponentDisconnectedTime(Date.now());
+      }
+    };
+
+    const handlePlayerReconnected = (data: { playerId: string; playerName: string }) => {
+      console.log('Player reconnected:', data);
+      if (data.playerId !== playerId) {
+        // Clear disconnect time
+        setOpponentDisconnectedTime(null);
+      }
+    };
+
+    socketService.on('player-disconnected', handlePlayerDisconnected);
+    socketService.on('player-disconnected-active-game', handlePlayerDisconnectedActiveGame);
+    socketService.on('player-reconnected', handlePlayerReconnected);
+
+    return () => {
+      socketService.off('player-disconnected', handlePlayerDisconnected);
+      socketService.off('player-disconnected-active-game', handlePlayerDisconnectedActiveGame);
+      socketService.off('player-reconnected', handlePlayerReconnected);
+    };
+  }, [playerId]);
+
+  // Listen for game over events
+  useEffect(() => {
+    const handleGameOver = (data: { winnerId: string; reason?: string }) => {
+      console.log('Game over event received:', data);
+      setGameOverWinnerId(data.winnerId);
+      if (data.reason) {
+        setGameOverReason(data.reason);
+        if (data.reason === 'forfeit' && data.winnerId === playerId) {
+          // Show forfeit notification for winner only
+          setOpponentDisconnected(true);
+          // Clear disconnect tracking
+          setOpponentDisconnectedTime(null);
+          // Auto-transition to game over screen after a delay
+          setTimeout(() => {
+            setOpponentDisconnected(false);
+          }, 3000);
+        }
+      }
+    };
+
+    socketService.on('game-over', handleGameOver);
+
+    return () => {
+      socketService.off('game-over', handleGameOver);
+    };
+  }, [playerId]);
+
   if (!gameState || !currentPlayer || !opponent) {
     return (
       <div className="game-screen loading">
@@ -229,6 +295,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         <PlayerHand 
           player={opponent} 
           isCurrentPlayer={false}
+          isDisconnected={!!opponentDisconnectedTime}
         />
       </div>
 
@@ -314,7 +381,22 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           playerId={playerId}
           onRematch={resetGame}
           onLeaveGame={onLeaveGame}
+          gameOverReason={gameOverReason}
+          gameOverWinnerId={gameOverWinnerId}
         />
+      )}
+
+      {/* Opponent Disconnection Notification - Shows after forfeit */}
+      {opponentDisconnected && gameOverReason === 'forfeit' && (
+        <>
+          {console.log('Rendering DisconnectNotification for forfeit victory')}
+          <DisconnectNotification
+            opponentName={opponent.name}
+            onReturnToLobby={() => setOpponentDisconnected(false)}
+            timeoutSeconds={3}
+            isVictory={true}
+          />
+        </>
       )}
     </div>
   );

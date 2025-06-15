@@ -55,6 +55,11 @@ export class RoomManager {
       this.handleReplayEnd(roomId);
     });
     
+    // Set up game over callback
+    gameManager.setOnGameOverCallback(() => {
+      this.checkGameState(roomId);
+    });
+    
     this.gameManagers.set(roomId, gameManager);
     this.playerToRoom.set(socketId, roomId);
     
@@ -340,6 +345,34 @@ export class RoomManager {
       this.io.to(roomId).emit('round-started', {
         round: gameState.currentRound,
         centerCards: gameState.centerCards
+      });
+    }
+  }
+
+  checkGameState(roomId: string): void {
+    if (!this.io) return;
+    
+    const gameState = this.getGameState(roomId);
+    const gameOverResult = this.getGameOverResult(roomId);
+    
+    if (!gameState) return;
+    
+    // Always emit updated game state to all players first
+    gameState.players.forEach(p => {
+      if (p.socketId) {
+        const playerState = this.getGameStateForPlayer(roomId, p.id);
+        this.io!.to(p.socketId).emit('game-state-updated', playerState);
+      }
+    });
+    
+    // If game is over, emit game-over event with proper details
+    if (gameState.state === GameState.GAME_OVER && gameOverResult) {
+      console.log('[RoomManager] Emitting game-over event:', gameOverResult);
+      this.io.to(roomId).emit('game-over', {
+        winnerId: gameOverResult.winnerId,
+        reason: gameOverResult.reason,
+        scores: gameOverResult.finalScores,
+        finalDecks: gameOverResult.finalDecks
       });
     }
   }

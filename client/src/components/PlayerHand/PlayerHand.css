@@ -49,3 +49,25 @@
     font-size: 0.8rem;
   }
 }
+
+/* Disconnected state */
+.player-hand.disconnected {
+  opacity: 0.6;
+  filter: grayscale(50%);
+}
+
+.disconnect-indicator {
+  color: #ff6b6b;
+  font-size: 14px;
+  font-weight: normal;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

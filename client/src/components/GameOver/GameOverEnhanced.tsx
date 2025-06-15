@@ -8,6 +8,8 @@ interface GameOverEnhancedProps {
   playerId: string;
   onRematch: () => void;
   onLeaveGame: () => void;
+  gameOverReason?: string | null;
+  gameOverWinnerId?: string | null;
 }
 
 interface DetailedStats {
@@ -28,7 +30,9 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
   gameState,
   playerId,
   onRematch,
-  onLeaveGame
+  onLeaveGame,
+  gameOverReason,
+  gameOverWinnerId
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [showStats, setShowStats] = useState(false);
@@ -41,7 +45,8 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
 
   const playerScore = gameState.scores[playerId] || 0;
   const opponentScore = opponent ? (gameState.scores[opponent.id] || 0) : 0;
-  const isWinner = currentPlayer?.deck.length === 0 || opponent?.deck.length === 20;
+  // Use gameOverWinnerId if provided (for forfeit cases), otherwise use deck length
+  const isWinner = gameOverWinnerId ? gameOverWinnerId === playerId : (currentPlayer?.deck.length === 0 || opponent?.deck.length === 20);
 
   // Calculate detailed statistics
   const getDetailedStats = (): DetailedStats => {
@@ -247,9 +252,13 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
             {isWinner ? 'VICTORY!' : 'DEFEAT'}
           </h1>
           <p className="result-subtitle">
-            {isWinner 
-              ? 'Outstanding performance! You are the 24 Points Champion!' 
-              : 'A valiant effort! Ready for a rematch?'}
+            {gameOverReason === 'forfeit' 
+              ? (isWinner 
+                  ? 'Your opponent disconnected and forfeited the game!' 
+                  : 'You were disconnected and the game was forfeited.')
+              : (isWinner 
+                  ? 'Outstanding performance! You are the 24 Points Champion!' 
+                  : 'A valiant effort! Ready for a rematch?')}
           </p>
         </div>
 

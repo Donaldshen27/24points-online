@@ -143,29 +143,41 @@ export const handleConnection = (io: Server, socket: Socket) => {
           });
 
           if (currentState.state === 'game_over') {
-            // Determine final winner based on card count
-            const player1 = currentState.players[0];
-            const player2 = currentState.players[1];
-            let gameWinnerId: string;
+            // Get the game over result from the game manager
+            const gameOverResult = roomManager.getGameOverResult(room.id);
             
-            if (player1.deck.length === 0) {
-              gameWinnerId = player1.id;
-            } else if (player2.deck.length === 0) {
-              gameWinnerId = player2.id;
-            } else if (player1.deck.length === 20) {
-              gameWinnerId = player2.id;
+            if (gameOverResult) {
+              io.to(room.id).emit('game-over', {
+                winnerId: gameOverResult.winnerId,
+                reason: gameOverResult.reason,
+                scores: gameOverResult.finalScores,
+                finalDecks: gameOverResult.finalDecks
+              });
             } else {
-              gameWinnerId = player1.id;
-            }
-            
-            io.to(room.id).emit('game-over', {
-              winnerId: gameWinnerId,
-              scores: currentState.scores,
-              finalDecks: {
-                [player1.id]: player1.deck.length,
-                [player2.id]: player2.deck.length
+              // Fallback to old logic if no game over result
+              const player1 = currentState.players[0];
+              const player2 = currentState.players[1];
+              let gameWinnerId: string;
+              
+              if (player1.deck.length === 0) {
+                gameWinnerId = player1.id;
+              } else if (player2.deck.length === 0) {
+                gameWinnerId = player2.id;
+              } else if (player1.deck.length === 20) {
+                gameWinnerId = player2.id;
+              } else {
+                gameWinnerId = player1.id;
               }
-            });
+              
+              io.to(room.id).emit('game-over', {
+                winnerId: gameWinnerId,
+                scores: currentState.scores,
+                finalDecks: {
+                  [player1.id]: player1.deck.length,
+                  [player2.id]: player2.deck.length
+                }
+              });
+            }
           } else {
             currentState.players.forEach(p => {
               const playerState = roomManager.getGameStateForPlayer(room.id, p.id);
@@ -280,13 +292,78 @@ export const handleConnection = (io: Server, socket: Socket) => {
     }
   });
 
+  socket.on('reconnect-to-game', (data: { roomId: string; playerId: string }) => {
+    const room = roomManager.getRoom(data.roomId);
+    if (!room) {
+      socket.emit('reconnect-error', { message: 'Room not found' });
+      return;
+    }
+
+    const player = room.players.find(p => p.id === data.playerId);
+    if (!player) {
+      socket.emit('reconnect-error', { message: 'Player not found in room' });
+      return;
+    }
+
+    // Handle reconnection
+    if (roomManager.handleReconnect(data.roomId, data.playerId, socket.id)) {
+      socket.join(data.roomId);
+      
+      // Send current game state to reconnected player
+      const playerState = roomManager.getGameStateForPlayer(data.roomId, data.playerId);
+      socket.emit('reconnected-to-game', { 
+        room: playerState,
+        playerId: data.playerId 
+      });
+      
+      // Notify other players
+      socket.to(data.roomId).emit('player-reconnected', { 
+        playerId: data.playerId,
+        playerName: player.name 
+      });
+    } else {
+      socket.emit('reconnect-error', { message: 'Failed to reconnect' });
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
-    const { room, roomId } = roomManager.leaveRoom(socket.id);
+    
+    // Get the room and player info before leaving
+    const currentRoom = roomManager.getRoomBySocketId(socket.id);
+    const disconnectedPlayer = currentRoom?.players.find(p => p.socketId === socket.id);
+    const roomId = currentRoom?.id;
+    
+    const isGameActive = currentRoom && (
+      currentRoom.state === GameState.PLAYING || 
+      currentRoom.state === GameState.SOLVING || 
+      currentRoom.state === GameState.ROUND_END ||
+      currentRoom.state === GameState.REPLAY
+    );
+    
+    // Emit disconnect notification BEFORE leaving room so other players get notified
+    if (roomId && currentRoom && disconnectedPlayer) {
+      // If game is active, notify about disconnect with auto-forfeit timer
+      if (isGameActive) {
+        // Send to all players in room except the disconnecting one
+        socket.to(roomId).emit('player-disconnected-active-game', { 
+          playerId: disconnectedPlayer.id,
+          playerName: disconnectedPlayer.name,
+          timeoutSeconds: 30
+        });
+      } else {
+        socket.to(roomId).emit('player-disconnected', { 
+          playerId: disconnectedPlayer.id,
+          socketId: socket.id 
+        });
+      }
+    }
+    
+    // Now leave the room
+    const { room } = roomManager.leaveRoom(socket.id);
     
     if (roomId && room) {
       io.to(roomId).emit('room-updated', room);
-      io.to(roomId).emit('player-disconnected', { socketId: socket.id });
     }
     
     io.emit('rooms-updated', roomManager.getOpenRooms());

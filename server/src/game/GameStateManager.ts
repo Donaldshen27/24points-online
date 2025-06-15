@@ -19,7 +19,7 @@ export interface RoundResult {
 
 export interface GameOverResult {
   winnerId: string;
-  reason: 'no_cards' | 'all_cards';
+  reason: 'no_cards' | 'all_cards' | 'forfeit';
   finalScores: { [playerId: string]: number };
   finalDecks: { [playerId: string]: number };
 }
@@ -33,8 +33,11 @@ export class GameStateManager {
   private gameOverResult: GameOverResult | null = null;
   private onRedealCallback?: () => void;
   private onReplayEndCallback?: () => void;
+  private onGameOverCallback?: () => void;
   private replaySkipRequests: Set<string> = new Set();
   private replayTimeout?: NodeJS.Timeout;
+  private disconnectTimers: Map<string, NodeJS.Timeout> = new Map();
+  private static readonly DISCONNECT_TIMEOUT_MS = 30000; // 30 seconds
 
   constructor(room: GameRoom) {
     this.room = room;
@@ -53,6 +56,13 @@ export class GameStateManager {
    */
   setOnReplayEndCallback(callback: () => void): void {
     this.onReplayEndCallback = callback;
+  }
+
+  /**
+   * Set callback for when game ends
+   */
+  setOnGameOverCallback(callback: () => void): void {
+    this.onGameOverCallback = callback;
   }
 
   /**
@@ -127,9 +137,9 @@ export class GameStateManager {
       // Determine winner based on who has fewer cards
       console.log(`[GameStateManager] Insufficient cards for new round - ending game`);
       if (player1.deck.length < player2.deck.length) {
-        this.endGame(player1.id);
+        this.endGame(player1.id, 'no_cards');
       } else {
-        this.endGame(player2.id);
+        this.endGame(player2.id, 'no_cards');
       }
       return;
     }
@@ -288,12 +298,12 @@ export class GameStateManager {
         if (winner.deck.length === 0) {
           // Winner has no cards left - they win!
           console.log(`[GameStateManager] Game Over - ${result.winnerId} wins (no cards)`);
-          this.endGame(result.winnerId);
+          this.endGame(result.winnerId, 'no_cards');
           return;
         } else if (loser.deck.length === 20) {
           // Loser has all cards - they lose!
           console.log(`[GameStateManager] Game Over - ${result.winnerId} wins (opponent has all cards)`);
-          this.endGame(result.winnerId);
+          this.endGame(result.winnerId, 'all_cards');
           return;
         }
       }
@@ -331,10 +341,31 @@ export class GameStateManager {
   }
 
   /**
+   * Handle auto-forfeit when a player doesn't reconnect in time
+   */
+  private handleAutoForfeit(playerId: string): void {
+    // Remove the timer
+    this.disconnectTimers.delete(playerId);
+    
+    // Find the other player who wins by forfeit
+    const otherPlayer = this.room.players.find(p => p.id !== playerId);
+    if (!otherPlayer) {
+      console.error('[GameStateManager] Cannot find other player for auto-forfeit');
+      return;
+    }
+    
+    console.log(`[GameStateManager] Game forfeited by ${playerId}. Winner: ${otherPlayer.id}`);
+    
+    // End the game with the connected player as winner
+    this.endGame(otherPlayer.id, 'forfeit');
+  }
+
+  /**
    * End the game
    */
-  private endGame(winnerId: string): void {
+  private endGame(winnerId: string, reason?: 'no_cards' | 'all_cards' | 'forfeit'): void {
     // Clear any pending timers
+    this.clearAllTimers();
     this.room.state = GameState.GAME_OVER;
     
     // Ensure center cards are cleared (they should have been transferred already)
@@ -347,26 +378,33 @@ export class GameStateManager {
     const winner = this.room.players.find(p => p.id === winnerId);
     const loser = this.room.players.find(p => p.id !== winnerId);
     
-    let reason: 'no_cards' | 'all_cards' = 'no_cards';
-    if (winner && winner.deck.length === 0) {
-      reason = 'no_cards';
-    } else if (loser && loser.deck.length === 20) {
-      reason = 'all_cards';
+    let finalReason: 'no_cards' | 'all_cards' | 'forfeit' = reason || 'no_cards';
+    if (!reason) {
+      if (winner && winner.deck.length === 0) {
+        finalReason = 'no_cards';
+      } else if (loser && loser.deck.length === 20) {
+        finalReason = 'all_cards';
+      }
     }
     
-    console.log(`[GameStateManager] Game Over - Winner: ${winnerId}, Reason: ${reason}`);
+    console.log(`[GameStateManager] Game Over - Winner: ${winnerId}, Reason: ${finalReason}`);
     console.log(`[GameStateManager] Final decks - P1: ${this.room.players[0].deck.length}, P2: ${this.room.players[1].deck.length}`);
     
     // Store game over result
     this.gameOverResult = {
       winnerId,
-      reason,
+      reason: finalReason,
       finalScores: { ...this.room.scores },
       finalDecks: {
         [this.room.players[0].id]: this.room.players[0].deck.length,
         [this.room.players[1].id]: this.room.players[1].deck.length
       }
     };
+    
+    // Notify that game ended
+    if (this.onGameOverCallback) {
+      this.onGameOverCallback();
+    }
   }
 
   /**
@@ -413,9 +451,31 @@ export class GameStateManager {
       return;
     }
 
-    // If game is in progress, pause and wait for reconnection
-    // This could be enhanced with a reconnection timeout
-    player.socketId = ''; // Clear socket ID but keep player in game
+    // If game is in progress, start auto-forfeit timer
+    if (this.room.state === GameState.PLAYING || 
+        this.room.state === GameState.SOLVING || 
+        this.room.state === GameState.ROUND_END ||
+        this.room.state === GameState.REPLAY) {
+      
+      console.log(`[GameStateManager] Player ${player.name} (${playerId}) disconnected during active game. Starting ${GameStateManager.DISCONNECT_TIMEOUT_MS / 1000}s auto-forfeit timer.`);
+      
+      // Clear any existing timer for this player
+      const existingTimer = this.disconnectTimers.get(playerId);
+      if (existingTimer) {
+        clearTimeout(existingTimer);
+      }
+      
+      // Start new auto-forfeit timer
+      const timer = setTimeout(() => {
+        console.log(`[GameStateManager] Auto-forfeit timer expired for ${player.name} (${playerId}). Forfeiting game.`);
+        this.handleAutoForfeit(playerId);
+      }, GameStateManager.DISCONNECT_TIMEOUT_MS);
+      
+      this.disconnectTimers.set(playerId, timer);
+    }
+
+    // Clear socket ID but keep player in game
+    player.socketId = '';
   }
 
   /**
@@ -424,6 +484,14 @@ export class GameStateManager {
   handleReconnect(playerId: string, socketId: string): void {
     const player = this.room.players.find(p => p.id === playerId);
     if (!player) return;
+
+    // Cancel any pending auto-forfeit timer
+    const timer = this.disconnectTimers.get(playerId);
+    if (timer) {
+      console.log(`[GameStateManager] Player ${player.name} (${playerId}) reconnected. Cancelling auto-forfeit timer.`);
+      clearTimeout(timer);
+      this.disconnectTimers.delete(playerId);
+    }
 
     player.socketId = socketId;
   }
@@ -516,6 +584,21 @@ export class GameStateManager {
     // Notify that replay ended
     if (this.onReplayEndCallback) {
       this.onReplayEndCallback();
+    }
+  }
+
+  /**
+   * Clear all timers (disconnect and replay)
+   */
+  private clearAllTimers(): void {
+    // Clear disconnect timers
+    this.disconnectTimers.forEach(timer => clearTimeout(timer));
+    this.disconnectTimers.clear();
+    
+    // Clear replay timeout
+    if (this.replayTimeout) {
+      clearTimeout(this.replayTimeout);
+      this.replayTimeout = undefined;
     }
   }
 }

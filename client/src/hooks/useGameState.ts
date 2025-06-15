@@ -69,11 +69,14 @@ export const useGameState = (playerId: string | null): GameStateHook => {
     };
 
     // Game over handler
-    const handleGameOver = (data: { winnerId: string; scores: any; finalDecks: any }) => {
+    const handleGameOver = (data: { winnerId: string; reason?: string; scores: any; finalDecks: any }) => {
       setIsSolving(false);
       // Note: The game state should already be updated via game-state-updated event
       // This handler is just for additional game over specific data
       console.log('[useGameState] Game over received:', data);
+      if (data.reason === 'forfeit') {
+        console.log('[useGameState] Game ended due to forfeit');
+      }
     };
 
     // Game reset handler

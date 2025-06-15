@@ -229,7 +229,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         <PlayerHand 
           player={opponent} 
           isCurrentPlayer={false}
-          showCards={false}
         />
       </div>
 
@@ -252,7 +251,6 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         <PlayerHand 
           player={currentPlayer} 
           isCurrentPlayer={true}
-          showCards={true}
         />
       </div>
 

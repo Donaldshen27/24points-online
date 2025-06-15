@@ -24,20 +24,21 @@ export const OperationMenu: React.FC<OperationMenuProps> = ({ position, onSelect
 
   // Calculate menu position to keep it within viewport
   const getMenuStyle = () => {
-    const menuSize = 200; // Approximate menu size
+    const menuWidth = 250; // Approximate menu width
+    const menuHeight = 80; // Approximate menu height
     const padding = 20;
     
-    let left = position.x - menuSize / 2;
-    let top = position.y - menuSize / 2;
+    let left = position.x - menuWidth / 2;
+    let top = position.y - menuHeight / 2;
 
     // Adjust if menu would go off screen
     if (left < padding) left = padding;
     if (top < padding) top = padding;
-    if (left + menuSize > window.innerWidth - padding) {
-      left = window.innerWidth - menuSize - padding;
+    if (left + menuWidth > window.innerWidth - padding) {
+      left = window.innerWidth - menuWidth - padding;
     }
-    if (top + menuSize > window.innerHeight - padding) {
-      top = window.innerHeight - menuSize - padding;
+    if (top + menuHeight > window.innerHeight - padding) {
+      top = window.innerHeight - menuHeight - padding;
     }
 
     return { left, top };

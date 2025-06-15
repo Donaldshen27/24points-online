@@ -1,0 +1,41 @@
+.interactive-table-test {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  background: #1a1a2e;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.interactive-table-test h1 {
+  color: #4ecdc4;
+  margin-bottom: 1rem;
+}
+
+.interactive-table-test p {
+  color: #ccc;
+  margin-bottom: 2rem;
+}
+
+.test-info {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.test-info h3 {
+  color: #ffd700;
+  margin-bottom: 1rem;
+}
+
+.test-info ol {
+  color: #ccc;
+  line-height: 1.8;
+  padding-left: 1.5rem;
+}
+
+.test-info li {
+  margin-bottom: 0.5rem;
+}

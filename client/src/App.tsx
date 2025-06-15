@@ -5,6 +5,7 @@ import { WaitingRoom } from './components/WaitingRoom/WaitingRoom'
 import { GameScreen } from './components/GameScreen/GameScreen'
 import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
+import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
 import type { GameRoom } from './types/game.types'
 import './App.css'
 
@@ -23,7 +24,7 @@ function App() {
   const [appState, setAppState] = useState<AppState>(AppState.CONNECTING)
   const [currentRoom, setCurrentRoom] = useState<GameRoom | null>(null)
   const [playerId, setPlayerId] = useState<string>('')
-  const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | null>(null)
+  const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | null>(null)
 
   useEffect(() => {
     socketService.connect()
@@ -123,12 +124,16 @@ function App() {
                   <button onClick={() => setTestComponent('calculator')}>
                     Calculator Test
                   </button>
+                  <button onClick={() => setTestComponent('interactive')}>
+                    Interactive Table Test
+                  </button>
                 </div>
               </div>
             )}
             
             {testComponent === 'deck' && <DeckTest />}
             {testComponent === 'calculator' && <CalculatorTest />}
+            {testComponent === 'interactive' && <InteractiveTableTest />}
             
             {testComponent && (
               <div className="test-back">

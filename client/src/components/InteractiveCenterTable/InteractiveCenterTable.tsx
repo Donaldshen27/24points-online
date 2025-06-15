@@ -39,23 +39,36 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
   }, [initialCards]);
 
   const handleCardClick = (card: CardType | MergedCard, event: React.MouseEvent) => {
+    console.log('Card clicked:', card, { selectedCard, secondCard, operationMenuPosition });
     if (disabled || !allowInteraction) return;
 
+    // If clicking on already selected card, deselect
+    if (selectedCard?.id === card.id) {
+      setSelectedCard(null);
+      setSecondCard(null);
+      setOperationMenuPosition(null);
+      return;
+    }
+
     if (!selectedCard) {
-      // First card selection - show operation menu
+      // First card selection
+      console.log('First card selected:', card);
       setSelectedCard(card);
+      setOperationMenuPosition(null); // Don't show menu yet
+    } else if (selectedCard.id !== card.id && !operationMenuPosition) {
+      // Second card selection - now show operation menu
+      console.log('Second card selected:', card);
+      setSecondCard(card);
       const rect = event.currentTarget.getBoundingClientRect();
       setOperationMenuPosition({
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2
       });
-    } else if (selectedCard.id !== card.id) {
-      // Second card selection - store it and wait for operation selection
-      setSecondCard(card);
     }
   };
 
   const handleOperationSelect = (operation: '+' | '-' | '*' | '/') => {
+    console.log('handleOperationSelect called:', { operation, selectedCard, secondCard });
     if (!selectedCard || !secondCard) return;
 
     // Calculate result
@@ -78,11 +91,11 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
         break;
       case '*':
         result = value1 * value2;
-        expression = `${expr1} × ${expr2}`;
+        expression = `${expr1} * ${expr2}`;
         break;
       case '/':
         result = value1 / value2;
-        expression = `${expr1} ÷ ${expr2}`;
+        expression = `${expr1} / ${expr2}`;
         break;
     }
 
@@ -164,7 +177,11 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
     <div className="interactive-center-table">
       <div className="table-surface">
         <div className="table-header">
-          <h3>Combine to 24</h3>
+          <h3>
+            {!selectedCard ? 'Click a card to start' : 
+             !secondCard ? 'Click another card' : 
+             'Choose an operation'}
+          </h3>
           {history.length > 0 && allowInteraction && (
             <button className="reset-btn" onClick={handleReset}>
               ↩ Undo
@@ -179,7 +196,10 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
                 key={card.id}
                 data-card-id={card.id}
                 className={`card-wrapper ${selectedCard?.id === card.id ? 'selected' : ''} ${secondCard?.id === card.id ? 'selected-second' : ''}`}
-                onClick={(e) => handleCardClick(card, e)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCardClick(card, e);
+                }}
               >
                 <Card
                   card={card}
@@ -187,6 +207,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
                   selected={selectedCard?.id === card.id || secondCard?.id === card.id}
                   disabled={disabled || !allowInteraction}
                   className={`center-card card-${index}`}
+                  onClick={() => {}} // Handle click in wrapper
                 />
                 {isMergedCard(card) && (
                   <div className="card-expression">{card.expression}</div>

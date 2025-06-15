@@ -7,6 +7,7 @@ import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
 import type { GameRoom } from './types/game.types'
+import { GameState } from './types/game.types'
 import './App.css'
 
 const AppState = {
@@ -50,7 +51,16 @@ function App() {
   const handleRoomJoined = (room: GameRoom, playerId: string) => {
     setCurrentRoom(room)
     setPlayerId(playerId)
-    setAppState(AppState.WAITING_ROOM)
+    // Check if game is already in progress (for reconnections)
+    if (room.state === GameState.PLAYING || 
+        room.state === GameState.SOLVING || 
+        room.state === GameState.ROUND_END || 
+        room.state === GameState.REPLAY ||
+        room.state === GameState.GAME_OVER) {
+      setAppState(AppState.IN_GAME)
+    } else {
+      setAppState(AppState.WAITING_ROOM)
+    }
   }
 
   const handleGameStart = () => {

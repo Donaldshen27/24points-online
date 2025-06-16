@@ -35,6 +35,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
     });
 
     socketService.on('room-joined', (data: { room: GameRoom; playerId: string; isSpectator?: boolean }) => {
+      console.log('Lobby: room-joined event received:', data);
       // Only handle non-spectator joins here
       if (!data.isSpectator) {
         onRoomJoined(data.room, data.playerId, false);

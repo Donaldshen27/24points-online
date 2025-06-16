@@ -34,6 +34,8 @@ export const handleConnection = (io: Server, socket: Socket) => {
   });
 
   socket.on('join-room', (data: { roomId: string; playerName: string; isSpectator?: boolean }) => {
+    console.log('[Server] join-room received:', data);
+    
     // Check if this is a reconnection first
     const room = roomManager.getRoom(data.roomId);
     const existingPlayer = room?.players.find(p => !p.socketId && p.name === data.playerName);
@@ -56,6 +58,7 @@ export const handleConnection = (io: Server, socket: Socket) => {
     }
 
     socket.join(data.roomId);
+    console.log(`[Server] Socket ${socket.id} joined room ${data.roomId}`);
     
     if (existingPlayer) {
       // Reconnection - send game state
@@ -72,7 +75,33 @@ export const handleConnection = (io: Server, socket: Socket) => {
       });
     } else {
       // New player or spectator
-      socket.emit('room-joined', { room: joinedRoom, playerId, isSpectator: data.isSpectator });
+      if (data.isSpectator) {
+        console.log('[Server] Emitting spectator-joined');
+        
+        // Get the full game state for spectator
+        const gameState = roomManager.getGameState(data.roomId);
+        console.log('[Server] Game state for spectator:', {
+          hasGameState: !!gameState,
+          state: gameState?.state,
+          playerCount: gameState?.players?.length,
+          centerCardsCount: gameState?.centerCards?.length
+        });
+        
+        if (gameState) {
+          socket.emit('spectator-joined', { room: gameState, playerId });
+          
+          // Send game-state-updated after a small delay to ensure event handlers are ready
+          setTimeout(() => {
+            console.log('[Server] Sending game-state-updated to spectator');
+            socket.emit('game-state-updated', gameState);
+          }, 100);
+        } else {
+          socket.emit('spectator-joined', { room: joinedRoom, playerId });
+        }
+      } else {
+        console.log('[Server] Emitting room-joined for player');
+        socket.emit('room-joined', { room: joinedRoom, playerId });
+      }
     }
     
     io.to(data.roomId).emit('room-updated', joinedRoom);

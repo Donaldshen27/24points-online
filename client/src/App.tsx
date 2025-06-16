@@ -30,13 +30,14 @@ function App() {
   const [gameCount, setGameCount] = useState<number>(0)
   const [isSpectator, setIsSpectator] = useState<boolean>(false)
 
-  const handleRoomJoined = useCallback((room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectator: boolean = false) => {
+  const handleRoomJoined = useCallback((room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectatorJoin: boolean = false) => {
+    console.log('[App] handleRoomJoined called:', { roomId: room.id, playerId, isReconnection, isSpectatorJoin })
     setCurrentRoom(room)
     setPlayerId(playerId)
-    setIsSpectator(isSpectator)
+    setIsSpectator(isSpectatorJoin)
     
     // Spectators go directly to game view
-    if (isSpectator) {
+    if (isSpectatorJoin) {
       setAppState(AppState.IN_GAME)
       return
     }
@@ -74,17 +75,16 @@ function App() {
       setIsSpectator(false)
     })
 
-    // Handle room-joined for spectators
-    socketService.on('room-joined', (data: { room: GameRoom; playerId: string; isSpectator?: boolean }) => {
-      if (data.isSpectator) {
-        handleRoomJoined(data.room, data.playerId, false, true)
-      }
+    // Handle spectator joins separately
+    socketService.on('spectator-joined', (data: { room: GameRoom; playerId: string }) => {
+      console.log('App.tsx: spectator-joined event received:', data)
+      handleRoomJoined(data.room, data.playerId, false, true)
     })
 
     return () => {
       socketService.off('connect')
       socketService.off('disconnect')
-      socketService.off('room-joined')
+      socketService.off('spectator-joined')
       socketService.disconnect()
     }
   }, [handleRoomJoined])

@@ -17,6 +17,7 @@ interface GameStateHook {
 }
 
 export const useGameState = (playerId: string | null, initialRoom?: GameRoom | null): GameStateHook => {
+  console.log('[useGameState] Hook initialized with:', { playerId, hasInitialRoom: !!initialRoom, initialRoomState: initialRoom?.state });
   const [gameState, setGameState] = useState<GameRoom | null>(initialRoom || null);
   const [currentRound, setCurrentRound] = useState(initialRoom?.currentRound || 0);
   const [centerCards, setCenterCards] = useState<Card[]>(initialRoom?.centerCards || []);
@@ -38,10 +39,12 @@ export const useGameState = (playerId: string | null, initialRoom?: GameRoom | n
         state: state.state,
         myDeckSize: state.players.find(p => p.id === playerId)?.deck.length,
         opponentDeckSize: state.players.find(p => p.id !== playerId)?.deck.length,
-        centerCards: state.centerCards.length
+        centerCards: state.centerCards?.length || 0,
+        hasPlayers: !!state.players,
+        playerCount: state.players?.length || 0
       });
       setGameState(state);
-      setCenterCards(state.centerCards);
+      setCenterCards(state.centerCards || []);
       
       // Check if we're still solving
       if (state.state !== GameState.SOLVING) {

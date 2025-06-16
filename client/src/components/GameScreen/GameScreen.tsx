@@ -21,6 +21,8 @@ interface GameScreenProps {
 }
 
 export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveGame, isSpectator = false }) => {
+  console.log('[GameScreen] Component mounted with:', { roomId: room?.id, roomState: room?.state, playerId, isSpectator });
+  
   const {
     gameState,
     currentRound,
@@ -48,8 +50,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const [opponentDisconnectedTime, setOpponentDisconnectedTime] = useState<number | null>(null);
 
   // Get current player and opponent
-  const currentPlayer = gameState?.players.find(p => p.id === playerId);
-  const opponent = gameState?.players.find(p => p.id !== playerId);
+  // For spectators, just show the first player as "current" and second as "opponent"
+  const currentPlayer = isSpectator 
+    ? gameState?.players?.[0] 
+    : gameState?.players.find(p => p.id === playerId);
+  const opponent = isSpectator 
+    ? gameState?.players?.[1] 
+    : gameState?.players.find(p => p.id !== playerId);
 
 
 
@@ -82,15 +89,17 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   // Get status message
   const getStatusMessage = (): string => {
-    if (!gameState) return 'Loading...';
+    if (!gameState) return 'Loading game...';
     
     switch (gameState.state) {
       case GameState.WAITING:
         return 'Waiting for players...';
       case GameState.PLAYING:
-        return `Round ${currentRound} - Find a solution!`;
+        return isSpectator 
+          ? `Round ${currentRound} - Watching game` 
+          : `Round ${currentRound} - Find a solution!`;
       case GameState.SOLVING:
-        return 'Race to solve!';
+        return isSpectator ? 'Player is solving...' : 'Race to solve!';
       case GameState.ROUND_END:
         return 'Round ended!';
       case GameState.GAME_OVER:
@@ -249,10 +258,20 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     };
   }, [playerId]);
 
-  if (!gameState || !currentPlayer || !opponent) {
+  // For spectators, we need to wait for game state but not for player matching
+  if (!gameState || (!isSpectator && (!currentPlayer || !opponent))) {
     return (
       <div className="game-screen loading">
         <h2>Loading game...</h2>
+      </div>
+    );
+  }
+  
+  // For spectators, if players aren't loaded yet, show a different message
+  if (isSpectator && (!currentPlayer || !opponent)) {
+    return (
+      <div className="game-screen loading">
+        <h2>Waiting for game data...</h2>
       </div>
     );
   }

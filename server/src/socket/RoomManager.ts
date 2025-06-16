@@ -80,14 +80,17 @@ export class RoomManager {
   }
 
   joinRoom(roomId: string, playerId: string, socketId: string, playerName: string, isSpectator?: boolean): GameRoom | null {
+    console.log('[RoomManager] joinRoom called:', { roomId, playerId, playerName, isSpectator });
     const room = this.rooms.get(roomId);
     
     if (!room) {
+      console.log('[RoomManager] Room not found:', roomId);
       return null;
     }
 
     // If joining as spectator, add to spectators list instead of players
     if (isSpectator) {
+      console.log('[RoomManager] Adding spectator to room:', roomId);
       // Add to spectators tracking
       if (!this.spectators.has(roomId)) {
         this.spectators.set(roomId, new Set());

@@ -2,6 +2,8 @@
 .room-type-selector {
   padding: 2rem;
   text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .room-type-selector h2 {
@@ -10,36 +12,114 @@
   margin-bottom: 2rem;
 }
 
-.room-type-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  max-width: 800px;
-  margin: 0 auto;
+/* Carousel Container */
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  height: 400px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+/* Carousel Track */
+.carousel-track {
+  position: relative;
+  width: 600px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+/* Carousel Arrows */
+.carousel-arrow {
+  position: relative;
+  z-index: 10;
+  background: rgba(26, 26, 46, 0.8);
+  border: 2px solid #00d4ff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #00d4ff;
+}
+
+.carousel-arrow:hover:not(:disabled) {
+  background: #00d4ff;
+  color: #1a1a2e;
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.carousel-arrow svg {
+  width: 24px;
+  height: 24px;
 }
 
 /* Room Type Cards */
 .room-type-card {
+  position: absolute;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   border: 2px solid transparent;
   border-radius: 16px;
   padding: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 320px;
+  height: 360px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.room-type-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-}
-
-.room-type-card.selected {
+/* Current card */
+.room-type-card.current {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+  z-index: 5;
   border-color: #00d4ff;
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
+.room-type-card.current:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Side cards */
+.room-type-card.side-card {
+  opacity: 0.4;
+  transform: scale(0.85);
+  cursor: default;
+  pointer-events: none;
+}
+
+.room-type-card.side-card.prev {
+  transform: translateX(-280px) scale(0.85) rotateY(25deg);
+  z-index: 3;
+}
+
+.room-type-card.side-card.next {
+  transform: translateX(280px) scale(0.85) rotateY(-25deg);
+  z-index: 3;
+}
+
+/* Animation state */
+.room-type-card.animating {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card backgrounds */
 .room-type-card::before {
   content: '';
   position: absolute;
@@ -57,6 +137,10 @@
 
 .room-type-card.super::before {
   background: radial-gradient(circle, rgba(255, 195, 0, 0.1) 0%, transparent 70%);
+}
+
+.room-type-card.extended::before {
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
 }
 
 /* Card Header */
@@ -140,7 +224,10 @@
 
 /* Card Footer */
 .card-footer {
-  text-align: center;
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  right: 1.5rem;
 }
 
 .select-button {
@@ -156,16 +243,39 @@
   width: 100%;
 }
 
-.room-type-card.selected .select-button {
-  background: #00d4ff;
-  color: #1a1a2e;
-}
-
-.select-button:hover {
+.room-type-card.current .select-button:hover {
   background: #00d4ff;
   color: #1a1a2e;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 212, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  width: 24px;
+  border-radius: 4px;
+  background: #00d4ff;
+}
+
+.indicator:hover:not(.active) {
+  background: rgba(0, 212, 255, 0.5);
 }
 
 /* Animations */
@@ -186,18 +296,43 @@
     padding: 1rem;
   }
 
-  .room-type-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
   .room-type-selector h2 {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
   }
 
+  .carousel-container {
+    height: 420px;
+    gap: 1rem;
+  }
+
+  .carousel-track {
+    width: 100%;
+    max-width: 400px;
+  }
+
   .room-type-card {
+    width: 280px;
+    height: 380px;
     padding: 1.25rem;
+  }
+
+  .room-type-card.side-card.prev {
+    transform: translateX(-200px) scale(0.8) rotateY(20deg);
+  }
+
+  .room-type-card.side-card.next {
+    transform: translateX(200px) scale(0.8) rotateY(-20deg);
+  }
+
+  .carousel-arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .carousel-arrow svg {
+    width: 20px;
+    height: 20px;
   }
 
   .card-header h3 {
@@ -227,8 +362,29 @@
     margin-bottom: 1rem;
   }
 
+  .carousel-container {
+    height: 400px;
+    gap: 0.5rem;
+  }
+
   .room-type-card {
+    width: 240px;
+    height: 360px;
     padding: 1rem;
+  }
+
+  .room-type-card.side-card {
+    display: none; /* Hide side cards on small screens */
+  }
+
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .carousel-arrow svg {
+    width: 18px;
+    height: 18px;
   }
 
   .icon-wrapper {

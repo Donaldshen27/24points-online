@@ -123,6 +123,13 @@ export function SpectatorView({ room, onLeave }: SpectatorViewProps) {
             </div>
           )}
 
+          {room.state === GameState.REPLAY && (
+            <div className="replay-view">
+              <h3>Reviewing Solution...</h3>
+              <p>Next round will start after replay</p>
+            </div>
+          )}
+
           {room.state === GameState.GAME_OVER && (
             <div className="game-over-view">
               <h2>🏆 Game Over!</h2>

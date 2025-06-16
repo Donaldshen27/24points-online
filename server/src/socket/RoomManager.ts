@@ -410,10 +410,20 @@ export class RoomManager {
       this.io!.to(p.socketId).emit('game-state-updated', playerState);
     });
     
+    // Update spectators
+    const spectatorRoomId = `spectators-${roomId}`;
+    this.io!.to(spectatorRoomId).emit('spectator-room-updated', { room: gameState });
+    
     // If we're now in playing state, emit round started
     if (gameState.state === GameState.PLAYING) {
       console.log('[RoomManager] Emitting round-started for round:', gameState.currentRound);
       this.io.to(roomId).emit('round-started', {
+        round: gameState.currentRound,
+        centerCards: gameState.centerCards
+      });
+      
+      // Also emit to spectators
+      this.io!.to(spectatorRoomId).emit('round-started', {
         round: gameState.currentRound,
         centerCards: gameState.centerCards
       });
@@ -436,15 +446,22 @@ export class RoomManager {
       }
     });
     
+    // Update spectators
+    const spectatorRoomId = `spectators-${roomId}`;
+    this.io!.to(spectatorRoomId).emit('spectator-room-updated', { room: gameState });
+    
     // If game is over, emit game-over event with proper details
     if (gameState.state === GameState.GAME_OVER && gameOverResult) {
       console.log('[RoomManager] Emitting game-over event:', gameOverResult);
-      this.io.to(roomId).emit('game-over', {
+      const gameOverData = {
         winnerId: gameOverResult.winnerId,
         reason: gameOverResult.reason,
         scores: gameOverResult.finalScores,
         finalDecks: gameOverResult.finalDecks
-      });
+      };
+      
+      this.io.to(roomId).emit('game-over', gameOverData);
+      this.io!.to(spectatorRoomId).emit('game-over', gameOverData);
     }
   }
 

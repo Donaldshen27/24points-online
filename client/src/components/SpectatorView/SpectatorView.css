@@ -125,13 +125,15 @@
 .solving-view,
 .waiting-view,
 .round-end-view,
+.replay-view,
 .game-over-view {
   text-align: center;
   padding: 2rem;
 }
 
 .solving-view h3,
-.waiting-view h3 {
+.waiting-view h3,
+.replay-view h3 {
   color: #ffc107;
   margin-bottom: 1rem;
 }

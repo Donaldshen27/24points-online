@@ -211,6 +211,15 @@ export const handleConnection = (io: Server, socket: Socket) => {
         correct: isCorrect,
         reason: isCorrect ? 'correct_solution' : 'incorrect_solution'
       });
+      
+      // Also send round-ended to spectators
+      broadcastToSpectators(io, room.id, 'round-ended', {
+        winnerId,
+        loserId,
+        solution: data.solution,
+        correct: isCorrect,
+        reason: isCorrect ? 'correct_solution' : 'incorrect_solution'
+      });
 
       // Update game state for all players
       setTimeout(() => {
@@ -267,7 +276,16 @@ export const handleConnection = (io: Server, socket: Socket) => {
               io.to(p.socketId).emit('game-state-updated', playerState);
             });
             
+            // Update spectators with new round
+            broadcastToSpectators(io, room.id, 'spectator-room-updated', { room: currentState });
+            
             io.to(room.id).emit('round-started', {
+              round: currentState.currentRound,
+              centerCards: currentState.centerCards
+            });
+            
+            // Also send round-started to spectators
+            broadcastToSpectators(io, room.id, 'round-started', {
               round: currentState.currentRound,
               centerCards: currentState.centerCards
             });
@@ -314,9 +332,18 @@ export const handleConnection = (io: Server, socket: Socket) => {
             io.to(p.socketId).emit('game-state-updated', playerState);
           });
           
+          // Update spectators
+          broadcastToSpectators(io, room.id, 'spectator-room-updated', { room: gameState });
+          
           // If we're in playing state, announce the new round
           if (gameState.state === 'playing') {
             io.to(room.id).emit('round-started', {
+              round: gameState.currentRound,
+              centerCards: gameState.centerCards
+            });
+            
+            // Also to spectators
+            broadcastToSpectators(io, room.id, 'round-started', {
               round: gameState.currentRound,
               centerCards: gameState.centerCards
             });

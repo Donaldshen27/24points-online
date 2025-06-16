@@ -272,7 +272,7 @@ button[title]:disabled:hover::after {
   border-radius: 12px;
   padding: 1.5rem;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   transition: all 0.3s ease;
   box-shadow: 
     0 0 20px rgba(255, 107, 107, 0.3),
@@ -518,6 +518,8 @@ button[title]:disabled:hover::after {
   box-shadow: 
     0 4px 15px rgba(156, 39, 176, 0.4),
     inset 0 -4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  pointer-events: auto;
 }
 
 .spectate-btn::before {

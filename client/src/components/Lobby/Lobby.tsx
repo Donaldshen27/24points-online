@@ -245,9 +245,14 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                     )}
                     {(room.state === 'playing' || room.state === 'solving' || room.state === 'round_end') && (
                       <button
-                        onClick={() => handleSpectateRoom(room.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleSpectateRoom(room.id);
+                        }}
                         className="spectate-btn"
                         title="Watch this battle live!"
+                        type="button"
                       >
                         👁️ SPECTATE
                       </button>

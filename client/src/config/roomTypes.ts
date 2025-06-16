@@ -1,4 +1,4 @@
-import { RoomTypeConfig } from '../types/roomTypes';
+import type { RoomTypeConfig } from '../types/roomTypes';
 
 export const ROOM_TYPE_CONFIGS: Record<string, RoomTypeConfig> = {
   classic: {

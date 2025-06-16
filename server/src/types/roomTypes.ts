@@ -15,7 +15,7 @@ export interface RoomTypeConfig {
 export interface RuleConfiguration {
   turnTimeLimit: number;
   solutionTimeLimit: number;
-  scoringSystem: 'classic' | 'speed' | 'complexity';
+  scoringSystem: 'classic' | 'speed' | 'complexity' | 'extended';
   winCondition: 'no_cards' | 'all_cards' | 'point_limit' | 'time_limit' | 'round_limit';
   winConditionValue?: number;
   allowSpectators: boolean;

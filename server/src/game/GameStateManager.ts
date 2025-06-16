@@ -6,6 +6,7 @@ import { RoomTypeConfig } from '../types/roomTypes';
 import { BaseGameRules } from './rules/BaseGameRules';
 import { ClassicGameRules } from './rules/ClassicGameRules';
 import { SuperGameRules } from './rules/SuperGameRules';
+import { ExtendedGameRules } from './rules/ExtendedGameRules';
 
 export interface GameEvent {
   type: 'round_start' | 'player_claim' | 'solution_attempt' | 'round_end' | 'game_over';
@@ -82,6 +83,8 @@ export class GameStateManager {
     // Create appropriate game rules based on room type
     if (this.config.id === 'super') {
       this.gameRules = new SuperGameRules(this.config);
+    } else if (this.config.id === 'extended') {
+      this.gameRules = new ExtendedGameRules(this.config);
     } else {
       this.gameRules = new ClassicGameRules(this.config);
     }

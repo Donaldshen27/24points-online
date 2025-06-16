@@ -6,6 +6,7 @@ import { GameScreen } from './components/GameScreen/GameScreen'
 import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
+import { SEOContent } from './components/SEO/SEOContent'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
 import './App.css'
@@ -184,6 +185,11 @@ function App() {
           </div>
         )}
       </main>
+      
+      {/* SEO Content - visible to search engines but can be hidden visually */}
+      {appState === AppState.LOBBY && (
+        <SEOContent />
+      )}
     </div>
   )
 }

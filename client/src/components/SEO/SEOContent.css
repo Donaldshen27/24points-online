@@ -1,0 +1,175 @@
+.seo-content {
+  background-color: #f8f9fa;
+  padding: 3rem 1rem;
+  margin-top: 2rem;
+}
+
+.seo-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.seo-content h2 {
+  font-size: 2.5rem;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 3rem;
+  font-weight: 700;
+}
+
+.seo-section {
+  background: white;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.seo-section h3 {
+  font-size: 1.8rem;
+  color: #4f46e5;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.seo-section h4 {
+  font-size: 1.3rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.seo-section p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4b5563;
+  margin-bottom: 1rem;
+}
+
+.seo-section ol,
+.seo-section ul {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4b5563;
+  padding-left: 2rem;
+}
+
+.seo-section li {
+  margin-bottom: 0.8rem;
+}
+
+.seo-section strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.feature {
+  text-align: center;
+  padding: 1.5rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.feature:hover {
+  transform: translateY(-2px);
+}
+
+.feature h4 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.feature p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* FAQ Styles */
+.seo-section dl {
+  margin-top: 1rem;
+}
+
+.seo-section dt {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.seo-section dt:first-child {
+  margin-top: 0;
+}
+
+.seo-section dd {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #4b5563;
+  margin-left: 0;
+  margin-bottom: 1rem;
+}
+
+.cta {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #e0e7ff;
+  border-radius: 8px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .seo-content {
+    padding: 2rem 0.5rem;
+  }
+  
+  .seo-container {
+    padding: 0 0.5rem;
+  }
+  
+  .seo-content h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .seo-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .seo-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .seo-section p,
+  .seo-section ol,
+  .seo-section ul {
+    font-size: 1rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Hide for screen readers but visible to search engines */
+.seo-content[aria-hidden="true"] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

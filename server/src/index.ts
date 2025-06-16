@@ -13,9 +13,11 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
   : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:4173'];
 
-// Add Netlify deployment URL
+// Add production deployment URLs
 if (process.env.NODE_ENV === 'production') {
   allowedOrigins.push('https://verdant-flan-eeb30e.netlify.app');
+  allowedOrigins.push('https://twentyfourpoints.com');
+  allowedOrigins.push('https://www.twentyfourpoints.com');
 }
 
 const io = new Server(server, {

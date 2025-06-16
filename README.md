@@ -2,7 +2,9 @@
 
 A real-time multiplayer card game where two players race to solve mathematical puzzles by combining 4 cards to reach exactly 24 using arithmetic operations.
 
-🎮 **Play Now**: https://verdant-flan-eeb30e.netlify.app/
+🎮 **Play Now**: 
+- https://twentyfourpoints.com
+- https://verdant-flan-eeb30e.netlify.app/
 
 ## 🎮 Game Features
 

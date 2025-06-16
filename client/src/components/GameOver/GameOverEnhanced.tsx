@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import socketService from '../../services/socketService';
 import type { GameRoom } from '../../types/game.types';
 import './GameOverEnhanced.css';
 
@@ -30,7 +29,6 @@ interface DetailedStats {
 export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
   gameState,
   playerId,
-  onRematch,
   onLeaveGame,
   gameOverReason,
   gameOverWinnerId,

@@ -58,7 +58,15 @@ export const handleConnection = (io: Server, socket: Socket) => {
     }
 
     socket.join(data.roomId);
-    console.log(`[Server] Socket ${socket.id} joined room ${data.roomId}`);
+    
+    // If spectator, also join the spectator-specific room
+    if (data.isSpectator) {
+      const spectatorRoomId = `spectators-${data.roomId}`;
+      socket.join(spectatorRoomId);
+      console.log(`[Server] Spectator ${socket.id} joined rooms: ${data.roomId} and ${spectatorRoomId}`);
+    } else {
+      console.log(`[Server] Socket ${socket.id} joined room ${data.roomId}`);
+    }
     
     if (existingPlayer) {
       // Reconnection - send game state
@@ -140,6 +148,10 @@ export const handleConnection = (io: Server, socket: Socket) => {
     if (roomId) {
       socket.leave(roomId);
       
+      // If spectator, also leave spectator room
+      const spectatorRoomId = `spectators-${roomId}`;
+      socket.leave(spectatorRoomId);
+      
       if (room) {
         io.to(roomId).emit('room-updated', room);
         if (!isGameActive) {
@@ -171,7 +183,17 @@ export const handleConnection = (io: Server, socket: Socket) => {
                 io.to(player.socketId).emit('game-state-updated', playerState);
               });
               
+              // Send full game state to spectators
+              const spectatorRoomId = `spectators-${room.id}`;
+              io.to(spectatorRoomId).emit('game-state-updated', gameState);
+              
               io.to(room.id).emit('round-started', {
+                round: gameState.currentRound,
+                centerCards: gameState.centerCards
+              });
+              
+              // Also send round-started to spectators
+              io.to(spectatorRoomId).emit('round-started', {
                 round: gameState.currentRound,
                 centerCards: gameState.centerCards
               });
@@ -208,8 +230,9 @@ export const handleConnection = (io: Server, socket: Socket) => {
           io.to(p.socketId).emit('game-state-updated', playerState);
         });
         
-        // Update spectators
-        broadcastToSpectators(io, room.id, 'spectator-room-updated', { room: gameState });
+        // Send full game state to spectators
+        const spectatorRoomId = `spectators-${room.id}`;
+        io.to(spectatorRoomId).emit('game-state-updated', gameState);
       }
     } else {
       socket.emit('claim-error', { message: 'Cannot claim solution at this time' });
@@ -260,20 +283,27 @@ export const handleConnection = (io: Server, socket: Socket) => {
             io.to(p.socketId).emit('game-state-updated', playerState);
           });
           
-          // Update spectators
-          broadcastToSpectators(io, room.id, 'spectator-room-updated', { room: currentState });
+          // Send full game state to spectators
+          const spectatorRoomId = `spectators-${room.id}`;
+          io.to(spectatorRoomId).emit('game-state-updated', currentState);
 
           if (currentState.state === 'game_over') {
             // Get the game over result from the game manager
             const gameOverResult = roomManager.getGameOverResult(room.id);
             
             if (gameOverResult) {
-              io.to(room.id).emit('game-over', {
+              const gameOverData = {
                 winnerId: gameOverResult.winnerId,
                 reason: gameOverResult.reason,
                 scores: gameOverResult.finalScores,
                 finalDecks: gameOverResult.finalDecks
-              });
+              };
+              
+              io.to(room.id).emit('game-over', gameOverData);
+              
+              // Also send game-over to spectators
+              const spectatorRoomId = `spectators-${room.id}`;
+              io.to(spectatorRoomId).emit('game-over', gameOverData);
             } else {
               // Fallback to old logic if no game over result
               const player1 = currentState.players[0];
@@ -290,14 +320,20 @@ export const handleConnection = (io: Server, socket: Socket) => {
                 gameWinnerId = player1.id;
               }
               
-              io.to(room.id).emit('game-over', {
+              const gameOverData = {
                 winnerId: gameWinnerId,
                 scores: currentState.scores,
                 finalDecks: {
                   [player1.id]: player1.deck.length,
                   [player2.id]: player2.deck.length
                 }
-              });
+              };
+              
+              io.to(room.id).emit('game-over', gameOverData);
+              
+              // Also send game-over to spectators
+              const spectatorRoomId = `spectators-${room.id}`;
+              io.to(spectatorRoomId).emit('game-over', gameOverData);
             }
           } else {
             currentState.players.forEach(p => {
@@ -305,8 +341,9 @@ export const handleConnection = (io: Server, socket: Socket) => {
               io.to(p.socketId).emit('game-state-updated', playerState);
             });
             
-            // Update spectators with new round
-            broadcastToSpectators(io, room.id, 'spectator-room-updated', { room: currentState });
+            // Send full game state to spectators for new round
+            const spectatorRoomId = `spectators-${room.id}`;
+            io.to(spectatorRoomId).emit('game-state-updated', currentState);
             
             io.to(room.id).emit('round-started', {
               round: currentState.currentRound,
@@ -314,7 +351,7 @@ export const handleConnection = (io: Server, socket: Socket) => {
             });
             
             // Also send round-started to spectators
-            broadcastToSpectators(io, room.id, 'round-started', {
+            io.to(spectatorRoomId).emit('round-started', {
               round: currentState.currentRound,
               centerCards: currentState.centerCards
             });

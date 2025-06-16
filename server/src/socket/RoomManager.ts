@@ -436,9 +436,9 @@ export class RoomManager {
       this.io!.to(p.socketId).emit('game-state-updated', playerState);
     });
     
-    // Update spectators
+    // Send full game state to spectators
     const spectatorRoomId = `spectators-${roomId}`;
-    this.io!.to(spectatorRoomId).emit('spectator-room-updated', { room: gameState });
+    this.io!.to(spectatorRoomId).emit('game-state-updated', gameState);
     
     // If we're now in playing state, emit round started
     if (gameState.state === GameState.PLAYING) {
@@ -472,9 +472,9 @@ export class RoomManager {
       }
     });
     
-    // Update spectators
+    // Send full game state to spectators
     const spectatorRoomId = `spectators-${roomId}`;
-    this.io!.to(spectatorRoomId).emit('spectator-room-updated', { room: gameState });
+    this.io!.to(spectatorRoomId).emit('game-state-updated', gameState);
     
     // If game is over, emit game-over event with proper details
     if (gameState.state === GameState.GAME_OVER && gameOverResult) {

@@ -297,11 +297,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
       {/* Opponent Area */}
       <div className="opponent-area">
-        <PlayerHand 
-          player={opponent} 
-          isCurrentPlayer={false}
-          isDisconnected={!!opponentDisconnectedTime}
-        />
+        {opponent && (
+          <PlayerHand 
+            player={opponent} 
+            isCurrentPlayer={false}
+            isDisconnected={!!opponentDisconnectedTime}
+          />
+        )}
       </div>
 
       {/* Game Board */}
@@ -327,10 +329,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
       {/* Current Player Area */}
       <div className="player-area">
-        <PlayerHand 
-          player={currentPlayer} 
-          isCurrentPlayer={true}
-        />
+        {currentPlayer && (
+          <PlayerHand 
+            player={currentPlayer} 
+            isCurrentPlayer={true}
+          />
+        )}
       </div>
 
 
@@ -338,9 +342,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       {roundResult && gameState.state === GameState.ROUND_END && !showingSolutionReplay && (
         <RoundResult
           winnerId={roundResult.winnerId}
-          winnerName={roundResult.winnerId === playerId ? currentPlayer.name : opponent.name}
+          winnerName={roundResult.winnerId === playerId ? (currentPlayer?.name || 'Player') : (opponent?.name || 'Opponent')}
           loserId={roundResult.loserId}
-          loserName={roundResult.loserId === playerId ? currentPlayer.name : opponent.name}
+          loserName={roundResult.loserId === playerId ? (currentPlayer?.name || 'Player') : (opponent?.name || 'Opponent')}
           solution={roundResult.solution}
           reason={roundResult.reason}
           onContinue={() => setRoundResult(null)}
@@ -404,7 +408,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         <>
           {console.log('Rendering DisconnectNotification for forfeit victory')}
           <DisconnectNotification
-            opponentName={opponent.name}
+            opponentName={opponent?.name || 'Opponent'}
             onReturnToLobby={() => setOpponentDisconnected(false)}
             timeoutSeconds={3}
             isVictory={true}

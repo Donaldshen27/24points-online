@@ -6,6 +6,7 @@ import { GameScreen } from './components/GameScreen/GameScreen'
 import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
+import { SpectatorView } from './components/SpectatorView/SpectatorView'
 import { SEOContent } from './components/SEO/SEOContent'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
@@ -16,7 +17,8 @@ const AppState = {
   LOBBY: 'lobby',
   WAITING_ROOM: 'waiting_room',
   IN_GAME: 'in_game',
-  TEST_MODE: 'test_mode'
+  TEST_MODE: 'test_mode',
+  SPECTATING: 'spectating'
 } as const;
 
 type AppState = typeof AppState[keyof typeof AppState];
@@ -28,6 +30,7 @@ function App() {
   const [playerId, setPlayerId] = useState<string>('')
   const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | null>(null)
   const [gameCount, setGameCount] = useState<number>(0)
+  const [isSpectator, setIsSpectator] = useState<boolean>(false)
 
   useEffect(() => {
     socketService.connect()
@@ -46,11 +49,31 @@ function App() {
       setIsConnected(false)
       setAppState(AppState.CONNECTING)
       setCurrentRoom(null)
+      setIsSpectator(false)
+    })
+
+    // Spectator events
+    socketService.on('spectator-joined', (data: { room: GameRoom }) => {
+      setCurrentRoom(data.room)
+      setIsSpectator(true)
+      setAppState(AppState.SPECTATING)
+    })
+
+    socketService.on('spectator-room-updated', (data: { room: GameRoom }) => {
+      setCurrentRoom(data.room)
+    })
+
+    socketService.on('spectate-error', (data: { message: string }) => {
+      alert(data.message)
+      setAppState(AppState.LOBBY)
     })
 
     return () => {
       socketService.off('connect')
       socketService.off('disconnect')
+      socketService.off('spectator-joined')
+      socketService.off('spectator-room-updated')
+      socketService.off('spectate-error')
       socketService.disconnect()
     }
   }, [])
@@ -91,7 +114,12 @@ function App() {
 
   const handleLeaveRoom = () => {
     // Emit leave-room event to server
-    socketService.emit('leave-room')
+    if (isSpectator) {
+      socketService.emit('leave-spectator')
+      setIsSpectator(false)
+    } else {
+      socketService.emit('leave-room')
+    }
     
     setCurrentRoom(null)
     setPlayerId('')
@@ -149,6 +177,13 @@ function App() {
             room={currentRoom}
             playerId={playerId}
             onLeaveGame={handleLeaveRoom}
+          />
+        )}
+
+        {appState === AppState.SPECTATING && currentRoom && (
+          <SpectatorView 
+            room={currentRoom}
+            onLeave={handleLeaveRoom}
           />
         )}
 

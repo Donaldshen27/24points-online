@@ -11,6 +11,7 @@ export class RoomManager {
   private playerToRoom: Map<string, string> = new Map();
   private io: Server | null = null;
   private totalGamesPlayed: number = 0;
+  public spectators: Map<string, Set<string>> = new Map();
 
   setIo(io: Server): void {
     this.io = io;
@@ -473,6 +474,10 @@ export class RoomManager {
       state: room.state,
       currentRound: room.currentRound
     };
+  }
+
+  getRoomConfig(roomType: string): any {
+    return getRoomTypeConfig(roomType);
   }
 
   getTotalGamesPlayed(): number {

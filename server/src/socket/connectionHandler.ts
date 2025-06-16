@@ -2,6 +2,12 @@ import { Server, Socket } from 'socket.io';
 import roomManager from './RoomManager';
 import { Solution, GameState } from '../types/game.types';
 
+// Helper function to broadcast game state to spectators
+function broadcastToSpectators(io: Server, roomId: string, event: string, data: any) {
+  const spectatorRoomId = `spectators-${roomId}`;
+  io.to(spectatorRoomId).emit(event, data);
+}
+
 export const handleConnection = (io: Server, socket: Socket) => {
   console.log('New client connected:', socket.id);
   
@@ -71,6 +77,9 @@ export const handleConnection = (io: Server, socket: Socket) => {
     
     io.to(data.roomId).emit('room-updated', joinedRoom);
     io.emit('rooms-updated', roomManager.getOpenRooms());
+    
+    // Update spectators
+    broadcastToSpectators(io, data.roomId, 'spectator-room-updated', { room: joinedRoom });
   });
 
   socket.on('leave-room', () => {
@@ -169,6 +178,9 @@ export const handleConnection = (io: Server, socket: Socket) => {
           const playerState = roomManager.getGameStateForPlayer(room.id, p.id);
           io.to(p.socketId).emit('game-state-updated', playerState);
         });
+        
+        // Update spectators
+        broadcastToSpectators(io, room.id, 'spectator-room-updated', { room: gameState });
       }
     } else {
       socket.emit('claim-error', { message: 'Cannot claim solution at this time' });
@@ -209,6 +221,9 @@ export const handleConnection = (io: Server, socket: Socket) => {
             const playerState = roomManager.getGameStateForPlayer(room.id, p.id);
             io.to(p.socketId).emit('game-state-updated', playerState);
           });
+          
+          // Update spectators
+          broadcastToSpectators(io, room.id, 'spectator-room-updated', { room: currentState });
 
           if (currentState.state === 'game_over') {
             // Get the game over result from the game manager
@@ -413,8 +428,92 @@ export const handleConnection = (io: Server, socket: Socket) => {
     callback({ count });
   });
 
+  // Spectator events
+  socket.on('spectate-room', (data: { roomId: string }) => {
+    const room = roomManager.getRoom(data.roomId);
+    if (!room) {
+      socket.emit('spectate-error', { message: 'Room not found' });
+      return;
+    }
+
+    // Check if room allows spectators
+    if (!room.roomType || !roomManager.getRoomConfig(room.roomType)?.rules.allowSpectators) {
+      socket.emit('spectate-error', { message: 'This room does not allow spectators' });
+      return;
+    }
+
+    // Check if game is active
+    if (room.state !== GameState.PLAYING && room.state !== GameState.SOLVING && room.state !== GameState.ROUND_END) {
+      socket.emit('spectate-error', { message: 'Can only spectate active games' });
+      return;
+    }
+
+    // Add socket to spectator room
+    const spectatorRoomId = `spectators-${data.roomId}`;
+    socket.join(spectatorRoomId);
+    
+    // Track spectator
+    if (!roomManager.spectators) {
+      roomManager.spectators = new Map();
+    }
+    if (!roomManager.spectators.has(data.roomId)) {
+      roomManager.spectators.set(data.roomId, new Set());
+    }
+    roomManager.spectators.get(data.roomId)!.add(socket.id);
+
+    // Send current game state to spectator
+    const gameState = roomManager.getGameState(data.roomId);
+    socket.emit('spectator-joined', { room: gameState });
+
+    // Notify room that a spectator joined
+    io.to(data.roomId).emit('spectator-count-updated', { 
+      count: roomManager.spectators.get(data.roomId)?.size || 0 
+    });
+  });
+
+  socket.on('leave-spectator', () => {
+    // Find which room this spectator is watching
+    if (roomManager.spectators) {
+      for (const [roomId, spectatorSet] of roomManager.spectators.entries()) {
+        if (spectatorSet.has(socket.id)) {
+          spectatorSet.delete(socket.id);
+          socket.leave(`spectators-${roomId}`);
+          
+          // Clean up empty sets
+          if (spectatorSet.size === 0) {
+            roomManager.spectators.delete(roomId);
+          }
+
+          // Notify room of updated spectator count
+          io.to(roomId).emit('spectator-count-updated', { 
+            count: spectatorSet.size 
+          });
+          break;
+        }
+      }
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
+    
+    // Clean up spectators
+    if (roomManager.spectators) {
+      for (const [roomId, spectatorSet] of roomManager.spectators.entries()) {
+        if (spectatorSet.has(socket.id)) {
+          spectatorSet.delete(socket.id);
+          socket.leave(`spectators-${roomId}`);
+          
+          if (spectatorSet.size === 0) {
+            roomManager.spectators.delete(roomId);
+          }
+          
+          io.to(roomId).emit('spectator-count-updated', { 
+            count: spectatorSet.size 
+          });
+        }
+      }
+    }
     
     // Get the room and player info before leaving
     const currentRoom = roomManager.getRoomBySocketId(socket.id);

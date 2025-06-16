@@ -90,6 +90,10 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
     socketService.emit('join-room', { roomId: joinRoomId.toUpperCase(), playerName });
   };
 
+  const handleSpectateRoom = (roomId: string) => {
+    socketService.emit('spectate-room', { roomId });
+  };
+
   return (
     <div className="lobby">
       <h1>24 Points Arena</h1>
@@ -218,19 +222,30 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                     )}
                   </div>
                   
-                  {isJoinable && (
-                    <button
-                      onClick={() => {
-                        setHasInteracted(true);
-                        handleJoinRoom(room.id);
-                      }}
-                      disabled={!playerName.trim()}
-                      className={`join-battle-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
-                      title={!playerName.trim() ? 'Enter your name first' : ''}
-                    >
-                      {!playerName.trim() ? '🔒 ' : ''}JOIN BATTLE
-                    </button>
-                  )}
+                  <div className="battle-actions">
+                    {isJoinable && (
+                      <button
+                        onClick={() => {
+                          setHasInteracted(true);
+                          handleJoinRoom(room.id);
+                        }}
+                        disabled={!playerName.trim()}
+                        className={`join-battle-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
+                        title={!playerName.trim() ? 'Enter your name first' : ''}
+                      >
+                        {!playerName.trim() ? '🔒 ' : ''}JOIN BATTLE
+                      </button>
+                    )}
+                    {(room.state === 'playing' || room.state === 'solving' || room.state === 'round_end') && (
+                      <button
+                        onClick={() => handleSpectateRoom(room.id)}
+                        className="spectate-btn"
+                        title="Watch this battle live!"
+                      >
+                        👁️ SPECTATE
+                      </button>
+                    )}
+                  </div>
                 </div>
               );
             })}

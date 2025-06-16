@@ -1,0 +1,333 @@
+.spectator-view {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  padding: 1rem;
+}
+
+.spectator-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.spectator-header h2 {
+  color: #9c27b0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+}
+
+.spectator-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.25rem;
+  border-radius: 6px;
+}
+
+.view-toggle button {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid #666;
+  color: #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.view-toggle button.active {
+  background: #9c27b0;
+  border-color: #9c27b0;
+  color: white;
+  transform: scale(1.05);
+}
+
+.view-toggle button:hover:not(.active) {
+  background: rgba(156, 39, 176, 0.2);
+  border-color: #9c27b0;
+}
+
+.leave-btn {
+  padding: 0.5rem 1.5rem;
+  background: #f44336;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.leave-btn:hover {
+  background: #d32f2f;
+  transform: translateY(-2px);
+}
+
+.spectator-info {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(156, 39, 176, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.spectator-info p {
+  margin: 0.5rem 0;
+  color: #e0e0e0;
+}
+
+.spectator-info strong {
+  color: #9c27b0;
+  font-size: 1.2em;
+}
+
+.room-info {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.game-area {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.opponent-area,
+.player-area {
+  display: flex;
+  justify-content: center;
+}
+
+.table-area {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.solving-view,
+.waiting-view,
+.round-end-view,
+.game-over-view {
+  text-align: center;
+  padding: 2rem;
+}
+
+.solving-view h3,
+.waiting-view h3 {
+  color: #ffc107;
+  margin-bottom: 1rem;
+}
+
+.winner-text {
+  font-size: 1.5rem;
+  color: #4CAF50;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.game-over-view h2 {
+  font-size: 3rem;
+  color: #ff6b6b;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1rem;
+}
+
+.battle-stats {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.battle-stats h3 {
+  text-align: center;
+  color: #9c27b0;
+  margin-bottom: 1.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.player-stats {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.player-stats.viewing {
+  background: rgba(156, 39, 176, 0.2);
+  border-color: #9c27b0;
+  transform: scale(1.05);
+}
+
+.player-stats h4 {
+  color: #ffc107;
+  margin-bottom: 0.5rem;
+}
+
+.player-stats p {
+  margin: 0.25rem 0;
+  color: #e0e0e0;
+}
+
+.spectator-stats {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: rgba(156, 39, 176, 0.2);
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.spectator-error {
+  text-align: center;
+  padding: 3rem;
+  background: rgba(244, 67, 54, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.spectator-error h2 {
+  color: #f44336;
+  margin-bottom: 1rem;
+}
+
+.spectator-error button {
+  margin-top: 1rem;
+  padding: 0.75rem 2rem;
+  background: #f44336;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.spectator-error button:hover {
+  background: #d32f2f;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.stat-value {
+  font-weight: bold;
+  color: #ffc107;
+}
+
+.connection-status {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.connection-status.connected {
+  color: #4CAF50;
+}
+
+.connection-status.disconnected {
+  color: #f44336;
+}
+
+.match-stats {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.match-stats h4 {
+  color: #9c27b0;
+  margin-bottom: 1rem;
+}
+
+.match-stats p {
+  margin: 0.5rem 0;
+  color: #e0e0e0;
+}
+
+.final-scores {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.final-scores h4 {
+  color: #ffc107;
+  margin-bottom: 1rem;
+}
+
+.player-score {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.game-status {
+  color: #ffc107;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .spectator-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .spectator-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .view-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .leave-btn {
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -6,6 +6,7 @@ interface PlayerHandProps {
   player: Player;
   isCurrentPlayer: boolean;
   isDisconnected?: boolean;
+  isSpectatorView?: boolean;
 }
 
 export const PlayerHand: React.FC<PlayerHandProps> = ({

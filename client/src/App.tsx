@@ -30,6 +30,30 @@ function App() {
   const [gameCount, setGameCount] = useState<number>(0)
   const [isSpectator, setIsSpectator] = useState<boolean>(false)
 
+  const handleRoomJoined = useCallback((room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectator: boolean = false) => {
+    setCurrentRoom(room)
+    setPlayerId(playerId)
+    setIsSpectator(isSpectator)
+    
+    // Spectators go directly to game view
+    if (isSpectator) {
+      setAppState(AppState.IN_GAME)
+      return
+    }
+    
+    // Only go directly to game if this is a reconnection AND game is active
+    if (isReconnection && (
+        room.state === GameState.PLAYING || 
+        room.state === GameState.SOLVING || 
+        room.state === GameState.ROUND_END || 
+        room.state === GameState.REPLAY ||
+        room.state === GameState.GAME_OVER)) {
+      setAppState(AppState.IN_GAME)
+    } else {
+      setAppState(AppState.WAITING_ROOM)
+    }
+  }, [])
+
   useEffect(() => {
     socketService.connect()
     
@@ -77,30 +101,6 @@ function App() {
 
     return () => clearInterval(interval)
   }, [isConnected])
-
-  const handleRoomJoined = useCallback((room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectator: boolean = false) => {
-    setCurrentRoom(room)
-    setPlayerId(playerId)
-    setIsSpectator(isSpectator)
-    
-    // Spectators go directly to game view
-    if (isSpectator) {
-      setAppState(AppState.IN_GAME)
-      return
-    }
-    
-    // Only go directly to game if this is a reconnection AND game is active
-    if (isReconnection && (
-        room.state === GameState.PLAYING || 
-        room.state === GameState.SOLVING || 
-        room.state === GameState.ROUND_END || 
-        room.state === GameState.REPLAY ||
-        room.state === GameState.GAME_OVER)) {
-      setAppState(AppState.IN_GAME)
-    } else {
-      setAppState(AppState.WAITING_ROOM)
-    }
-  }, [])
 
   const handleGameStart = () => {
     setAppState(AppState.IN_GAME)

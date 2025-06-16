@@ -10,19 +10,24 @@ interface LobbyProps {
 
 export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
   const [playerName, setPlayerName] = useState('');
-  const [rooms, setRooms] = useState<GameRoom[]>([]);
+  const [allRooms, setAllRooms] = useState<GameRoom[]>([]);
   const [joinRoomId, setJoinRoomId] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [selectedRoomType, setSelectedRoomType] = useState('classic');
   const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
-    socketService.on('rooms-list', (roomsList: GameRoom[]) => {
-      setRooms(roomsList);
+    socketService.on('rooms-list', () => {
+      // We don't use rooms-list anymore, just keeping the handler for compatibility
     });
 
-    socketService.on('rooms-updated', (roomsList: GameRoom[]) => {
-      setRooms(roomsList);
+    socketService.on('all-rooms-list', (roomsList: GameRoom[]) => {
+      setAllRooms(roomsList);
+    });
+
+    socketService.on('rooms-updated', () => {
+      // When rooms are updated, get the full list again
+      socketService.emit('get-all-rooms');
     });
 
     socketService.on('room-created', (data: { room: GameRoom; playerId: string }) => {
@@ -43,9 +48,11 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
     });
 
     socketService.emit('get-rooms');
+    socketService.emit('get-all-rooms');
 
     return () => {
       socketService.off('rooms-list');
+      socketService.off('all-rooms-list');
       socketService.off('rooms-updated');
       socketService.off('room-created');
       socketService.off('room-joined');
@@ -151,46 +158,82 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
         </div>
       </div>
 
-      <div className="available-rooms">
-        <h2>Available Rooms</h2>
-        {rooms.length === 0 ? (
-          <p>No rooms available. Create one!</p>
+      <div className="all-ongoing-battles">
+        <h2 className="battles-title">🔥 ALL ONGOING BATTLES 🔥</h2>
+        {allRooms.length === 0 ? (
+          <p className="no-battles">No battles in progress. Be the first to start one!</p>
         ) : (
-          <div className="rooms-list">
-            {rooms.map((room) => (
-              <div key={room.id} className="room-item">
-                <div className="room-info">
-                  <span className="room-id">Room: {room.id}</span>
-                  <span className="player-count">
-                    Players: {room.players.filter(p => p.socketId).length}/2
-                  </span>
-                  {room.players[0] && (
-                    <span className="host-name">
-                      Host: {room.players[0].name}
-                    </span>
-                  )}
-                  {room.players.some(p => !p.socketId) && (
-                    <span className="reconnect-available">
-                      🔄 Reconnect Available
-                      {room.players.filter(p => !p.socketId).map(p => (
-                        <span key={p.id} className="reconnect-name"> ({p.name})</span>
-                      ))}
-                    </span>
+          <div className="battles-list">
+            {allRooms.map((room) => {
+              const player1 = room.players[0];
+              const player2 = room.players[1];
+              const isJoinable = room.players.length < 2 || room.players.some(p => !p.socketId);
+              
+              return (
+                <div key={room.id} className="battle-card">
+                  <div className="battle-header">
+                    {player1 && player2 ? (
+                      <div className="vs-title">
+                        <span className="fighter-name fighter-1">{player1.name}</span>
+                        <span className="vs-text">VS</span>
+                        <span className="fighter-name fighter-2">{player2.name}</span>
+                      </div>
+                    ) : player1 ? (
+                      <div className="vs-title">
+                        <span className="fighter-name fighter-1">{player1.name}</span>
+                        <span className="vs-text">VS</span>
+                        <span className="fighter-name waiting">???</span>
+                      </div>
+                    ) : (
+                      <div className="vs-title">
+                        <span className="waiting-text">Waiting for fighters...</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="battle-info">
+                    <span className="room-code">ROOM CODE: {room.id}</span>
+                    
+                    {room.state === 'waiting' && (
+                      <span className="battle-status waiting-status">
+                        {room.players.length === 2 && room.players.every(p => p.isReady) 
+                          ? '🎮 Ready to Start' 
+                          : '⏳ Waiting for Players'}
+                      </span>
+                    )}
+                    {(room.state === 'playing' || room.state === 'solving' || room.state === 'round_end' || room.state === 'replay') && (
+                      <span className="battle-status active-status">⚔️ BATTLE IN PROGRESS</span>
+                    )}
+                    {room.state === 'game_over' && (
+                      <span className="battle-status ended-status">🏆 Battle Ended</span>
+                    )}
+                    
+                    {room.players.some(p => !p.socketId) && (
+                      <span className="reconnect-available">
+                        🔄 Reconnect Available
+                        {room.players.filter(p => !p.socketId).map(p => (
+                          <span key={p.id} className="reconnect-name"> ({p.name})</span>
+                        ))}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {isJoinable && (
+                    <button
+                      onClick={() => {
+                        setHasInteracted(true);
+                        handleJoinRoom(room.id);
+                      }}
+                      disabled={!playerName.trim()}
+                      className={`join-battle-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
+                      title={!playerName.trim() ? 'Enter your name first' : ''}
+                    >
+                      {!playerName.trim() ? '🔒 ' : ''}JOIN BATTLE
+                    </button>
                   )}
                 </div>
-                <button
-                  onClick={() => {
-                    setHasInteracted(true);
-                    handleJoinRoom(room.id);
-                  }}
-                  disabled={!playerName.trim()}
-                  className={`join-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
-                  title={!playerName.trim() ? 'Enter your name first' : ''}
-                >
-                  {!playerName.trim() ? '🔒 ' : ''}Join
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

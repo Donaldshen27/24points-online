@@ -148,6 +148,10 @@ export const handleConnection = (io: Server, socket: Socket) => {
     socket.emit('rooms-list', roomManager.getOpenRooms());
   });
 
+  socket.on('get-all-rooms', () => {
+    socket.emit('all-rooms-list', roomManager.getAllRooms());
+  });
+
   socket.on('claim-solution', () => {
     const room = roomManager.getRoomBySocketId(socket.id);
     if (!room) return;

@@ -216,6 +216,9 @@ export class GameStateManager {
       // Add cards back to the bottom of each player's deck
       this.room.players[0].deck.push(...player1Cards);
       this.room.players[1].deck.push(...player2Cards);
+      // Shuffle both decks to prevent the same unsolvable combination from appearing again
+      this.gameRules.shuffleDeck(this.room.players[0].deck);
+      this.gameRules.shuffleDeck(this.room.players[1].deck);
       
       // Notify about redeal if callback is set
       if (this.onRedealCallback) {
@@ -351,6 +354,8 @@ export class GameStateManager {
         console.log(`[GameStateManager] Round ended - Winner: ${winner.name} (${winner.id}), Loser: ${loser.name} (${loser.id})`);
         console.log(`[GameStateManager] Before transfer - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length}`);
         loser.deck.push(...result.cards);
+        // Shuffle the loser's deck to prevent the same cards from appearing repeatedly
+        this.gameRules.shuffleDeck(loser.deck);
         console.log(`[GameStateManager] After transfer - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length} (added ${result.cards.length} cards)`);
         
         // Update scores using game rules scoring
@@ -375,6 +380,9 @@ export class GameStateManager {
       
       this.room.players[0].deck.push(...player1Cards);
       this.room.players[1].deck.push(...player2Cards);
+      // Shuffle both decks to prevent repetitive patterns
+      this.gameRules.shuffleDeck(this.room.players[0].deck);
+      this.gameRules.shuffleDeck(this.room.players[1].deck);
     }
 
     // Clear center cards

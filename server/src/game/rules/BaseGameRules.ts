@@ -15,8 +15,8 @@ export abstract class BaseGameRules {
   abstract calculateScore(solution: Solution, timeElapsed: number): number;
   abstract checkWinCondition(room: GameRoom): WinResult | null;
   
-  // Common shuffle method
-  protected shuffleDeck(cards: Card[]): void {
+  // Common shuffle method (made public for post-round shuffling)
+  public shuffleDeck(cards: Card[]): void {
     for (let i = cards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [cards[i], cards[j]] = [cards[j], cards[i]];

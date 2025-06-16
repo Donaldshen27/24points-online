@@ -16,7 +16,7 @@ export const ROOM_TYPE_CONFIGS: Record<string, RoomTypeConfig> = {
       solutionTimeLimit: 30,
       scoringSystem: 'classic',
       winCondition: 'no_cards',
-      allowSpectators: false,
+      allowSpectators: true,
       requireExactMatch: true,
     },
     features: {

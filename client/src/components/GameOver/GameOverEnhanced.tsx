@@ -10,6 +10,7 @@ interface GameOverEnhancedProps {
   onLeaveGame: () => void;
   gameOverReason?: string | null;
   gameOverWinnerId?: string | null;
+  isSpectator?: boolean;
 }
 
 interface DetailedStats {
@@ -32,25 +33,50 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
   onRematch,
   onLeaveGame,
   gameOverReason,
-  gameOverWinnerId
+  gameOverWinnerId,
+  isSpectator = false
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [showStats, setShowStats] = useState(false);
-  const [rematchRequested, setRematchRequested] = useState(false);
-  const [opponentWantsRematch, setOpponentWantsRematch] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const currentPlayer = gameState.players.find(p => p.id === playerId);
-  const opponent = gameState.players.find(p => p.id !== playerId);
-
-  const playerScore = gameState.scores[playerId] || 0;
-  const opponentScore = opponent ? (gameState.scores[opponent.id] || 0) : 0;
-  // Use gameOverWinnerId if provided (for forfeit cases), otherwise use deck length
-  const isWinner = gameOverWinnerId ? gameOverWinnerId === playerId : (currentPlayer?.deck.length === 0 || opponent?.deck.length === 20);
+  // For spectators, determine the winner and show their stats
+  let currentPlayer, opponent, playerScore, opponentScore, isWinner;
+  
+  if (isSpectator) {
+    // Find the actual winner
+    const actualWinnerId = gameOverWinnerId || 
+      (gameState.players.find(p => p.deck.length === 0)?.id || 
+       gameState.players.find(p => p.deck.length === 20)?.id);
+    
+    if (actualWinnerId) {
+      currentPlayer = gameState.players.find(p => p.id === actualWinnerId);
+      opponent = gameState.players.find(p => p.id !== actualWinnerId);
+      playerScore = gameState.scores[actualWinnerId] || 0;
+      opponentScore = opponent ? (gameState.scores[opponent.id] || 0) : 0;
+      isWinner = true; // Always show as winner for spectator view
+    } else {
+      // Fallback to first player if no clear winner
+      currentPlayer = gameState.players[0];
+      opponent = gameState.players[1];
+      playerScore = gameState.scores[currentPlayer?.id] || 0;
+      opponentScore = gameState.scores[opponent?.id] || 0;
+      isWinner = playerScore > opponentScore;
+    }
+  } else {
+    currentPlayer = gameState.players.find(p => p.id === playerId);
+    opponent = gameState.players.find(p => p.id !== playerId);
+    playerScore = gameState.scores[playerId] || 0;
+    opponentScore = opponent ? (gameState.scores[opponent.id] || 0) : 0;
+    // Use gameOverWinnerId if provided (for forfeit cases), otherwise use deck length
+    isWinner = gameOverWinnerId ? gameOverWinnerId === playerId : (currentPlayer?.deck.length === 0 || opponent?.deck.length === 20);
+  }
 
   // Calculate detailed statistics
   const getDetailedStats = (): DetailedStats => {
-    const playerTimes = gameState.roundTimes?.[playerId] || [];
+    // Use the current player's ID (which is the winner's ID for spectators)
+    const statsPlayerId = currentPlayer?.id || playerId;
+    const playerTimes = gameState.roundTimes?.[statsPlayerId] || [];
     const opponentTimes = opponent ? (gameState.roundTimes?.[opponent.id] || []) : [];
     
     const avgSolveTime = playerTimes.length > 0 
@@ -65,12 +91,12 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
       ? Math.min(...playerTimes) 
       : 0;
 
-    const firstSolves = gameState.firstSolves?.[playerId] || 0;
-    const totalAttempts = (gameState.correctSolutions?.[playerId] || 0) + 
-                         (gameState.incorrectAttempts?.[playerId] || 0);
+    const firstSolves = gameState.firstSolves?.[statsPlayerId] || 0;
+    const totalAttempts = (gameState.correctSolutions?.[statsPlayerId] || 0) + 
+                         (gameState.incorrectAttempts?.[statsPlayerId] || 0);
     
     const accuracyRate = totalAttempts > 0 
-      ? ((gameState.correctSolutions?.[playerId] || 0) / totalAttempts) * 100 
+      ? ((gameState.correctSolutions?.[statsPlayerId] || 0) / totalAttempts) * 100 
       : 0;
 
     const firstSolveRate = gameState.currentRound > 0 
@@ -193,34 +219,8 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
     // Animate in
     setTimeout(() => setIsVisible(true), 100);
     setTimeout(() => setShowStats(true), 800);
-    
-    const socket = socketService.getSocket();
-    if (!socket) return;
-    
-    const handleOpponentRematch = () => {
-      setOpponentWantsRematch(true);
-    };
-    
-    const handleRematchStarted = () => {
-      onRematch();
-    };
-    
-    socket.on('opponent-wants-rematch', handleOpponentRematch);
-    socket.on('rematch-started', handleRematchStarted);
-    
-    return () => {
-      socket.off('opponent-wants-rematch', handleOpponentRematch);
-      socket.off('rematch-started', handleRematchStarted);
-    };
-  }, [onRematch]);
+  }, []);
 
-  const handleRematch = () => {
-    setRematchRequested(true);
-    const socket = socketService.getSocket();
-    if (socket) {
-      socket.emit('request-rematch');
-    }
-  };
 
   const stats = getDetailedStats();
 
@@ -249,7 +249,9 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
         {/* Result Header */}
         <div className="result-header">
           <h1 className="result-title">
-            {isWinner ? 'VICTORY!' : 'DEFEAT'}
+            {isSpectator 
+              ? `${currentPlayer?.name} WINS!` 
+              : (isWinner ? 'VICTORY!' : 'DEFEAT')}
           </h1>
           <p className="result-subtitle">
             {gameOverReason === 'forfeit' 
@@ -292,15 +294,15 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
             <div className="stat-category">
               <h3>⏱️ Speed Analysis</h3>
               <div className="stat-row">
-                <span className="stat-label">Your Average Time</span>
+                <span className="stat-label">{isSpectator ? `${currentPlayer?.name}'s Average Time` : 'Your Average Time'}</span>
                 <span className="stat-value highlight">{formatTime(stats.avgSolveTime)}</span>
               </div>
               <div className="stat-row">
-                <span className="stat-label">Opponent Average</span>
+                <span className="stat-label">{isSpectator ? `${opponent?.name}'s Average` : 'Opponent Average'}</span>
                 <span className="stat-value">{formatTime(stats.opponentAvgSolveTime)}</span>
               </div>
               <div className="stat-row">
-                <span className="stat-label">Your Fastest Solve</span>
+                <span className="stat-label">{isSpectator ? 'Fastest Solve' : 'Your Fastest Solve'}</span>
                 <span className="stat-value trophy">{formatTime(stats.fastestSolve)}</span>
               </div>
             </div>
@@ -376,30 +378,12 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
 
         {/* Action Buttons */}
         <div className="action-buttons">
-          {!rematchRequested ? (
-            <button 
-              className="action-button rematch-btn"
-              onClick={handleRematch}
-            >
-              <span className="button-icon">🔄</span>
-              Request Rematch
-            </button>
-          ) : (
-            <div className="rematch-waiting">
-              <div className="waiting-spinner"></div>
-              <p>Waiting for opponent...</p>
-              {opponentWantsRematch && (
-                <p className="opponent-ready">✅ Opponent wants rematch!</p>
-              )}
-            </div>
-          )}
-          
           <button 
             className="action-button home-btn"
             onClick={onLeaveGame}
           >
             <span className="button-icon">🏠</span>
-            Back to Main Page
+            {isSpectator ? 'Back to Lobby' : 'Back to Main Page'}
           </button>
         </div>
       </div>

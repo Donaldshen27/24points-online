@@ -395,6 +395,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           onLeaveGame={onLeaveGame}
           gameOverReason={gameOverReason}
           gameOverWinnerId={gameOverWinnerId}
+          isSpectator={isSpectator}
         />
       )}
 

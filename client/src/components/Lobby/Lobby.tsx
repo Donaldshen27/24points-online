@@ -14,6 +14,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
   const [joinRoomId, setJoinRoomId] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [selectedRoomType, setSelectedRoomType] = useState('classic');
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
     socketService.on('rooms-list', (roomsList: GameRoom[]) => {
@@ -86,14 +87,28 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
     <div className="lobby">
       <h1>24 Points Arena</h1>
       
-      <div className="player-name-section">
+      <div className={`player-name-section ${!playerName && hasInteracted ? 'required' : ''}`}>
+        <label htmlFor="username-input" className="username-label">
+          <span className="label-text">Your Name</span>
+          <span className="required-indicator">*</span>
+        </label>
         <input
+          id="username-input"
           type="text"
-          placeholder="Enter your name"
+          placeholder="Enter your name to start playing"
           value={playerName}
-          onChange={(e) => setPlayerName(e.target.value)}
+          onChange={(e) => {
+            setPlayerName(e.target.value);
+            if (!hasInteracted) setHasInteracted(true);
+          }}
+          onBlur={() => setHasInteracted(true)}
           maxLength={20}
+          className={!playerName && hasInteracted ? 'input-error' : ''}
+          autoFocus
         />
+        {!playerName && hasInteracted && (
+          <span className="error-message">Please enter your name to continue</span>
+        )}
       </div>
 
       <RoomTypeSelector
@@ -103,11 +118,15 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
 
       <div className="lobby-actions">
         <button 
-          onClick={handleCreateRoom} 
+          onClick={() => {
+            setHasInteracted(true);
+            handleCreateRoom();
+          }} 
           disabled={!playerName.trim() || isCreating}
-          className="create-room-btn"
+          className={`create-room-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
+          title={!playerName.trim() ? 'Enter your name first' : ''}
         >
-          Create New Room
+          {!playerName.trim() ? '🔒 ' : ''}Create New Room
         </button>
 
         <div className="join-with-code">
@@ -119,10 +138,15 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
             maxLength={6}
           />
           <button 
-            onClick={handleJoinWithCode}
+            onClick={() => {
+              setHasInteracted(true);
+              handleJoinWithCode();
+            }}
             disabled={!playerName.trim() || !joinRoomId.trim()}
+            className={!playerName.trim() ? 'disabled-hint' : ''}
+            title={!playerName.trim() ? 'Enter your name first' : !joinRoomId.trim() ? 'Enter room code' : ''}
           >
-            Join Room
+            {!playerName.trim() ? '🔒 ' : ''}Join Room
           </button>
         </div>
       </div>
@@ -155,11 +179,15 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                   )}
                 </div>
                 <button
-                  onClick={() => handleJoinRoom(room.id)}
+                  onClick={() => {
+                    setHasInteracted(true);
+                    handleJoinRoom(room.id);
+                  }}
                   disabled={!playerName.trim()}
-                  className="join-btn"
+                  className={`join-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
+                  title={!playerName.trim() ? 'Enter your name first' : ''}
                 >
-                  Join
+                  {!playerName.trim() ? '🔒 ' : ''}Join
                 </button>
               </div>
             ))}

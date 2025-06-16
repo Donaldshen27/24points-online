@@ -166,6 +166,34 @@
   cursor: not-allowed;
 }
 
+/* Enhanced focus states for better UX */
+button:focus-visible {
+  outline: 2px solid #4CAF50;
+  outline-offset: 2px;
+}
+
+/* Tooltip styles for disabled buttons */
+button[title]:disabled {
+  position: relative;
+}
+
+button[title]:disabled:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  padding: 6px 12px;
+  background-color: #333;
+  color: white;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 10;
+  animation: fadeIn 0.2s ease-in;
+}
+
 .reconnect-available {
   color: #ffc107;
   font-size: 0.85rem;

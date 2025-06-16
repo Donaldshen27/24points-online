@@ -7,6 +7,8 @@ class SocketService {
   connect(url?: string): void {
     // Use environment variable or fallback to localhost for development
     const serverUrl = url || import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
+    console.log('Connecting to server URL:', serverUrl);
+    console.log('Environment variables:', import.meta.env);
     this.socket = io(serverUrl, {
       autoConnect: true,
     });

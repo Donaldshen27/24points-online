@@ -342,9 +342,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       {roundResult && gameState.state === GameState.ROUND_END && !showingSolutionReplay && (
         <RoundResult
           winnerId={roundResult.winnerId}
-          winnerName={roundResult.winnerId === playerId ? (currentPlayer?.name || 'Player') : (opponent?.name || 'Opponent')}
+          winnerName={isSpectator 
+            ? (gameState.players.find(p => p.id === roundResult.winnerId)?.name || 'Winner')
+            : (roundResult.winnerId === playerId ? (currentPlayer?.name || 'Player') : (opponent?.name || 'Opponent'))}
           loserId={roundResult.loserId}
-          loserName={roundResult.loserId === playerId ? (currentPlayer?.name || 'Player') : (opponent?.name || 'Opponent')}
+          loserName={isSpectator
+            ? (gameState.players.find(p => p.id === roundResult.loserId)?.name || 'Loser')
+            : (roundResult.loserId === playerId ? (currentPlayer?.name || 'Player') : (opponent?.name || 'Opponent'))}
           solution={roundResult.solution}
           reason={roundResult.reason}
           onContinue={() => setRoundResult(null)}

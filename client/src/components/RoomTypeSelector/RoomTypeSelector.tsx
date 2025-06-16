@@ -153,7 +153,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
           onClick={handlePrevious}
           disabled={isAnimating}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -213,7 +213,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
           onClick={handleNext}
           disabled={isAnimating}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>

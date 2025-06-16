@@ -39,10 +39,10 @@
 .carousel-arrow {
   position: relative;
   z-index: 10;
-  background: rgba(26, 26, 46, 0.8);
+  background: rgba(26, 26, 46, 0.9);
   border: 2px solid #00d4ff;
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -56,7 +56,7 @@
   background: #00d4ff;
   color: #1a1a2e;
   transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
 }
 
 .carousel-arrow:disabled {
@@ -65,8 +65,8 @@
 }
 
 .carousel-arrow svg {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
 }
 
 /* Room Type Cards */
@@ -326,13 +326,13 @@
   }
 
   .carousel-arrow {
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
   }
 
   .carousel-arrow svg {
-    width: 20px;
-    height: 20px;
+    width: 26px;
+    height: 26px;
   }
 
   .card-header h3 {
@@ -378,13 +378,13 @@
   }
 
   .carousel-arrow {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
   }
 
   .carousel-arrow svg {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
   }
 
   .icon-wrapper {

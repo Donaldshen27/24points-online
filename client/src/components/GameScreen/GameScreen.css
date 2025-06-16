@@ -59,6 +59,19 @@
   margin-top: 0.25rem;
 }
 
+.spectator-badge {
+  background: #9c27b0;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+}
+
 .game-status {
   display: flex;
   flex-direction: column;

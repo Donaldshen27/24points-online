@@ -6,7 +6,6 @@ import { GameScreen } from './components/GameScreen/GameScreen'
 import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
-import { SpectatorView } from './components/SpectatorView/SpectatorView'
 import { SEOContent } from './components/SEO/SEOContent'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
@@ -17,8 +16,7 @@ const AppState = {
   LOBBY: 'lobby',
   WAITING_ROOM: 'waiting_room',
   IN_GAME: 'in_game',
-  TEST_MODE: 'test_mode',
-  SPECTATING: 'spectating'
+  TEST_MODE: 'test_mode'
 } as const;
 
 type AppState = typeof AppState[keyof typeof AppState];
@@ -52,28 +50,17 @@ function App() {
       setIsSpectator(false)
     })
 
-    // Spectator events
-    socketService.on('spectator-joined', (data: { room: GameRoom }) => {
-      setCurrentRoom(data.room)
-      setIsSpectator(true)
-      setAppState(AppState.SPECTATING)
-    })
-
-    socketService.on('spectator-room-updated', (data: { room: GameRoom }) => {
-      setCurrentRoom(data.room)
-    })
-
-    socketService.on('spectate-error', (data: { message: string }) => {
-      alert(data.message)
-      setAppState(AppState.LOBBY)
+    // Handle room-joined for spectators
+    socketService.on('room-joined', (data: { room: GameRoom; playerId: string; isSpectator?: boolean }) => {
+      if (data.isSpectator) {
+        handleRoomJoined(data.room, data.playerId, false, true)
+      }
     })
 
     return () => {
       socketService.off('connect')
       socketService.off('disconnect')
-      socketService.off('spectator-joined')
-      socketService.off('spectator-room-updated')
-      socketService.off('spectate-error')
+      socketService.off('room-joined')
       socketService.disconnect()
     }
   }, [])
@@ -91,9 +78,16 @@ function App() {
     return () => clearInterval(interval)
   }, [isConnected])
 
-  const handleRoomJoined = (room: GameRoom, playerId: string, isReconnection: boolean = false) => {
+  const handleRoomJoined = (room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectator: boolean = false) => {
     setCurrentRoom(room)
     setPlayerId(playerId)
+    setIsSpectator(isSpectator)
+    
+    // Spectators go directly to game view
+    if (isSpectator) {
+      setAppState(AppState.IN_GAME)
+      return
+    }
     
     // Only go directly to game if this is a reconnection AND game is active
     if (isReconnection && (
@@ -114,15 +108,11 @@ function App() {
 
   const handleLeaveRoom = () => {
     // Emit leave-room event to server
-    if (isSpectator) {
-      socketService.emit('leave-spectator')
-      setIsSpectator(false)
-    } else {
-      socketService.emit('leave-room')
-    }
+    socketService.emit('leave-room')
     
     setCurrentRoom(null)
     setPlayerId('')
+    setIsSpectator(false)
     setAppState(AppState.LOBBY)
   }
 
@@ -177,13 +167,7 @@ function App() {
             room={currentRoom}
             playerId={playerId}
             onLeaveGame={handleLeaveRoom}
-          />
-        )}
-
-        {appState === AppState.SPECTATING && currentRoom && (
-          <SpectatorView 
-            room={currentRoom}
-            onLeave={handleLeaveRoom}
+            isSpectator={isSpectator}
           />
         )}
 

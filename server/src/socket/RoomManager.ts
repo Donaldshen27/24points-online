@@ -79,11 +79,24 @@ export class RoomManager {
     return room;
   }
 
-  joinRoom(roomId: string, playerId: string, socketId: string, playerName: string): GameRoom | null {
+  joinRoom(roomId: string, playerId: string, socketId: string, playerName: string, isSpectator?: boolean): GameRoom | null {
     const room = this.rooms.get(roomId);
     
     if (!room) {
       return null;
+    }
+
+    // If joining as spectator, add to spectators list instead of players
+    if (isSpectator) {
+      // Add to spectators tracking
+      if (!this.spectators.has(roomId)) {
+        this.spectators.set(roomId, new Set());
+      }
+      this.spectators.get(roomId)!.add(socketId);
+      this.playerToRoom.set(socketId, roomId);
+      
+      // Return room info without modifying players
+      return room;
     }
 
     // Check if this is a reconnection - look for disconnected player with same name
@@ -138,6 +151,16 @@ export class RoomManager {
     
     if (!room) {
       return { room: null, roomId: null };
+    }
+
+    // Check if this is a spectator
+    if (this.spectators.has(roomId) && this.spectators.get(roomId)!.has(socketId)) {
+      this.spectators.get(roomId)!.delete(socketId);
+      if (this.spectators.get(roomId)!.size === 0) {
+        this.spectators.delete(roomId);
+      }
+      this.playerToRoom.delete(socketId);
+      return { room, roomId };
     }
 
     const player = room.players.find(p => p.socketId === socketId);

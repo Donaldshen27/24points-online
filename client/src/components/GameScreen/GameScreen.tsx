@@ -17,9 +17,10 @@ interface GameScreenProps {
   room: GameRoom;
   playerId: string;
   onLeaveGame: () => void;
+  isSpectator?: boolean;
 }
 
-export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveGame }) => {
+export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveGame, isSpectator = false }) => {
   const {
     gameState,
     currentRound,
@@ -263,6 +264,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         <div className="game-info">
           <h2>Room: {room.id}</h2>
           <div className="round-info">Round {currentRound}</div>
+          {isSpectator && <div className="spectator-badge">👁️ Spectating</div>}
         </div>
         
         <div className="game-status">
@@ -270,7 +272,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         </div>
 
         <button className="leave-btn" onClick={onLeaveGame}>
-          Leave Game
+          {isSpectator ? 'Leave Spectator Mode' : 'Leave Game'}
         </button>
       </div>
 
@@ -290,8 +292,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           <InteractiveCenterTable 
             cards={centerCards}
             onSolutionFound={handleDirectSolution}
-            disabled={gameState?.state !== GameState.PLAYING}
-            allowInteraction={gameState?.state === GameState.PLAYING && centerCards.length > 0}
+            disabled={isSpectator || gameState?.state !== GameState.PLAYING}
+            allowInteraction={!isSpectator && gameState?.state === GameState.PLAYING && centerCards.length > 0}
           />
           {room.roomType === 'super' && (
             <div className="super-mode-hint">

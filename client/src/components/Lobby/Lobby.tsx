@@ -91,7 +91,8 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
   };
 
   const handleSpectateRoom = (roomId: string) => {
-    socketService.emit('spectate-room', { roomId });
+    // Join as spectator - this will be handled differently in App.tsx
+    socketService.emit('join-room', { roomId, playerName: `Spectator-${Date.now()}`, isSpectator: true });
   };
 
   return (

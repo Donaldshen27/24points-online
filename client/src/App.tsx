@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import socketService from './services/socketService'
 import { Lobby } from './components/Lobby/Lobby'
 import { WaitingRoom } from './components/WaitingRoom/WaitingRoom'
@@ -63,7 +63,7 @@ function App() {
       socketService.off('room-joined')
       socketService.disconnect()
     }
-  }, [])
+  }, [handleRoomJoined])
 
   // Poll for game count updates
   useEffect(() => {
@@ -78,7 +78,7 @@ function App() {
     return () => clearInterval(interval)
   }, [isConnected])
 
-  const handleRoomJoined = (room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectator: boolean = false) => {
+  const handleRoomJoined = useCallback((room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectator: boolean = false) => {
     setCurrentRoom(room)
     setPlayerId(playerId)
     setIsSpectator(isSpectator)
@@ -100,7 +100,7 @@ function App() {
     } else {
       setAppState(AppState.WAITING_ROOM)
     }
-  }
+  }, [])
 
   const handleGameStart = () => {
     setAppState(AppState.IN_GAME)

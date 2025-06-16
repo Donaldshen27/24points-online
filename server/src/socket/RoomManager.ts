@@ -73,6 +73,11 @@ export class RoomManager {
       this.checkGameState(roomId);
     });
     
+    // Set up game state change callback (for redeals)
+    gameManager.setOnGameStateChangeCallback(() => {
+      this.broadcastGameState(roomId);
+    });
+    
     this.gameManagers.set(roomId, gameManager);
     this.playerToRoom.set(socketId, roomId);
     
@@ -454,6 +459,39 @@ export class RoomManager {
         centerCards: gameState.centerCards
       });
     }
+  }
+
+  private broadcastGameState(roomId: string): void {
+    if (!this.io) return;
+    
+    const gameState = this.getGameState(roomId);
+    if (!gameState) return;
+    
+    console.log('[RoomManager] Broadcasting game state after redeal');
+    
+    // Emit updated game state to all players
+    gameState.players.forEach(p => {
+      if (p.socketId) {
+        const playerState = this.getGameStateForPlayer(roomId, p.id);
+        this.io!.to(p.socketId).emit('game-state-updated', playerState);
+      }
+    });
+    
+    // Send full game state to spectators
+    const spectatorRoomId = `spectators-${roomId}`;
+    this.io!.to(spectatorRoomId).emit('game-state-updated', gameState);
+    
+    // Emit round-started event with new cards
+    this.io.to(roomId).emit('round-started', {
+      round: gameState.currentRound,
+      centerCards: gameState.centerCards
+    });
+    
+    // Also emit to spectators
+    this.io!.to(spectatorRoomId).emit('round-started', {
+      round: gameState.currentRound,
+      centerCards: gameState.centerCards
+    });
   }
 
   checkGameState(roomId: string): void {

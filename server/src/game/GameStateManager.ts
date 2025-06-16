@@ -38,6 +38,7 @@ export class GameStateManager {
   protected onRedealCallback?: () => void;
   protected onReplayEndCallback?: () => void;
   protected onGameOverCallback?: () => void;
+  protected onGameStateChangeCallback?: () => void;
   protected replaySkipRequests: Set<string> = new Set();
   protected replayTimeout?: NodeJS.Timeout;
   protected disconnectTimers: Map<string, NodeJS.Timeout> = new Map();
@@ -105,6 +106,13 @@ export class GameStateManager {
    */
   setOnGameOverCallback(callback: () => void): void {
     this.onGameOverCallback = callback;
+  }
+
+  /**
+   * Set callback for when game state changes
+   */
+  setOnGameStateChangeCallback(callback: () => void): void {
+    this.onGameStateChangeCallback = callback;
   }
 
   /**
@@ -214,6 +222,14 @@ export class GameStateManager {
       // Try again with a small delay
       setTimeout(() => {
         this.startNewRound();
+        
+        // After successful redeal, emit the new game state
+        if (this.room.state === GameState.PLAYING && this.room.centerCards.length > 0) {
+          // Trigger a game state update to notify all clients
+          if (this.onGameStateChangeCallback) {
+            this.onGameStateChangeCallback();
+          }
+        }
       }, 100);
       
       return;

@@ -46,8 +46,10 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
             <button 
               className="test-mode-btn"
               onClick={onTestModeToggle}
+              title={isTestMode ? t('app.exitTestMode') : t('app.testMode')}
             >
-              {isTestMode ? t('app.exitTestMode') : t('app.testMode')}
+              <span className="test-mode-full">{isTestMode ? t('app.exitTestMode') : t('app.testMode')}</span>
+              <span className="test-mode-mobile">{isTestMode ? '✖' : '🧪'}</span>
             </button>
           )}
           
@@ -89,7 +91,10 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
           ) : (
             <div className="nav-auth">
               <button className="btn btn-secondary" disabled>{t('app.nav.signIn')}</button>
-              <button className="btn btn-primary" disabled>{t('app.nav.signUp')}</button>
+              <button className="btn btn-primary" disabled>
+                <span className="auth-full">{t('app.nav.signUp')}</span>
+                <span className="auth-mobile">Join</span>
+              </button>
             </div>
           )}
         </div>

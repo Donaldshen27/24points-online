@@ -5,6 +5,19 @@
   padding: var(--space-6) var(--space-4);
 }
 
+/* Mobile text variations */
+.title-mobile,
+.desc-mobile,
+.btn-text-mobile {
+  display: none;
+}
+
+.title-full,
+.desc-full,
+.btn-text-full {
+  display: inline;
+}
+
 /* Hero Section */
 .lobby-hero {
   text-align: center;
@@ -534,6 +547,19 @@
     padding: var(--space-3) var(--space-2);
   }
 
+  /* Show mobile text variants */
+  .title-mobile,
+  .desc-mobile,
+  .btn-text-mobile {
+    display: inline;
+  }
+
+  .title-full,
+  .desc-full,
+  .btn-text-full {
+    display: none;
+  }
+
   .lobby-title {
     font-size: var(--text-3xl);
   }
@@ -543,8 +569,42 @@
     margin-bottom: var(--space-4);
   }
 
+  .player-name-label {
+    font-size: var(--text-xs);
+  }
+
   .game-options {
     grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .game-option-card {
+    padding: var(--space-4);
+  }
+
+  .option-icon {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .option-title {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-1);
+  }
+
+  .option-description {
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-3);
+  }
+
+  .quick-play-btn,
+  .join-code-btn {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-base);
+  }
+
+  .solo-practice-label {
+    font-size: var(--text-sm);
   }
 
   .games-grid {
@@ -558,10 +618,47 @@
 
   .code-input {
     width: 100%;
+    font-size: var(--text-base);
   }
 
   .join-code-btn {
     width: 100%;
+  }
+
+  /* Active games */
+  .active-games-section h2 {
+    font-size: var(--text-xl);
+  }
+
+  .game-card {
+    padding: var(--space-3);
+  }
+
+  .player-match {
+    padding: var(--space-2);
+  }
+
+  .player-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: var(--text-base);
+  }
+
+  .player-name {
+    font-size: var(--text-sm);
+  }
+
+  .vs-divider {
+    font-size: var(--text-base);
+  }
+
+  .game-status {
+    font-size: var(--text-xs);
+  }
+
+  .action-btn {
+    padding: var(--space-2);
+    font-size: var(--text-xs);
   }
 }
 

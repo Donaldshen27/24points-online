@@ -75,7 +75,10 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
 
   return (
     <div className="waiting-room">
-      <h2>{t('waitingRoom.roomCode', { code: room.id })}</h2>
+      <h2 className="waiting-room-title">
+        <span className="title-full">{t('waitingRoom.roomCode', { code: room.id })}</span>
+        <span className="title-mobile">{room.id}</span>
+      </h2>
       
       <div className="players-section">
         <div className="player-card">
@@ -85,7 +88,10 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
           </div>
         </div>
 
-        <div className="vs">{t('waitingRoom.vs')}</div>
+        <div className="vs">
+          <span className="vs-full">{t('waitingRoom.vs')}</span>
+          <span className="vs-mobile">vs</span>
+        </div>
 
         <div className="player-card">
           {otherPlayer ? (
@@ -106,7 +112,10 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
 
       {countdown !== null && (
         <div className="countdown">
-          <h2>{t('waitingRoom.gameStarting', { seconds: countdown })}</h2>
+          <h2>
+            <span className="countdown-full">{t('waitingRoom.gameStarting', { seconds: countdown })}</span>
+            <span className="countdown-mobile">{countdown}</span>
+          </h2>
         </div>
       )}
 
@@ -116,13 +125,15 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
             className={`ready-btn ${currentPlayer?.isReady ? 'ready' : ''}`}
             onClick={handleReadyToggle}
           >
-            {currentPlayer?.isReady ? t('waitingRoom.buttons.cancelReady') : t('waitingRoom.buttons.ready')}
+            <span className="btn-text-full">{currentPlayer?.isReady ? t('waitingRoom.buttons.cancelReady') : t('waitingRoom.buttons.ready')}</span>
+            <span className="btn-text-mobile">{currentPlayer?.isReady ? '✓' : 'Ready'}</span>
           </button>
         )}
         
         {countdown === null && (
           <button className="leave-btn" onClick={handleLeaveRoom}>
-            {t('waitingRoom.buttons.leaveRoom')}
+            <span className="btn-text-full">{t('waitingRoom.buttons.leaveRoom')}</span>
+            <span className="btn-text-mobile">Leave</span>
           </button>
         )}
       </div>

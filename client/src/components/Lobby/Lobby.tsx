@@ -163,8 +163,14 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
           {/* Quick Play */}
           <div className="game-option-card">
             <div className="option-icon">⚡</div>
-            <h3 className="option-title">{t('lobby.quickPlay', 'Quick Play')}</h3>
-            <p className="option-description">{t('lobby.quickPlayDesc', 'Create a new game instantly')}</p>
+            <h3 className="option-title">
+              <span className="title-full">{t('lobby.quickPlay', 'Quick Play')}</span>
+              <span className="title-mobile">Quick</span>
+            </h3>
+            <p className="option-description">
+              <span className="desc-full">{t('lobby.quickPlayDesc', 'Create a new game instantly')}</span>
+              <span className="desc-mobile">New game</span>
+            </p>
             <button 
               onClick={() => {
                 setHasInteracted(true);
@@ -173,7 +179,8 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
               disabled={!playerName.trim() || isCreating}
               className="quick-play-btn"
             >
-              {isCreating ? t('lobby.creating', 'Creating...') : t('lobby.createRoom')}
+              <span className="btn-text-full">{isCreating ? t('lobby.creating', 'Creating...') : t('lobby.createRoom')}</span>
+              <span className="btn-text-mobile">{isCreating ? '...' : 'Create'}</span>
             </button>
             <div className="solo-practice-wrapper">
               <label className="solo-practice-label">
@@ -191,8 +198,14 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
           {/* Join with Code */}
           <div className="game-option-card">
             <div className="option-icon">🔑</div>
-            <h3 className="option-title">{t('lobby.joinWithCode', 'Join with Code')}</h3>
-            <p className="option-description">{t('lobby.joinWithCodeDesc', 'Enter a room code to join')}</p>
+            <h3 className="option-title">
+              <span className="title-full">{t('lobby.joinWithCode', 'Join with Code')}</span>
+              <span className="title-mobile">Join</span>
+            </h3>
+            <p className="option-description">
+              <span className="desc-full">{t('lobby.joinWithCodeDesc', 'Enter a room code to join')}</span>
+              <span className="desc-mobile">Enter code</span>
+            </p>
             <div className="join-code-section">
               <input
                 type="text"
@@ -210,7 +223,8 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                 disabled={!playerName.trim() || !joinRoomId.trim()}
                 className="join-code-btn"
               >
-                {t('lobby.joinRoom')}
+                <span className="btn-text-full">{t('lobby.joinRoom')}</span>
+                <span className="btn-text-mobile">Join</span>
               </button>
             </div>
           </div>

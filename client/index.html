@@ -14,20 +14,35 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://twentyfourpoints.com" />
     
+    <!-- Language Alternates (Hreflang) -->
+    <link rel="alternate" hreflang="en" href="https://twentyfourpoints.com" />
+    <link rel="alternate" hreflang="zh" href="https://twentyfourpoints.com/zh" />
+    <link rel="alternate" hreflang="zh-CN" href="https://twentyfourpoints.com/zh" />
+    <link rel="alternate" hreflang="zh-TW" href="https://twentyfourpoints.com/zh" />
+    <link rel="alternate" hreflang="x-default" href="https://twentyfourpoints.com" />
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://twentyfourpoints.com" />
     <meta property="og:title" content="24 Points Game - Multiplayer Math Card Game" />
     <meta property="og:description" content="Challenge friends in real-time! Solve math puzzles by combining 4 cards to reach exactly 24. Train your brain with this addictive multiplayer game." />
-    <meta property="og:image" content="https://twentyfourpoints.com/og-image.png" />
+    <meta property="og:image" content="https://twentyfourpoints.com/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="24 Points Game - Four cards showing 7, 3, 8, 4 with equation (7+3)×8÷4=24" />
     <meta property="og:site_name" content="24 Points Game" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <meta property="og:locale:alternate" content="zh_TW" />
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://twentyfourpoints.com" />
     <meta name="twitter:title" content="24 Points Game - Multiplayer Math Card Game" />
     <meta name="twitter:description" content="Challenge friends in real-time! Solve math puzzles by combining 4 cards to reach exactly 24." />
-    <meta name="twitter:image" content="https://twentyfourpoints.com/twitter-card.png" />
+    <meta name="twitter:image" content="https://twentyfourpoints.com/og-image.svg" />
+    <meta name="twitter:image:alt" content="24 Points Game - Math puzzle card game" />
     
     <!-- Additional SEO Tags -->
     <meta name="robots" content="index, follow" />
@@ -37,9 +52,7 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
     
     <!-- Preconnect to optimize loading -->
@@ -54,7 +67,7 @@
       "name": "24 Points Game",
       "description": "A multiplayer math card game where players race to combine 4 cards using arithmetic operations to reach exactly 24",
       "url": "https://twentyfourpoints.com",
-      "image": "https://twentyfourpoints.com/game-screenshot.png",
+      "image": "https://twentyfourpoints.com/og-image.svg",
       "author": {
         "@type": "Organization",
         "name": "TwentyFourPoints.com"
@@ -120,6 +133,40 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Dynamic SEO Updates -->
+    <script>
+      // Update canonical and hreflang based on current language
+      window.addEventListener('load', function() {
+        function updateSEOTags() {
+          const path = window.location.pathname;
+          const isZh = path.startsWith('/zh');
+          const canonical = document.querySelector('link[rel="canonical"]');
+          
+          if (isZh && canonical) {
+            canonical.href = 'https://twentyfourpoints.com/zh';
+          }
+        }
+        
+        updateSEOTags();
+        
+        // Listen for URL changes
+        const originalPushState = history.pushState;
+        const originalReplaceState = history.replaceState;
+        
+        history.pushState = function() {
+          originalPushState.apply(history, arguments);
+          updateSEOTags();
+        };
+        
+        history.replaceState = function() {
+          originalReplaceState.apply(history, arguments);
+          updateSEOTags();
+        };
+        
+        window.addEventListener('popstate', updateSEOTags);
+      });
+    </script>
     
     <!-- Fallback content for SEO -->
     <noscript>

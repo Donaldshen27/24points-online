@@ -237,11 +237,17 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
         {/* Trophy/Medal Animation */}
         <div className="trophy-container">
           <div className={`trophy ${isWinner ? 'gold' : 'silver'}`}>
-            {isWinner ? '🏆' : '🥈'}
+            <span role="img" aria-label={isWinner ? 'Gold trophy' : 'Silver medal'}>
+              {isWinner ? '🏆' : '🥈'}
+            </span>
           </div>
           <div className="sparkles">
             {[...Array(12)].map((_, i) => (
-              <div key={i} className={`sparkle sparkle-${i + 1}`}>✨</div>
+              <div key={i} className={`sparkle sparkle-${i + 1}`}>
+                <span role="img" aria-label="Sparkle">
+                  ✨
+                </span>
+              </div>
             ))}
           </div>
         </div>
@@ -271,7 +277,11 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
           {/* Score Overview */}
           <div className="score-overview">
             <div className="player-final-score">
-              <div className="player-avatar">{isWinner ? '👑' : '🎮'}</div>
+              <div className="player-avatar">
+                <span role="img" aria-label={isWinner ? 'Crown' : 'Game controller'}>
+                  {isWinner ? '👑' : '🎮'}
+                </span>
+              </div>
               <div className="player-info">
                 <span className="player-name">{currentPlayer?.name || t('gameOver.labels.you')}</span>
                 <span className="final-score">{t('gameOver.labels.wins', { count: playerScore })}</span>
@@ -281,7 +291,11 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
             <div className="vs-separator">{t('gameOver.labels.vs')}</div>
             
             <div className="player-final-score">
-              <div className="player-avatar">{!isWinner ? '👑' : '🎮'}</div>
+              <div className="player-avatar">
+                <span role="img" aria-label={!isWinner ? 'Crown' : 'Game controller'}>
+                  {!isWinner ? '👑' : '🎮'}
+                </span>
+              </div>
               <div className="player-info">
                 <span className="player-name">{opponent?.name || t('gameOver.labels.opponent')}</span>
                 <span className="final-score">{t('gameOver.labels.wins', { count: opponentScore })}</span>
@@ -350,25 +364,25 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
             <div className="achievement-list">
               {stats.avgSolveTime < 10 && stats.avgSolveTime > 0 && (
                 <div className="achievement-badge speed">
-                  <span className="badge-icon">⚡</span>
+                  <span className="badge-icon" role="img" aria-label="Lightning bolt">⚡</span>
                   <span className="badge-text">{t('gameOver.achievements.speedDemon')}</span>
                 </div>
               )}
               {stats.accuracyRate >= 80 && (
                 <div className="achievement-badge accuracy">
-                  <span className="badge-icon">🎯</span>
+                  <span className="badge-icon" role="img" aria-label="Target">🎯</span>
                   <span className="badge-text">{t('gameOver.achievements.sharpshooter')}</span>
                 </div>
               )}
               {stats.firstSolveRate >= 60 && (
                 <div className="achievement-badge quick">
-                  <span className="badge-icon">🚀</span>
+                  <span className="badge-icon" role="img" aria-label="Rocket">🚀</span>
                   <span className="badge-text">{t('gameOver.achievements.quickThinker')}</span>
                 </div>
               )}
               {isWinner && (
                 <div className="achievement-badge winner">
-                  <span className="badge-icon">👑</span>
+                  <span className="badge-icon" role="img" aria-label="Crown">👑</span>
                   <span className="badge-text">{t('gameOver.achievements.champion')}</span>
                 </div>
               )}
@@ -382,7 +396,7 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
             className="action-button home-btn"
             onClick={onLeaveGame}
           >
-            <span className="button-icon">🏠</span>
+            <span className="button-icon" role="img" aria-label="Home">🏠</span>
             {isSpectator ? t('gameOver.spectator.backToLobby') : t('gameOver.backToMainPage')}
           </button>
         </div>

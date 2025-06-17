@@ -61,20 +61,20 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
     switch (typeId) {
       case 'classic':
         return (
-          <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" role="img" aria-label="Classic mode icon">
             <rect x="5" y="5" width="14" height="14" rx="2" />
             <path d="M9 9h6m-6 6h6" />
           </svg>
         );
       case 'super':
         return (
-          <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" role="img" aria-label="Super mode icon">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
         );
       case 'extended':
         return (
-          <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" role="img" aria-label="Extended mode icon">
             <path d="M12 2L2 7L12 12L22 7L12 2Z" />
             <path d="M2 17L12 22L22 17" />
             <path d="M2 12L12 17L22 12" />
@@ -91,7 +91,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
     // Player count
     details.push(
       <div key="players" className="detail-item">
-        <svg className="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg className="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" role="img" aria-label="Players icon">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
           <circle cx="9" cy="7" r="4" />
           <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -105,7 +105,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
     if (type.id === 'super') {
       details.push(
         <div key="cards" className="detail-item">
-          <svg className="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" role="img" aria-label="Cards icon">
             <rect x="3" y="3" width="7" height="9" rx="1" />
             <rect x="14" y="3" width="7" height="9" rx="1" />
             <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -117,7 +117,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
     } else if (type.id === 'extended') {
       details.push(
         <div key="range" className="detail-item">
-          <svg className="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" role="img" aria-label="Card range icon">
             <line x1="2" y1="12" x2="22" y2="12" />
             <polyline points="12 2 22 12 12 22" />
           </svg>
@@ -155,7 +155,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
           onClick={handlePrevious}
           disabled={isAnimating}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" role="img" aria-label="Previous room type">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -215,7 +215,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
           onClick={handleNext}
           disabled={isAnimating}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" role="img" aria-label="Next room type">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>

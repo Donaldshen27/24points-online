@@ -38,7 +38,11 @@ const DisconnectNotification: React.FC<DisconnectNotificationProps> = ({
   return (
     <div className="disconnect-overlay">
       <div className="disconnect-modal">
-        <div className="disconnect-icon">{isVictory ? '🏆' : '⚠️'}</div>
+        <div className="disconnect-icon">
+          <span role="img" aria-label={isVictory ? 'Trophy' : 'Warning'}>
+            {isVictory ? '🏆' : '⚠️'}
+          </span>
+        </div>
         <h2>{isVictory ? t('disconnect.victoryByForfeit') : t('disconnect.opponentDisconnected')}</h2>
         <p className="disconnect-message">
           {isVictory 

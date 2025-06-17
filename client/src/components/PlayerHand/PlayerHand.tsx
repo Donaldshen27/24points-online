@@ -16,40 +16,33 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
 }) => {
   const cardCount = player.deck.length;
   
-  // Generate heart emojis based on card count
-  const renderHearts = () => {
-    const hearts = [];
+  // Generate heart display based on card count
+  const getHeartDisplay = () => {
+    if (cardCount === 0) {
+      // Victory - show empty hearts
+      return '🤍🤍🤍🤍🤍';
+    }
+    
     const fullHearts = Math.floor(cardCount / 2);
     const hasHalfHeart = cardCount % 2 === 1;
+    const hearts = '❤️'.repeat(fullHearts) + (hasHalfHeart ? '💔' : '');
     
-    // Add full hearts
-    for (let i = 0; i < fullHearts; i++) {
-      hearts.push(<span key={`full-${i}`} className="heart full">❤️</span>);
-    }
+    // Add shaking class for low health (2 or less cards)
+    const className = cardCount <= 2 ? 'hearts-display shaking' : 'hearts-display';
     
-    // Add half heart if odd number
-    if (hasHalfHeart) {
-      hearts.push(<span key="half" className="heart half">💔</span>);
-    }
-    
-    // If no cards left, show empty hearts
-    if (cardCount === 0) {
-      hearts.push(<span key="empty" className="heart empty">🤍🤍🤍🤍🤍</span>);
-    }
-    
-    return hearts;
+    return <span className={className}>{hearts}</span>;
   };
 
   return (
-    <div className={`player-hand-minimal ${isCurrentPlayer ? 'current-player' : 'opponent'} ${isDisconnected ? 'disconnected' : ''}`}>
-      <div className="player-info-minimal">
+    <div className={`player-hand minimal ${isCurrentPlayer ? 'current-player' : 'opponent'} ${isDisconnected ? 'disconnected' : ''}`}>
+      <div className="player-info minimal">
         <span className="player-name">
           {player.name}
-          {isDisconnected && <span className="disconnect-indicator"> ⚠️</span>}
+          {isDisconnected && <span className="disconnect-icon">⚠️</span>}
         </span>
-        <div className="hearts-container">
-          {renderHearts()}
-          <span className="card-count-number">({cardCount})</span>
+        <div className="card-display">
+          {getHeartDisplay()}
+          <span className="card-count">({cardCount})</span>
         </div>
       </div>
     </div>

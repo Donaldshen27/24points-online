@@ -8,7 +8,7 @@ import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
 import { SEOContent } from './components/SEO/SEOContent'
-import LanguageToggle from './components/LanguageToggle'
+import Navigation from './components/Navigation/Navigation'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
 import './App.css'
@@ -121,30 +121,28 @@ function App() {
 
   return (
     <div className="App">
-      <LanguageToggle />
-      {/* Game counter at the very top */}
-      <div className="game-counter">
-        {t('app.gameCounter', { count: gameCount })}
-      </div>
+      <Navigation 
+        username={currentRoom?.players.find(p => p.id === playerId)?.name} 
+        onSignOut={handleLeaveRoom}
+        onTestModeToggle={() => {
+          setAppState(appState === AppState.TEST_MODE ? AppState.LOBBY : AppState.TEST_MODE);
+          setTestComponent(null);
+        }}
+        isTestMode={appState === AppState.TEST_MODE}
+      />
       
-      <header className="app-header">
-        <h1>{t('app.title')}</h1>
-        <div className="header-actions">
-          <button 
-            className="test-mode-btn"
-            onClick={() => {
-              setAppState(appState === AppState.TEST_MODE ? AppState.LOBBY : AppState.TEST_MODE);
-              setTestComponent(null);
-            }}
-          >
-            {appState === AppState.TEST_MODE ? t('app.exitTestMode') : t('app.testMode')}
-          </button>
+      {/* Connection status bar */}
+      <div className="status-bar">
+        <div className="status-bar-content">
+          <div className="game-counter">
+            {t('app.gameCounter', { count: gameCount })}
+          </div>
           <div className="connection-status">
             <span className={`status-dot ${isConnected ? 'connected' : 'disconnected'}`}></span>
             {isConnected ? t('app.status.connected') : t('app.status.disconnected')}
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="app-main">
         {appState === AppState.CONNECTING && (

@@ -99,152 +99,203 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
 
   const handleSpectateRoom = (roomId: string) => {
     console.log('Spectate button clicked for room:', roomId);
-    // Join as spectator - this will be handled differently in App.tsx
     const spectatorName = `Spectator-${Math.random().toString(36).substring(2, 7)}`;
     console.log('Emitting join-room as spectator:', { roomId, playerName: spectatorName, isSpectator: true });
     socketService.emit('join-room', { roomId, playerName: spectatorName, isSpectator: true });
   };
 
+  const getGameStatus = (room: GameRoom) => {
+    if (room.state === 'waiting') {
+      if (room.players.length === 2 && room.players.every(p => p.isReady)) {
+        return { status: 'ready', text: t('lobby.status.readyToStart'), className: 'status-waiting' };
+      }
+      return { status: 'waiting', text: t('lobby.status.waitingForPlayers'), className: 'status-waiting' };
+    }
+    if (['playing', 'solving', 'round_end', 'replay'].includes(room.state)) {
+      return { status: 'active', text: t('lobby.status.battleInProgress'), className: 'status-active' };
+    }
+    if (room.state === 'game_over') {
+      return { status: 'ended', text: t('lobby.status.battleEnded'), className: 'status-ended' };
+    }
+    return { status: 'unknown', text: '', className: '' };
+  };
+
   return (
     <div className="lobby">
-      <h1>{t('lobby.title')}</h1>
+      {/* Hero Section */}
+      <div className="lobby-hero">
+        <h1 className="lobby-title">{t('lobby.title')}</h1>
+        <p className="lobby-subtitle">{t('lobby.subtitle', 'Master the art of 24 points calculation')}</p>
+      </div>
       
-      <div className={`player-name-section ${!playerName && hasInteracted ? 'required' : ''}`}>
-        <label htmlFor="username-input" className="username-label">
-          <span className="label-text">{t('lobby.yourName')}</span>
-          <span className="required-indicator">*</span>
-        </label>
-        <input
-          id="username-input"
-          type="text"
-          placeholder={t('lobby.placeholders.enterName')}
-          value={playerName}
-          onChange={(e) => {
-            setPlayerName(e.target.value);
-            if (!hasInteracted) setHasInteracted(true);
-          }}
-          onBlur={() => setHasInteracted(true)}
-          maxLength={20}
-          className={!playerName && hasInteracted ? 'input-error' : ''}
-          autoFocus
-        />
-        {!playerName && hasInteracted && (
-          <span className="error-message">{t('lobby.errors.enterNameToContinue')}</span>
-        )}
-      </div>
-
-      <RoomTypeSelector
-        selectedType={selectedRoomType}
-        onSelectType={setSelectedRoomType}
-      />
-
-      <div className="lobby-actions">
-        <div className="create-room-section">
-          <button 
-            onClick={() => {
-              setHasInteracted(true);
-              handleCreateRoom();
-            }} 
-            disabled={!playerName.trim() || isCreating}
-            className={`create-room-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
-            title={!playerName.trim() ? t('lobby.tooltips.enterNameFirst') : ''}
-          >
-            {!playerName.trim() ? '🔒 ' : ''}{t('lobby.createRoom')}
-          </button>
-          <label className="solo-practice-label">
-            <input
-              type="checkbox"
-              checked={isSoloPractice}
-              onChange={(e) => setIsSoloPractice(e.target.checked)}
-              className="solo-practice-checkbox"
-            />
-            <span>{t('lobby.soloPractice')}</span>
+      {/* Player Setup Section */}
+      <div className="player-setup">
+        <div className="player-name-section">
+          <label htmlFor="username-input" className="player-name-label">
+            {t('lobby.yourName')}
           </label>
+          <input
+            id="username-input"
+            type="text"
+            placeholder={t('lobby.placeholders.enterName')}
+            value={playerName}
+            onChange={(e) => {
+              setPlayerName(e.target.value);
+              if (!hasInteracted) setHasInteracted(true);
+            }}
+            onBlur={() => setHasInteracted(true)}
+            maxLength={20}
+            className="player-name-input"
+            autoFocus
+          />
+          {!playerName && hasInteracted && (
+            <span className="error-message">{t('lobby.errors.enterNameToContinue')}</span>
+          )}
         </div>
 
-        <div className="join-with-code">
-          <input
-            type="text"
-            placeholder={t('lobby.roomCode')}
-            value={joinRoomId}
-            onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
-            maxLength={6}
-          />
-          <button 
-            onClick={() => {
-              setHasInteracted(true);
-              handleJoinWithCode();
-            }}
-            disabled={!playerName.trim() || !joinRoomId.trim()}
-            className={!playerName.trim() ? 'disabled-hint' : ''}
-            title={!playerName.trim() ? t('lobby.tooltips.enterNameFirst') : !joinRoomId.trim() ? t('lobby.tooltips.enterRoomCode') : ''}
-          >
-            {!playerName.trim() ? '🔒 ' : ''}{t('lobby.joinRoom')}
-          </button>
+        <RoomTypeSelector
+          selectedType={selectedRoomType}
+          onSelectType={setSelectedRoomType}
+        />
+
+        {/* Game Options */}
+        <div className="game-options">
+          {/* Quick Play */}
+          <div className="game-option-card">
+            <div className="option-icon">⚡</div>
+            <h3 className="option-title">{t('lobby.quickPlay', 'Quick Play')}</h3>
+            <p className="option-description">{t('lobby.quickPlayDesc', 'Create a new game instantly')}</p>
+            <button 
+              onClick={() => {
+                setHasInteracted(true);
+                handleCreateRoom();
+              }} 
+              disabled={!playerName.trim() || isCreating}
+              className="quick-play-btn"
+            >
+              {t('lobby.createRoom')}
+            </button>
+            <div className="solo-practice-wrapper">
+              <label className="solo-practice-label">
+                <input
+                  type="checkbox"
+                  checked={isSoloPractice}
+                  onChange={(e) => setIsSoloPractice(e.target.checked)}
+                  className="solo-practice-checkbox"
+                />
+                <span>{t('lobby.soloPractice')}</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Join with Code */}
+          <div className="game-option-card">
+            <div className="option-icon">🔑</div>
+            <h3 className="option-title">{t('lobby.joinWithCode', 'Join with Code')}</h3>
+            <p className="option-description">{t('lobby.joinWithCodeDesc', 'Enter a room code to join')}</p>
+            <div className="join-code-section">
+              <input
+                type="text"
+                placeholder={t('lobby.roomCode')}
+                value={joinRoomId}
+                onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
+                maxLength={6}
+                className="code-input"
+              />
+              <button 
+                onClick={() => {
+                  setHasInteracted(true);
+                  handleJoinWithCode();
+                }}
+                disabled={!playerName.trim() || !joinRoomId.trim()}
+                className="join-code-btn"
+              >
+                {t('lobby.joinRoom')}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="all-ongoing-battles">
-        <h2 className="battles-title">{t('lobby.ongoingBattles')}</h2>
-        {allRooms.length === 0 ? (
-          <p className="no-battles">{t('lobby.status.noBattles')}</p>
-        ) : (
-          <div className="battles-list">
-            {allRooms.map((room) => {
+      {/* Active Games Section */}
+      <div className="active-games-section">
+        <div className="section-header">
+          <h2 className="section-title">
+            {t('lobby.activeGames', 'Active Games')}
+            {allRooms.length > 0 && (
+              <span className="live-indicator">
+                <span className="live-dot"></span>
+                LIVE
+              </span>
+            )}
+          </h2>
+        </div>
+
+        <div className="games-grid">
+          {allRooms.length === 0 ? (
+            <p className="no-games">{t('lobby.status.noBattles')}</p>
+          ) : (
+            allRooms.map((room) => {
               const player1 = room.players[0];
               const player2 = room.players[1];
               const isJoinable = room.players.length < 2 || room.players.some(p => !p.socketId);
+              const gameStatus = getGameStatus(room);
               
               return (
-                <div key={room.id} className="battle-card">
-                  <div className="battle-header">
-                    {player1 && player2 ? (
-                      <div className="vs-title">
-                        <span className="fighter-name fighter-1">{player1.name}</span>
-                        <span className="vs-text">{t('lobby.status.vs')}</span>
-                        <span className="fighter-name fighter-2">{player2.name}</span>
-                      </div>
-                    ) : player1 ? (
-                      <div className="vs-title">
-                        <span className="fighter-name fighter-1">{player1.name}</span>
-                        <span className="vs-text">{t('lobby.status.vs')}</span>
-                        <span className="fighter-name waiting">{t('lobby.status.waiting')}</span>
-                      </div>
-                    ) : (
-                      <div className="vs-title">
-                        <span className="waiting-text">{t('lobby.status.waitingForFighters')}</span>
-                      </div>
-                    )}
+                <div key={room.id} className="game-card">
+                  {/* Player Match Display */}
+                  <div className="player-match">
+                    <div className="player-info">
+                      {player1 ? (
+                        <>
+                          <div className="player-avatar">
+                            {player1.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="player-name">{player1.name}</span>
+                        </>
+                      ) : (
+                        <span className="waiting-player">{t('lobby.status.waiting')}</span>
+                      )}
+                    </div>
+                    
+                    <span className="vs-divider">VS</span>
+                    
+                    <div className="player-info">
+                      {player2 ? (
+                        <>
+                          <span className="player-name">{player2.name}</span>
+                          <div className="player-avatar">
+                            {player2.name.charAt(0).toUpperCase()}
+                          </div>
+                        </>
+                      ) : (
+                        <span className="waiting-player">{t('lobby.status.waiting')}</span>
+                      )}
+                    </div>
                   </div>
                   
-                  <div className="battle-info">
-                    <span className="room-code">{t('lobby.status.roomCode', { code: room.id })}</span>
-                    
-                    {room.state === 'waiting' && (
-                      <span className="battle-status waiting-status">
-                        {room.players.length === 2 && room.players.every(p => p.isReady) 
-                          ? t('lobby.status.readyToStart') 
-                          : t('lobby.status.waitingForPlayers')}
-                      </span>
-                    )}
-                    {(room.state === 'playing' || room.state === 'solving' || room.state === 'round_end' || room.state === 'replay') && (
-                      <span className="battle-status active-status">{t('lobby.status.battleInProgress')}</span>
-                    )}
-                    {room.state === 'game_over' && (
-                      <span className="battle-status ended-status">{t('lobby.status.battleEnded')}</span>
-                    )}
-                    
-                    {room.players.some(p => !p.socketId) && (
+                  {/* Game Meta Info */}
+                  <div className="game-meta">
+                    <span className="room-code-display">{t('lobby.status.roomCode', { code: room.id })}</span>
+                    <span className={`game-status ${gameStatus.className}`}>
+                      {gameStatus.text}
+                    </span>
+                  </div>
+                  
+                  {/* Reconnect Info */}
+                  {room.players.some(p => !p.socketId) && (
+                    <div className="reconnect-info">
                       <span className="reconnect-available">
                         {t('lobby.status.reconnectAvailable')}
                         {room.players.filter(p => !p.socketId).map(p => (
                           <span key={p.id} className="reconnect-name"> ({p.name})</span>
                         ))}
                       </span>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   
-                  <div className="battle-actions">
+                  {/* Game Actions */}
+                  <div className="game-actions">
                     {isJoinable && (
                       <button
                         onClick={() => {
@@ -252,22 +303,19 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                           handleJoinRoom(room.id);
                         }}
                         disabled={!playerName.trim()}
-                        className={`join-battle-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
-                        title={!playerName.trim() ? t('lobby.tooltips.enterNameFirst') : ''}
+                        className="action-btn join-game-btn"
                       >
-                        {!playerName.trim() ? '🔒 ' : ''}{t('lobby.joinBattle')}
+                        {t('lobby.joinBattle')}
                       </button>
                     )}
-                    {(room.state === 'playing' || room.state === 'solving' || room.state === 'round_end') && (
+                    {['playing', 'solving', 'round_end'].includes(room.state) && (
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           handleSpectateRoom(room.id);
                         }}
-                        className="spectate-btn"
-                        title={t('lobby.tooltips.watchBattle')}
-                        type="button"
+                        className="action-btn spectate-game-btn"
                       >
                         {t('lobby.spectate')}
                       </button>
@@ -275,9 +323,9 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                   </div>
                 </div>
               );
-            })}
-          </div>
-        )}
+            })
+          )}
+        </div>
       </div>
     </div>
   );

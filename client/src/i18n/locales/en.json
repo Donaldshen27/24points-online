@@ -15,11 +15,25 @@
       "calculator": "Calculator Test",
       "interactiveTable": "Interactive Table Test",
       "back": "← Back to Test Menu"
+    },
+    "nav": {
+      "play": "Play",
+      "puzzles": "Puzzles",
+      "learn": "Learn",
+      "leaderboard": "Leaderboard",
+      "signIn": "Sign In",
+      "signUp": "Sign Up"
     }
   },
   "lobby": {
     "title": "24 Points Arena",
+    "subtitle": "Master the art of 24 points calculation",
     "ongoingBattles": "🔥 ALL ONGOING BATTLES 🔥",
+    "activeGames": "Active Games",
+    "quickPlay": "Quick Play",
+    "quickPlayDesc": "Create a new game instantly",
+    "joinWithCode": "Join with Code",
+    "joinWithCodeDesc": "Enter a room code to join",
     "yourName": "Your Name",
     "roomCode": "Room Code",
     "createRoom": "Create New Room",

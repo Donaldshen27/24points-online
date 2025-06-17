@@ -1,15 +1,18 @@
-/* Room Type Selector */
+/* Room Type Selector - Chess.com Style */
 .room-type-selector {
-  padding: 2rem;
+  padding: var(--space-6) 0;
   text-align: center;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
 .room-type-selector h2 {
-  color: #000;
-  font-size: 2rem;
-  margin-bottom: 2rem;
+  color: var(--color-text-primary);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  margin-bottom: var(--space-6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* Carousel Container */
@@ -18,16 +21,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
-  height: 400px;
+  gap: var(--space-6);
+  height: 320px;
   overflow: hidden;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-6);
 }
 
 /* Carousel Track */
 .carousel-track {
   position: relative;
-  width: 600px;
+  width: 500px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -39,48 +42,49 @@
 .carousel-arrow {
   position: relative;
   z-index: 10;
-  background: rgba(26, 26, 46, 0.9);
-  border: 2px solid #00d4ff;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+  background-color: var(--color-surface-2);
+  border: 2px solid var(--color-border-default);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: #00d4ff;
+  transition: all var(--transition-base);
+  color: var(--color-text-secondary);
 }
 
 .carousel-arrow:hover:not(:disabled) {
-  background: #00d4ff;
-  color: #1a1a2e;
-  transform: scale(1.1);
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+  background-color: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  color: var(--color-bg-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .carousel-arrow:disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
 .carousel-arrow svg {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
 }
 
 /* Room Type Cards */
 .room-type-card {
   position: absolute;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border: 2px solid transparent;
-  border-radius: 16px;
-  padding: 1.5rem;
+  background-color: var(--color-surface-1);
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
   cursor: pointer;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 320px;
-  height: 360px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 280px;
+  height: 280px;
+  box-shadow: var(--shadow-md);
 }
 
 /* Current card */
@@ -88,331 +92,212 @@
   transform: translateX(0) scale(1);
   opacity: 1;
   z-index: 5;
-  border-color: #00d4ff;
+  border-color: var(--color-accent-primary);
+  background-color: var(--color-surface-2);
 }
 
 .room-type-card.current:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-xl);
 }
 
 /* Side cards */
 .room-type-card.side-card {
-  opacity: 0.4;
-  transform: scale(0.85);
-  cursor: default;
-  pointer-events: none;
-}
-
-.room-type-card.side-card.prev {
-  transform: translateX(-280px) scale(0.85) rotateY(25deg);
   z-index: 3;
+  opacity: 0.6;
 }
 
-.room-type-card.side-card.next {
-  transform: translateX(280px) scale(0.85) rotateY(-25deg);
-  z-index: 3;
+.room-type-card.side-left {
+  transform: translateX(-200px) scale(0.85) rotateY(25deg);
 }
 
-/* Animation state */
-.room-type-card.animating {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+.room-type-card.side-right {
+  transform: translateX(200px) scale(0.85) rotateY(-25deg);
 }
 
-/* Card backgrounds */
-.room-type-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200%;
-  height: 200%;
-  animation: pulse 4s ease-in-out infinite;
+/* Hidden cards */
+.room-type-card.hidden {
+  opacity: 0;
+  transform: translateX(0) scale(0.5);
   pointer-events: none;
-}
-
-.room-type-card.classic::before {
-  background: radial-gradient(circle, rgba(255, 107, 107, 0.1) 0%, transparent 70%);
-}
-
-.room-type-card.super::before {
-  background: radial-gradient(circle, rgba(255, 195, 0, 0.1) 0%, transparent 70%);
-}
-
-.room-type-card.extended::before {
-  background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-}
-
-/* Card Header */
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.icon-wrapper {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-}
-
-.icon {
-  width: 28px;
-  height: 28px;
-  color: #00d4ff;
-}
-
-.card-header h3 {
-  margin: 0;
-  color: #fff;
-  font-size: 1.5rem;
+  z-index: 1;
 }
 
 /* Card Content */
-.card-content {
-  text-align: left;
+.card-icon {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-4);
+  display: block;
 }
 
-.description {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
+.card-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+  font-family: var(--font-primary);
 }
 
-.mode-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+.card-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.detail-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.9rem;
+.card-description {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
 }
 
-.detail-icon {
-  width: 20px;
-  height: 20px;
-  color: #00d4ff;
+.card-badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+/* Badge Variants */
+.badge-recommended {
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  color: var(--color-bg-primary);
 }
 
-.feature-tag {
-  background: rgba(0, 212, 255, 0.2);
-  color: #00d4ff;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
+.badge-new {
+  background: linear-gradient(135deg, var(--color-accent-gold), #f4d03f);
+  color: var(--color-bg-primary);
 }
 
-/* Card Footer */
-.card-footer {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 1.5rem;
-  right: 1.5rem;
+.badge-challenging {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
 }
 
-.select-button {
-  background: transparent;
-  border: 2px solid #00d4ff;
-  color: #00d4ff;
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-}
-
-.room-type-card.current .select-button:hover {
-  background: #00d4ff;
-  color: #1a1a2e;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
-}
-
-/* Carousel Indicators */
-.carousel-indicators {
+/* Selection Dots */
+.selection-dots {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
 }
 
-.indicator {
-  width: 8px;
-  height: 8px;
+.dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  border: none;
-  background: rgba(0, 212, 255, 0.3);
+  background-color: var(--color-surface-3);
+  border: 1px solid var(--color-border-default);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all var(--transition-base);
 }
 
-.indicator.active {
-  width: 24px;
-  border-radius: 4px;
-  background: #00d4ff;
+.dot.active {
+  background-color: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  transform: scale(1.2);
 }
 
-.indicator:hover:not(.active) {
-  background: rgba(0, 212, 255, 0.5);
+.dot:hover:not(.active) {
+  background-color: var(--color-surface-2);
+  border-color: var(--color-border-strong);
 }
 
-/* Animations */
-@keyframes pulse {
-  0%, 100% { 
-    transform: scale(1); 
-    opacity: 0.5; 
+/* Animation for card transitions */
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(300px) scale(0.8);
   }
-  50% { 
-    transform: scale(1.1); 
-    opacity: 0.8; 
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }
 
-/* Mobile Responsive */
+@keyframes cardSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-300px) scale(0.8);
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .room-type-selector {
-    padding: 1rem;
-  }
-
-  .room-type-selector h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
   .carousel-container {
-    height: 420px;
-    gap: 1rem;
+    gap: var(--space-4);
+    height: 280px;
   }
-
+  
   .carousel-track {
     width: 100%;
-    max-width: 400px;
   }
-
+  
   .room-type-card {
-    width: 280px;
-    height: 380px;
-    padding: 1.25rem;
+    width: 240px;
+    height: 240px;
+    padding: var(--space-4);
   }
-
-  .room-type-card.side-card.prev {
-    transform: translateX(-200px) scale(0.8) rotateY(20deg);
+  
+  .room-type-card.side-left {
+    transform: translateX(-140px) scale(0.8) rotateY(20deg);
   }
-
-  .room-type-card.side-card.next {
-    transform: translateX(200px) scale(0.8) rotateY(-20deg);
+  
+  .room-type-card.side-right {
+    transform: translateX(140px) scale(0.8) rotateY(-20deg);
   }
-
+  
+  .card-icon {
+    font-size: var(--text-3xl);
+  }
+  
+  .card-title {
+    font-size: var(--text-xl);
+  }
+  
   .carousel-arrow {
-    width: 52px;
-    height: 52px;
+    width: 40px;
+    height: 40px;
   }
-
+  
   .carousel-arrow svg {
-    width: 26px;
-    height: 26px;
-  }
-
-  .card-header h3 {
-    font-size: 1.25rem;
-  }
-
-  .description {
-    font-size: 0.9rem;
-  }
-
-  .detail-item {
-    font-size: 0.85rem;
-  }
-
-  .feature-tag {
-    font-size: 0.75rem;
+    width: 20px;
+    height: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .room-type-selector {
-    padding: 0.75rem;
-  }
-
   .room-type-selector h2 {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-4);
   }
-
+  
   .carousel-container {
-    height: 400px;
-    gap: 0.5rem;
+    height: 240px;
+    gap: var(--space-3);
   }
-
+  
   .room-type-card {
-    width: 240px;
-    height: 360px;
-    padding: 1rem;
+    width: 200px;
+    height: 200px;
+    padding: var(--space-3);
   }
-
-  .room-type-card.side-card {
-    display: none; /* Hide side cards on small screens */
+  
+  .room-type-card.side-left,
+  .room-type-card.side-right {
+    display: none;
   }
-
-  .carousel-arrow {
-    width: 44px;
-    height: 44px;
-  }
-
-  .carousel-arrow svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .icon-wrapper {
-    width: 40px;
-    height: 40px;
-  }
-
-  .icon {
-    width: 24px;
-    height: 24px;
-  }
-
-  .card-header h3 {
-    font-size: 1.1rem;
-  }
-
-  .description {
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-  }
-
-  .mode-details {
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .select-button {
-    padding: 0.6rem 1.5rem;
-    font-size: 0.9rem;
+  
+  .card-description {
+    font-size: var(--text-sm);
   }
 }

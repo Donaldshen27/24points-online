@@ -1,120 +1,197 @@
+/* Chess.com-style Card Component */
 .card {
   position: relative;
-  background-color: white;
-  border: 3px solid var(--card-color, #333);
-  border-radius: 12px;
+  background-color: var(--color-bg-board-alt);
+  border: 2px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   user-select: none;
+  overflow: hidden;
+}
+
+/* Premium card gradient background */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  pointer-events: none;
 }
 
 /* Size variants */
 .card.small {
-  width: 60px;
-  height: 80px;
-  font-size: 1.5rem;
+  width: 65px;
+  height: 90px;
+  font-size: var(--text-xl);
 }
 
 .card.medium {
-  width: 80px;
-  height: 100px;
-  font-size: 2rem;
+  width: 85px;
+  height: 115px;
+  font-size: var(--text-2xl);
 }
 
 .card.large {
-  width: 100px;
-  height: 130px;
-  font-size: 2.5rem;
+  width: 105px;
+  height: 140px;
+  font-size: var(--text-3xl);
+}
+
+/* Card value styling */
+.card-value {
+  font-weight: var(--font-bold);
+  color: var(--color-bg-primary);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  font-family: var(--font-primary);
+}
+
+/* Color variants */
+.card[style*="--card-color: #ff6b6b"] {
+  background: linear-gradient(135deg, #fff5f5, #fee);
+  border-color: #ff6b6b;
+}
+
+.card[style*="--card-color: #ff6b6b"] .card-value {
+  color: #ff6b6b;
+}
+
+.card[style*="--card-color: #4ecdc4"] {
+  background: linear-gradient(135deg, #f0ffff, #e6fffe);
+  border-color: #4ecdc4;
+}
+
+.card[style*="--card-color: #4ecdc4"] .card-value {
+  color: #4ecdc4;
 }
 
 /* Hover and interaction states */
 .card:hover:not(.disabled) {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-accent-primary);
 }
 
 .card:active:not(.disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px) scale(1);
+  box-shadow: var(--shadow-md);
 }
 
+/* Selected state */
 .card.selected {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  background-color: #f0f8ff;
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 0 0 3px var(--color-accent-primary), var(--shadow-xl);
+  background: linear-gradient(135deg, 
+    rgba(129, 199, 132, 0.15),
+    rgba(129, 199, 132, 0.05)
+  );
+  border-color: var(--color-accent-primary);
 }
 
 .card.selected::after {
   content: '✓';
   position: absolute;
-  top: 4px;
-  right: 4px;
-  color: var(--card-color);
-  font-size: 1rem;
-  font-weight: bold;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 24px;
+  height: 24px;
+  background-color: var(--color-accent-primary);
+  color: var(--color-bg-primary);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  box-shadow: var(--shadow-sm);
+  animation: checkIn var(--transition-base);
 }
 
+@keyframes checkIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Disabled state */
 .card.disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  filter: grayscale(0.5);
 }
 
 .card.disabled:hover {
   transform: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-border-strong);
 }
 
-/* Card content */
-.card-value {
-  font-weight: bold;
-  color: var(--card-color);
-  margin-bottom: 0.25rem;
-}
-
+/* Card owner label */
 .card-owner {
   position: absolute;
-  bottom: 4px;
-  font-size: 0.7em;
-  color: var(--card-color);
-  opacity: 0.7;
-  font-weight: 600;
+  bottom: var(--space-2);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* Keyboard shortcut indicator */
 .keyboard-shortcut {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 0.75rem;
-  color: #666;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-  opacity: 0.7;
-  transition: all 0.2s ease;
+  top: var(--space-2);
+  left: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-bold);
+  font-family: var(--font-mono);
+  opacity: 0;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
 .card:hover .keyboard-shortcut {
-  opacity: 1;
-  color: #333;
+  opacity: 0.9;
 }
 
 .card.selected .keyboard-shortcut {
-  color: var(--card-color);
+  background-color: var(--color-accent-primary);
+  color: var(--color-bg-primary);
   opacity: 1;
-  font-weight: 700;
 }
 
 /* Keyboard focus state */
 .card.keyboard-focused {
-  animation: keyboardPulse 0.4s ease-out;
-  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.3), 0 6px 12px rgba(0, 0, 0, 0.15);
+  animation: keyboardPulse 0.3s ease-out;
+  box-shadow: 0 0 0 4px rgba(129, 199, 132, 0.4), var(--shadow-lg);
+  border-color: var(--color-accent-primary);
 }
 
 @keyframes keyboardPulse {
@@ -122,46 +199,121 @@
     transform: scale(1);
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.08);
   }
   100% {
     transform: scale(1);
   }
 }
 
-/* Animation for dealing cards */
+/* Premium card animation for dealing */
 @keyframes dealCard {
-  from {
-    transform: translateY(-200px) rotate(180deg);
+  0% {
+    transform: translateY(-150px) rotate(180deg) scale(0.5);
     opacity: 0;
   }
-  to {
-    transform: translateY(0) rotate(0);
+  50% {
+    transform: translateY(-75px) rotate(90deg) scale(0.75);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0) rotate(0) scale(1);
     opacity: 1;
   }
 }
 
 .card.dealing {
-  animation: dealCard 0.5s ease-out;
+  animation: dealCard 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card flip animation */
+@keyframes cardFlip {
+  0% {
+    transform: rotateY(0);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: rotateY(0);
+  }
+}
+
+.card.flipping {
+  animation: cardFlip 0.4s ease-in-out;
+}
+
+/* Premium shine effect */
+.card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg) translateX(-100%);
+  transition: transform 0.6s;
+  pointer-events: none;
+}
+
+.card:hover::after {
+  transform: rotate(45deg) translateX(100%);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .card.large {
-    width: 80px;
-    height: 100px;
-    font-size: 2rem;
+    width: 85px;
+    height: 115px;
+    font-size: var(--text-2xl);
+  }
+  
+  .card.medium {
+    width: 70px;
+    height: 95px;
+    font-size: var(--text-xl);
+  }
+  
+  .card.small {
+    width: 55px;
+    height: 75px;
+    font-size: var(--text-lg);
+  }
+
+  .keyboard-shortcut {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+
+  .card.selected::after {
+    width: 20px;
+    height: 20px;
+    font-size: var(--text-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .card.large {
+    width: 70px;
+    height: 95px;
+    font-size: var(--text-xl);
   }
   
   .card.medium {
     width: 60px;
     height: 80px;
-    font-size: 1.5rem;
+    font-size: var(--text-lg);
   }
   
   .card.small {
     width: 50px;
     height: 65px;
-    font-size: 1.2rem;
+    font-size: var(--text-base);
   }
 }

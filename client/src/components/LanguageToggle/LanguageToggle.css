@@ -1,105 +1,49 @@
 .language-toggle {
-  position: fixed;
-  top: 35px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid #444;
-  border-radius: 25px;
-  padding: 8px 16px;
-  color: #888;
-  font-size: 14px;
-  font-weight: 600;
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 999;
+  transition: all var(--transition-base);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  width: auto;
-  min-width: fit-content;
+  gap: var(--space-2);
   white-space: nowrap;
 }
 
 .language-toggle:hover {
-  background: rgba(0, 0, 0, 0.9);
-  border-color: #666;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background-color: var(--color-surface-2);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
 }
 
 .lang-option {
-  transition: color 0.3s ease;
-  font-size: 13px;
-  letter-spacing: 0.5px;
+  transition: color var(--transition-base);
+  font-size: var(--text-sm);
+  letter-spacing: 0.02em;
 }
 
 .lang-option.active {
-  color: #fff;
-  font-weight: 700;
+  color: var(--color-accent-primary);
+  font-weight: var(--font-semibold);
 }
 
 .separator {
-  color: #555;
-  margin: 0 2px;
+  color: var(--color-text-muted);
+  margin: 0 var(--space-1);
 }
 
+/* Mobile adjustments */
 @media (max-width: 768px) {
   .language-toggle {
-    top: 30px;
-    right: 15px;
-    padding: 6px 12px;
-    font-size: 12px;
-    border-radius: 20px;
-    background: rgba(0, 0, 0, 0.9);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    gap: 6px;
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
   }
   
   .lang-option {
-    font-size: 11px;
+    font-size: var(--text-xs);
   }
-  
-  .separator {
-    margin: 0 2px;
-  }
-}
-
-@media (max-width: 480px) {
-  .language-toggle {
-    top: 25px;
-    right: 10px;
-    padding: 5px 10px;
-    font-size: 11px;
-    gap: 4px;
-  }
-  
-  .lang-option {
-    font-size: 10px;
-    letter-spacing: 0.3px;
-  }
-  
-  .separator {
-    margin: 0 1px;
-  }
-}
-
-/* Handle landscape mode on mobile */
-@media (max-width: 768px) and (orientation: landscape) {
-  .language-toggle {
-    top: 25px;
-    right: 10px;
-    padding: 4px 8px;
-    font-size: 10px;
-  }
-  
-  .lang-option {
-    font-size: 9px;
-  }
-}
-
-/* Ensure the button doesn't interfere with game UI */
-.language-toggle:active {
-  transform: scale(0.95);
 }

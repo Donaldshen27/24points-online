@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { RoomTypeInfo } from '../../types/roomTypes';
 import socketService from '../../services/socketService';
 import './RoomTypeSelector.css';
@@ -12,6 +13,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
   onSelectType, 
   selectedType = 'classic' 
 }) => {
+  const { t } = useTranslation();
   const [roomTypes, setRoomTypes] = useState<RoomTypeInfo[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -48,7 +50,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
   };
   
   if (roomTypes.length === 0) {
-    return <div className="room-type-selector">Loading...</div>;
+    return <div className="room-type-selector">{t('roomTypeSelector.loading')}</div>;
   }
   
   const currentType = roomTypes[currentIndex];
@@ -95,7 +97,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
           <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
-        <span>{type.playerCount} Players</span>
+        <span>{t('roomTypeSelector.players', { count: type.playerCount })}</span>
       </div>
     );
     
@@ -109,7 +111,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
             <rect x="3" y="14" width="7" height="7" rx="1" />
             <rect x="14" y="14" width="7" height="7" rx="1" />
           </svg>
-          <span>8 Cards</span>
+          <span>{t('roomTypeSelector.cards', { count: 8 })}</span>
         </div>
       );
     } else if (type.id === 'extended') {
@@ -119,7 +121,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
             <line x1="2" y1="12" x2="22" y2="12" />
             <polyline points="12 2 22 12 12 22" />
           </svg>
-          <span>Cards 1-20</span>
+          <span>{t('roomTypeSelector.cardsRange', { min: 1, max: 20 })}</span>
         </div>
       );
     }
@@ -131,13 +133,13 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
     const tags = [];
     
     if (type.features.hasTournamentMode) {
-      tags.push(<span key="tournament" className="feature-tag">Tournaments</span>);
+      tags.push(<span key="tournament" className="feature-tag">{t('roomTypeSelector.features.tournaments')}</span>);
     }
     
     if (type.id === 'super') {
-      tags.push(<span key="complexity" className="feature-tag">Complexity Scoring</span>);
+      tags.push(<span key="complexity" className="feature-tag">{t('roomTypeSelector.features.complexityScoring')}</span>);
     } else if (type.id === 'extended') {
-      tags.push(<span key="bonus" className="feature-tag">High Card Bonus</span>);
+      tags.push(<span key="bonus" className="feature-tag">{t('roomTypeSelector.features.highCardBonus')}</span>);
     }
     
     return tags;
@@ -145,7 +147,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
   
   return (
     <div className="room-type-selector">
-      <h2>Choose Game Mode</h2>
+      <h2>{t('roomTypeSelector.title')}</h2>
       
       <div className="carousel-container">
         <button 
@@ -192,7 +194,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
             
             <div className="card-footer">
               <button className="select-button">
-                {selectedType === currentType.id ? 'Selected' : 'Select Mode'}
+                {selectedType === currentType.id ? t('roomTypeSelector.buttons.selected') : t('roomTypeSelector.buttons.selectMode')}
               </button>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
 import type { GameRoom } from '../../types/game.types';
 import { RoomTypeSelector } from '../RoomTypeSelector/RoomTypeSelector';
@@ -9,6 +10,7 @@ interface LobbyProps {
 }
 
 export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
+  const { t } = useTranslation();
   const [playerName, setPlayerName] = useState('');
   const [allRooms, setAllRooms] = useState<GameRoom[]>([]);
   const [joinRoomId, setJoinRoomId] = useState('');
@@ -67,7 +69,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
 
   const handleCreateRoom = () => {
     if (!playerName.trim()) {
-      alert('Please enter your name');
+      alert(t('lobby.errors.enterName'));
       return;
     }
     setIsCreating(true);
@@ -76,7 +78,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
 
   const handleJoinRoom = (roomId: string) => {
     if (!playerName.trim()) {
-      alert('Please enter your name');
+      alert(t('lobby.errors.enterName'));
       return;
     }
     socketService.emit('join-room', { roomId, playerName });
@@ -84,11 +86,11 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
 
   const handleJoinWithCode = () => {
     if (!playerName.trim()) {
-      alert('Please enter your name');
+      alert(t('lobby.errors.enterName'));
       return;
     }
     if (!joinRoomId.trim()) {
-      alert('Please enter room code');
+      alert(t('lobby.errors.enterRoomCode'));
       return;
     }
     socketService.emit('join-room', { roomId: joinRoomId.toUpperCase(), playerName });
@@ -104,17 +106,17 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
 
   return (
     <div className="lobby">
-      <h1>24 Points Arena</h1>
+      <h1>{t('lobby.title')}</h1>
       
       <div className={`player-name-section ${!playerName && hasInteracted ? 'required' : ''}`}>
         <label htmlFor="username-input" className="username-label">
-          <span className="label-text">Your Name</span>
+          <span className="label-text">{t('lobby.yourName')}</span>
           <span className="required-indicator">*</span>
         </label>
         <input
           id="username-input"
           type="text"
-          placeholder="Enter your name to start playing"
+          placeholder={t('lobby.placeholders.enterName')}
           value={playerName}
           onChange={(e) => {
             setPlayerName(e.target.value);
@@ -126,7 +128,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
           autoFocus
         />
         {!playerName && hasInteracted && (
-          <span className="error-message">Please enter your name to continue</span>
+          <span className="error-message">{t('lobby.errors.enterNameToContinue')}</span>
         )}
       </div>
 
@@ -143,15 +145,15 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
           }} 
           disabled={!playerName.trim() || isCreating}
           className={`create-room-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
-          title={!playerName.trim() ? 'Enter your name first' : ''}
+          title={!playerName.trim() ? t('lobby.tooltips.enterNameFirst') : ''}
         >
-          {!playerName.trim() ? '🔒 ' : ''}Create New Room
+          {!playerName.trim() ? '🔒 ' : ''}{t('lobby.createRoom')}
         </button>
 
         <div className="join-with-code">
           <input
             type="text"
-            placeholder="Room Code"
+            placeholder={t('lobby.roomCode')}
             value={joinRoomId}
             onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
             maxLength={6}
@@ -163,17 +165,17 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
             }}
             disabled={!playerName.trim() || !joinRoomId.trim()}
             className={!playerName.trim() ? 'disabled-hint' : ''}
-            title={!playerName.trim() ? 'Enter your name first' : !joinRoomId.trim() ? 'Enter room code' : ''}
+            title={!playerName.trim() ? t('lobby.tooltips.enterNameFirst') : !joinRoomId.trim() ? t('lobby.tooltips.enterRoomCode') : ''}
           >
-            {!playerName.trim() ? '🔒 ' : ''}Join Room
+            {!playerName.trim() ? '🔒 ' : ''}{t('lobby.joinRoom')}
           </button>
         </div>
       </div>
 
       <div className="all-ongoing-battles">
-        <h2 className="battles-title">🔥 ALL ONGOING BATTLES 🔥</h2>
+        <h2 className="battles-title">{t('lobby.ongoingBattles')}</h2>
         {allRooms.length === 0 ? (
-          <p className="no-battles">No battles in progress. Be the first to start one!</p>
+          <p className="no-battles">{t('lobby.status.noBattles')}</p>
         ) : (
           <div className="battles-list">
             {allRooms.map((room) => {
@@ -187,42 +189,42 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                     {player1 && player2 ? (
                       <div className="vs-title">
                         <span className="fighter-name fighter-1">{player1.name}</span>
-                        <span className="vs-text">VS</span>
+                        <span className="vs-text">{t('lobby.status.vs')}</span>
                         <span className="fighter-name fighter-2">{player2.name}</span>
                       </div>
                     ) : player1 ? (
                       <div className="vs-title">
                         <span className="fighter-name fighter-1">{player1.name}</span>
-                        <span className="vs-text">VS</span>
-                        <span className="fighter-name waiting">???</span>
+                        <span className="vs-text">{t('lobby.status.vs')}</span>
+                        <span className="fighter-name waiting">{t('lobby.status.waiting')}</span>
                       </div>
                     ) : (
                       <div className="vs-title">
-                        <span className="waiting-text">Waiting for fighters...</span>
+                        <span className="waiting-text">{t('lobby.status.waitingForFighters')}</span>
                       </div>
                     )}
                   </div>
                   
                   <div className="battle-info">
-                    <span className="room-code">ROOM CODE: {room.id}</span>
+                    <span className="room-code">{t('lobby.status.roomCode', { code: room.id })}</span>
                     
                     {room.state === 'waiting' && (
                       <span className="battle-status waiting-status">
                         {room.players.length === 2 && room.players.every(p => p.isReady) 
-                          ? '🎮 Ready to Start' 
-                          : '⏳ Waiting for Players'}
+                          ? t('lobby.status.readyToStart') 
+                          : t('lobby.status.waitingForPlayers')}
                       </span>
                     )}
                     {(room.state === 'playing' || room.state === 'solving' || room.state === 'round_end' || room.state === 'replay') && (
-                      <span className="battle-status active-status">⚔️ BATTLE IN PROGRESS</span>
+                      <span className="battle-status active-status">{t('lobby.status.battleInProgress')}</span>
                     )}
                     {room.state === 'game_over' && (
-                      <span className="battle-status ended-status">🏆 Battle Ended</span>
+                      <span className="battle-status ended-status">{t('lobby.status.battleEnded')}</span>
                     )}
                     
                     {room.players.some(p => !p.socketId) && (
                       <span className="reconnect-available">
-                        🔄 Reconnect Available
+                        {t('lobby.status.reconnectAvailable')}
                         {room.players.filter(p => !p.socketId).map(p => (
                           <span key={p.id} className="reconnect-name"> ({p.name})</span>
                         ))}
@@ -239,9 +241,9 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                         }}
                         disabled={!playerName.trim()}
                         className={`join-battle-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
-                        title={!playerName.trim() ? 'Enter your name first' : ''}
+                        title={!playerName.trim() ? t('lobby.tooltips.enterNameFirst') : ''}
                       >
-                        {!playerName.trim() ? '🔒 ' : ''}JOIN BATTLE
+                        {!playerName.trim() ? '🔒 ' : ''}{t('lobby.joinBattle')}
                       </button>
                     )}
                     {(room.state === 'playing' || room.state === 'solving' || room.state === 'round_end') && (
@@ -252,10 +254,10 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                           handleSpectateRoom(room.id);
                         }}
                         className="spectate-btn"
-                        title="Watch this battle live!"
+                        title={t('lobby.tooltips.watchBattle')}
                         type="button"
                       >
-                        👁️ SPECTATE
+                        {t('lobby.spectate')}
                       </button>
                     )}
                   </div>

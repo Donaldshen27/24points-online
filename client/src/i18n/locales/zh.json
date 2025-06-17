@@ -1,0 +1,195 @@
+{
+  "app": {
+    "title": "24点游戏",
+    "testMode": "测试模式",
+    "exitTestMode": "退出测试模式",
+    "status": {
+      "connected": "已连接",
+      "disconnected": "已断开",
+      "connecting": "正在连接服务器..."
+    },
+    "gameCounter": "服务器启动以来已进行 {{count}} 场游戏",
+    "testMenu": {
+      "title": "选择测试组件",
+      "deckSystem": "牌组系统测试",
+      "calculator": "计算器测试",
+      "interactiveTable": "互动桌面测试",
+      "back": "← 返回测试菜单"
+    }
+  },
+  "lobby": {
+    "title": "24点竞技场",
+    "ongoingBattles": "🔥 所有进行中的对战 🔥",
+    "yourName": "您的名字",
+    "roomCode": "房间代码",
+    "createRoom": "创建新房间",
+    "joinRoom": "加入房间",
+    "joinBattle": "加入对战",
+    "spectate": "👁️ 观战",
+    "placeholders": {
+      "enterName": "输入您的名字开始游戏",
+      "roomCode": "房间代码"
+    },
+    "status": {
+      "noBattles": "当前没有进行中的对战。成为第一个开始的人！",
+      "vs": "对战",
+      "waiting": "???",
+      "waitingForFighters": "等待玩家加入...",
+      "roomCode": "房间代码：{{code}}",
+      "readyToStart": "🎮 准备开始",
+      "waitingForPlayers": "⏳ 等待玩家",
+      "battleInProgress": "⚔️ 对战进行中",
+      "battleEnded": "🏆 对战结束",
+      "reconnectAvailable": "🔄 可重新连接"
+    },
+    "errors": {
+      "enterName": "请输入您的名字",
+      "enterRoomCode": "请输入房间代码",
+      "enterNameToContinue": "请输入您的名字以继续"
+    },
+    "tooltips": {
+      "enterNameFirst": "请先输入您的名字",
+      "enterRoomCode": "输入房间代码",
+      "watchBattle": "观看这场对战！"
+    }
+  },
+  "waitingRoom": {
+    "roomCode": "房间代码：{{code}}",
+    "vs": "对战",
+    "status": {
+      "ready": "已准备",
+      "notReady": "未准备",
+      "waitingForOpponent": "等待对手...",
+      "waiting": "等待中"
+    },
+    "buttons": {
+      "ready": "准备",
+      "cancelReady": "取消准备",
+      "leaveRoom": "离开房间"
+    },
+    "gameStarting": "游戏将在 {{seconds}} 秒后开始...",
+    "shareCode": "与您的朋友分享此房间代码："
+  },
+  "gameScreen": {
+    "room": "房间：{{code}}",
+    "round": "第 {{number}} 回合",
+    "spectating": "👁️ 观战中",
+    "status": {
+      "loading": "加载游戏中...",
+      "waitingForData": "等待游戏数据...",
+      "waitingForPlayers": "等待玩家...",
+      "findSolution": "第 {{number}} 回合 - 寻找解决方案！",
+      "watchingGame": "第 {{number}} 回合 - 观看游戏",
+      "raceToSolve": "竞速求解！",
+      "playerSolving": "玩家正在求解...",
+      "roundEnded": "回合结束！",
+      "gameOver": "游戏结束！"
+    },
+    "buttons": {
+      "leaveGame": "离开游戏",
+      "leaveSpectator": "离开观战模式"
+    },
+    "hints": {
+      "superMode": "使用8张牌的任意组合凑成24！"
+    },
+    "console": {
+      "solutionFound": "找到解决方案！",
+      "submittingSolution": "提交解决方案：",
+      "claimError": "认领错误：",
+      "submitError": "提交错误："
+    }
+  },
+  "roomTypeSelector": {
+    "title": "选择游戏模式",
+    "loading": "加载中...",
+    "players": "{{count}} 人",
+    "cards": "{{count}} 张牌",
+    "cardsRange": "{{min}}-{{max}} 点牌",
+    "features": {
+      "tournaments": "锦标赛",
+      "complexityScoring": "复杂度评分",
+      "highCardBonus": "高牌奖励"
+    },
+    "buttons": {
+      "selected": "已选择",
+      "selectMode": "选择模式"
+    }
+  },
+  "roundResult": {
+    "solution": "解决方案：",
+    "finalResult": "最终结果：{{result}}",
+    "messages": {
+      "foundSolution": "{{winner}} 找到了解决方案！",
+      "incorrectSolution": "{{player}} 的解决方案不正确！",
+      "noSolution": "这些牌没有解决方案！",
+      "timeOut": "时间到！",
+      "roundComplete": "回合完成！"
+    },
+    "labels": {
+      "winner": "获胜者：",
+      "cardsGoTo": "牌归属于：",
+      "nextRound": "下一回合将在5秒后开始..."
+    },
+    "continueNow": "立即继续"
+  },
+  "gameOver": {
+    "spectator": {
+      "wins": "{{player}} 获胜！",
+      "backToLobby": "🏠 返回大厅"
+    },
+    "victory": "胜利！",
+    "defeat": "失败",
+    "battleReport": "⚔️ 战斗报告 ⚔️",
+    "speedAnalysis": "⏱️ 速度分析",
+    "performanceMetrics": "🎯 表现指标",
+    "cardStatistics": "🃏 卡牌统计",
+    "matchAchievements": "🏅 比赛成就",
+    "messages": {
+      "opponentDisconnected": "您的对手断线并弃权了！",
+      "youDisconnected": "您断线了，游戏被判负。",
+      "victoryMessage": "出色的表现！您是24点冠军！",
+      "defeatMessage": "勇敢的尝试！准备好再来一局吗？"
+    },
+    "labels": {
+      "you": "您",
+      "opponent": "对手",
+      "wins": "{{count}} 胜",
+      "vs": "对战",
+      "averageTime": "您的平均用时",
+      "opponentAverage": "对手平均用时",
+      "playerAverage": "{{player}} 的平均用时",
+      "fastestSolve": "您的最快求解",
+      "playerFastestSolve": "最快求解",
+      "firstSolveRate": "首次求解率",
+      "solutionAccuracy": "解题准确率",
+      "winRate": "胜率",
+      "cardsWon": "赢得卡牌",
+      "cardsLost": "失去卡牌",
+      "finalDeckSize": "最终牌组大小",
+      "cards": "{{count}} 张牌",
+      "na": "无",
+      "seconds": "{{seconds}}秒"
+    },
+    "achievements": {
+      "speedDemon": "⚡ 极速达人",
+      "sharpshooter": "🎯 神枪手",
+      "quickThinker": "🚀 快速思考者",
+      "champion": "👑 冠军"
+    },
+    "backToMainPage": "🏠 返回主页"
+  },
+  "disconnect": {
+    "victoryByForfeit": "对手弃权获胜！",
+    "opponentDisconnected": "对手断线",
+    "messages": {
+      "disconnectedTooLong": "{{opponent}} 断线时间过长。您自动获胜！",
+      "leftGame": "{{opponent}} 已离开游戏。",
+      "showingVictory": "{{seconds}} 秒后显示胜利画面...",
+      "returningToLobby": "{{seconds}} 秒后返回大厅..."
+    },
+    "buttons": {
+      "viewResults": "立即查看结果",
+      "returnToLobby": "立即返回大厅"
+    }
+  }
+}

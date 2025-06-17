@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useGameState } from '../../hooks/useGameState';
 import { InteractiveCenterTable } from '../InteractiveCenterTable/InteractiveCenterTable';
 import { PlayerHand } from '../PlayerHand/PlayerHand';
@@ -21,6 +22,7 @@ interface GameScreenProps {
 }
 
 export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveGame, isSpectator = false }) => {
+  const { t } = useTranslation();
   console.log('[GameScreen] Component mounted with:', { roomId: room?.id, roomState: room?.state, playerId, isSpectator });
   
   const {
@@ -62,7 +64,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   // Handle direct solution from interactive table
   const handleDirectSolution = (expression: string, result: number, usedCards: Card[], operations: Operation[]) => {
-    console.log('Solution found!', { expression, result, usedCards, operations });
+    console.log(t('gameScreen.console.solutionFound'), { expression, result, usedCards, operations });
     
     // Check if it's exactly 24
     if (Math.abs(result - 24) < 0.0001 && gameState?.state === GameState.PLAYING) {
@@ -80,7 +82,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           operations: operations,
           result: 24
         };
-        console.log('Submitting solution:', solution);
+        console.log(t('gameScreen.console.submittingSolution'), solution);
         socket.emit('submit-solution', { solution });
       }, 50);
     }
@@ -89,21 +91,21 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   // Get status message
   const getStatusMessage = (): string => {
-    if (!gameState) return 'Loading game...';
+    if (!gameState) return t('gameScreen.status.loading');
     
     switch (gameState.state) {
       case GameState.WAITING:
-        return 'Waiting for players...';
+        return t('gameScreen.status.waitingForPlayers');
       case GameState.PLAYING:
         return isSpectator 
-          ? `Round ${currentRound} - Watching game` 
-          : `Round ${currentRound} - Find a solution!`;
+          ? t('gameScreen.status.watchingGame', { number: currentRound }) 
+          : t('gameScreen.status.findSolution', { number: currentRound });
       case GameState.SOLVING:
-        return isSpectator ? 'Player is solving...' : 'Race to solve!';
+        return isSpectator ? t('gameScreen.status.playerSolving') : t('gameScreen.status.raceToSolve');
       case GameState.ROUND_END:
-        return 'Round ended!';
+        return t('gameScreen.status.roundEnded');
       case GameState.GAME_OVER:
-        return 'Game Over!';
+        return t('gameScreen.status.gameOver');
       default:
         return '';
     }
@@ -179,11 +181,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     };
 
     const handleClaimError = (data: { message: string }) => {
-      console.error('Claim error:', data.message);
+      console.error(t('gameScreen.console.claimError'), data.message);
     };
 
     const handleSubmitError = (data: { message: string }) => {
-      console.error('Submit error:', data.message);
+      console.error(t('gameScreen.console.submitError'), data.message);
     };
 
     socketService.on('round-ended', handleRoundEnded);
@@ -262,7 +264,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   if (!gameState || (!isSpectator && (!currentPlayer || !opponent))) {
     return (
       <div className="game-screen loading">
-        <h2>Loading game...</h2>
+        <h2>{t('gameScreen.status.loading')}</h2>
       </div>
     );
   }
@@ -271,7 +273,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   if (isSpectator && (!currentPlayer || !opponent)) {
     return (
       <div className="game-screen loading">
-        <h2>Waiting for game data...</h2>
+        <h2>{t('gameScreen.status.waitingForData')}</h2>
       </div>
     );
   }
@@ -281,9 +283,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       {/* Game Header */}
       <div className="game-header">
         <div className="game-info">
-          <h2>Room: {room.id}</h2>
-          <div className="round-info">Round {currentRound}</div>
-          {isSpectator && <div className="spectator-badge">👁️ Spectating</div>}
+          <h2>{t('gameScreen.room', { code: room.id })}</h2>
+          <div className="round-info">{t('gameScreen.round', { number: currentRound })}</div>
+          {isSpectator && <div className="spectator-badge">{t('gameScreen.spectating')}</div>}
         </div>
         
         <div className="game-status">
@@ -291,7 +293,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         </div>
 
         <button className="leave-btn" onClick={onLeaveGame}>
-          {isSpectator ? 'Leave Spectator Mode' : 'Leave Game'}
+          {isSpectator ? t('gameScreen.buttons.leaveSpectator') : t('gameScreen.buttons.leaveGame')}
         </button>
       </div>
 
@@ -321,7 +323,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
               <svg className="hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 2v6m0 4v6m0 4v2m0-18a2 2 0 110 4 2 2 0 010-4zm0 8a2 2 0 110 4 2 2 0 010-4z" />
               </svg>
-              <span>Use any combination of the 8 cards to make 24!</span>
+              <span>{t('gameScreen.hints.superMode')}</span>
             </div>
           )}
         </div>

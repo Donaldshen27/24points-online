@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './DisconnectNotification.css';
 
 interface DisconnectNotificationProps {
@@ -14,6 +15,7 @@ const DisconnectNotification: React.FC<DisconnectNotificationProps> = ({
   timeoutSeconds = 30,
   isVictory = false
 }) => {
+  const { t } = useTranslation();
   const [timeRemaining, setTimeRemaining] = useState(timeoutSeconds);
   
   console.log('DisconnectNotification mounted, opponent:', opponentName, 'isVictory:', isVictory);
@@ -37,19 +39,19 @@ const DisconnectNotification: React.FC<DisconnectNotificationProps> = ({
     <div className="disconnect-overlay">
       <div className="disconnect-modal">
         <div className="disconnect-icon">{isVictory ? '🏆' : '⚠️'}</div>
-        <h2>{isVictory ? 'Victory by Forfeit!' : 'Opponent Disconnected'}</h2>
+        <h2>{isVictory ? t('disconnect.victoryByForfeit') : t('disconnect.opponentDisconnected')}</h2>
         <p className="disconnect-message">
           {isVictory 
-            ? `${opponentName} disconnected for too long. You won automatically!`
-            : `${opponentName} has left the game.`}
+            ? t('disconnect.messages.disconnectedTooLong', { opponent: opponentName })
+            : t('disconnect.messages.leftGame', { opponent: opponentName })}
         </p>
         <p className="disconnect-timer">
           {isVictory 
-            ? `Showing victory screen in ${timeRemaining} seconds...`
-            : `Returning to lobby in ${timeRemaining} seconds...`}
+            ? t('disconnect.messages.showingVictory', { seconds: timeRemaining })
+            : t('disconnect.messages.returningToLobby', { seconds: timeRemaining })}
         </p>
         <button className="return-button" onClick={onReturnToLobby}>
-          {isVictory ? 'View Results Now' : 'Return to Lobby Now'}
+          {isVictory ? t('disconnect.buttons.viewResults') : t('disconnect.buttons.returnToLobby')}
         </button>
       </div>
     </div>

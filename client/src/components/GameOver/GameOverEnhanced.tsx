@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { GameRoom } from '../../types/game.types';
 import './GameOverEnhanced.css';
 
@@ -34,6 +35,7 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
   gameOverWinnerId,
   isSpectator = false
 }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -223,8 +225,8 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
   const stats = getDetailedStats();
 
   const formatTime = (seconds: number) => {
-    if (seconds === 0) return 'N/A';
-    return `${seconds}s`;
+    if (seconds === 0) return t('gameOver.labels.na');
+    return t('gameOver.labels.seconds', { seconds });
   };
 
   return (
@@ -248,41 +250,41 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
         <div className="result-header">
           <h1 className="result-title">
             {isSpectator 
-              ? `${currentPlayer?.name} WINS!` 
-              : (isWinner ? 'VICTORY!' : 'DEFEAT')}
+              ? t('gameOver.spectator.wins', { player: currentPlayer?.name }) 
+              : (isWinner ? t('gameOver.victory') : t('gameOver.defeat'))}
           </h1>
           <p className="result-subtitle">
             {gameOverReason === 'forfeit' 
               ? (isWinner 
-                  ? 'Your opponent disconnected and forfeited the game!' 
-                  : 'You were disconnected and the game was forfeited.')
+                  ? t('gameOver.messages.opponentDisconnected') 
+                  : t('gameOver.messages.youDisconnected'))
               : (isWinner 
-                  ? 'Outstanding performance! You are the 24 Points Champion!' 
-                  : 'A valiant effort! Ready for a rematch?')}
+                  ? t('gameOver.messages.victoryMessage') 
+                  : t('gameOver.messages.defeatMessage'))}
           </p>
         </div>
 
         {/* Battle Report */}
         <div className={`battle-report ${showStats ? 'show' : ''}`}>
-          <h2>⚔️ Battle Report ⚔️</h2>
+          <h2>{t('gameOver.battleReport')}</h2>
           
           {/* Score Overview */}
           <div className="score-overview">
             <div className="player-final-score">
               <div className="player-avatar">{isWinner ? '👑' : '🎮'}</div>
               <div className="player-info">
-                <span className="player-name">{currentPlayer?.name || 'You'}</span>
-                <span className="final-score">{playerScore} wins</span>
+                <span className="player-name">{currentPlayer?.name || t('gameOver.labels.you')}</span>
+                <span className="final-score">{t('gameOver.labels.wins', { count: playerScore })}</span>
               </div>
             </div>
             
-            <div className="vs-separator">VS</div>
+            <div className="vs-separator">{t('gameOver.labels.vs')}</div>
             
             <div className="player-final-score">
               <div className="player-avatar">{!isWinner ? '👑' : '🎮'}</div>
               <div className="player-info">
-                <span className="player-name">{opponent?.name || 'Opponent'}</span>
-                <span className="final-score">{opponentScore} wins</span>
+                <span className="player-name">{opponent?.name || t('gameOver.labels.opponent')}</span>
+                <span className="final-score">{t('gameOver.labels.wins', { count: opponentScore })}</span>
               </div>
             </div>
           </div>
@@ -290,33 +292,33 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
           {/* Detailed Statistics Grid */}
           <div className="stats-grid-enhanced">
             <div className="stat-category">
-              <h3>⏱️ Speed Analysis</h3>
+              <h3>{t('gameOver.speedAnalysis')}</h3>
               <div className="stat-row">
-                <span className="stat-label">{isSpectator ? `${currentPlayer?.name}'s Average Time` : 'Your Average Time'}</span>
+                <span className="stat-label">{isSpectator ? t('gameOver.labels.playerAverage', { player: currentPlayer?.name }) : t('gameOver.labels.averageTime')}</span>
                 <span className="stat-value highlight">{formatTime(stats.avgSolveTime)}</span>
               </div>
               <div className="stat-row">
-                <span className="stat-label">{isSpectator ? `${opponent?.name}'s Average` : 'Opponent Average'}</span>
+                <span className="stat-label">{isSpectator ? t('gameOver.labels.playerAverage', { player: opponent?.name }) : t('gameOver.labels.opponentAverage')}</span>
                 <span className="stat-value">{formatTime(stats.opponentAvgSolveTime)}</span>
               </div>
               <div className="stat-row">
-                <span className="stat-label">{isSpectator ? 'Fastest Solve' : 'Your Fastest Solve'}</span>
+                <span className="stat-label">{isSpectator ? t('gameOver.labels.playerFastestSolve') : t('gameOver.labels.fastestSolve')}</span>
                 <span className="stat-value trophy">{formatTime(stats.fastestSolve)}</span>
               </div>
             </div>
 
             <div className="stat-category">
-              <h3>🎯 Performance Metrics</h3>
+              <h3>{t('gameOver.performanceMetrics')}</h3>
               <div className="stat-row">
-                <span className="stat-label">First Solve Rate</span>
+                <span className="stat-label">{t('gameOver.labels.firstSolveRate')}</span>
                 <span className="stat-value">{stats.firstSolveRate}%</span>
               </div>
               <div className="stat-row">
-                <span className="stat-label">Solution Accuracy</span>
+                <span className="stat-label">{t('gameOver.labels.solutionAccuracy')}</span>
                 <span className="stat-value">{stats.accuracyRate}%</span>
               </div>
               <div className="stat-row">
-                <span className="stat-label">Win Rate</span>
+                <span className="stat-label">{t('gameOver.labels.winRate')}</span>
                 <span className="stat-value highlight">
                   {stats.totalRounds > 0 
                     ? Math.round((stats.playerWins / stats.totalRounds) * 100) 
@@ -326,48 +328,48 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
             </div>
 
             <div className="stat-category">
-              <h3>🃏 Card Statistics</h3>
+              <h3>{t('gameOver.cardStatistics')}</h3>
               <div className="stat-row">
-                <span className="stat-label">Cards Won</span>
+                <span className="stat-label">{t('gameOver.labels.cardsWon')}</span>
                 <span className="stat-value success">+{stats.totalCardsWon}</span>
               </div>
               <div className="stat-row">
-                <span className="stat-label">Cards Lost</span>
+                <span className="stat-label">{t('gameOver.labels.cardsLost')}</span>
                 <span className="stat-value danger">-{stats.totalCardsLost}</span>
               </div>
               <div className="stat-row">
-                <span className="stat-label">Final Deck Size</span>
-                <span className="stat-value">{currentPlayer?.deck.length || 0} cards</span>
+                <span className="stat-label">{t('gameOver.labels.finalDeckSize')}</span>
+                <span className="stat-value">{t('gameOver.labels.cards', { count: currentPlayer?.deck.length || 0 })}</span>
               </div>
             </div>
           </div>
 
           {/* Achievement Badges */}
           <div className="achievements">
-            <h3>🏅 Match Achievements</h3>
+            <h3>{t('gameOver.matchAchievements')}</h3>
             <div className="achievement-list">
               {stats.avgSolveTime < 10 && stats.avgSolveTime > 0 && (
                 <div className="achievement-badge speed">
                   <span className="badge-icon">⚡</span>
-                  <span className="badge-text">Speed Demon</span>
+                  <span className="badge-text">{t('gameOver.achievements.speedDemon')}</span>
                 </div>
               )}
               {stats.accuracyRate >= 80 && (
                 <div className="achievement-badge accuracy">
                   <span className="badge-icon">🎯</span>
-                  <span className="badge-text">Sharpshooter</span>
+                  <span className="badge-text">{t('gameOver.achievements.sharpshooter')}</span>
                 </div>
               )}
               {stats.firstSolveRate >= 60 && (
                 <div className="achievement-badge quick">
                   <span className="badge-icon">🚀</span>
-                  <span className="badge-text">Quick Thinker</span>
+                  <span className="badge-text">{t('gameOver.achievements.quickThinker')}</span>
                 </div>
               )}
               {isWinner && (
                 <div className="achievement-badge winner">
                   <span className="badge-icon">👑</span>
-                  <span className="badge-text">Champion</span>
+                  <span className="badge-text">{t('gameOver.achievements.champion')}</span>
                 </div>
               )}
             </div>
@@ -381,7 +383,7 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
             onClick={onLeaveGame}
           >
             <span className="button-icon">🏠</span>
-            {isSpectator ? 'Back to Lobby' : 'Back to Main Page'}
+            {isSpectator ? t('gameOver.spectator.backToLobby') : t('gameOver.backToMainPage')}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Solution } from '../../types/game.types';
 import './RoundResult.css';
 
@@ -23,6 +24,7 @@ export const RoundResult: React.FC<RoundResultProps> = ({
   onContinue,
   hideForReplay = false
 }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -40,15 +42,15 @@ export const RoundResult: React.FC<RoundResultProps> = ({
   const getResultMessage = () => {
     switch (reason) {
       case 'correct_solution':
-        return `${winnerName || 'Winner'} found the solution!`;
+        return t('roundResult.messages.foundSolution', { winner: winnerName || 'Winner' });
       case 'incorrect_solution':
-        return `${loserName || 'Player'}'s solution was incorrect!`;
+        return t('roundResult.messages.incorrectSolution', { player: loserName || 'Player' });
       case 'no_solution':
-        return 'No solution exists for these cards!';
+        return t('roundResult.messages.noSolution');
       case 'timeout':
-        return 'Time ran out!';
+        return t('roundResult.messages.timeOut');
       default:
-        return 'Round complete!';
+        return t('roundResult.messages.roundComplete');
     }
   };
 
@@ -59,7 +61,7 @@ export const RoundResult: React.FC<RoundResultProps> = ({
 
     return (
       <div className="solution-display">
-        <h3>Solution:</h3>
+        <h3>{t('roundResult.solution')}</h3>
         <div className="solution-steps">
           {solution.operations.map((op, index) => (
             <div key={index} className="solution-step">
@@ -71,7 +73,7 @@ export const RoundResult: React.FC<RoundResultProps> = ({
           ))}
         </div>
         <div className="solution-final">
-          Final Result: <strong>{solution.result}</strong>
+          {t('roundResult.finalResult', { result: solution.result })}
         </div>
       </div>
     );
@@ -98,11 +100,11 @@ export const RoundResult: React.FC<RoundResultProps> = ({
         {winnerId && loserId && (
           <div className="result-players">
             <div className="winner-info">
-              <span className="result-label">Winner:</span>
+              <span className="result-label">{t('roundResult.labels.winner')}</span>
               <span className="player-name">{winnerName || 'Player'}</span>
             </div>
             <div className="loser-info">
-              <span className="result-label">Cards go to:</span>
+              <span className="result-label">{t('roundResult.labels.cardsGoTo')}</span>
               <span className="player-name">{loserName || 'Player'}</span>
             </div>
           </div>
@@ -111,9 +113,9 @@ export const RoundResult: React.FC<RoundResultProps> = ({
         {solution && renderSolution()}
 
         <div className="result-footer">
-          <p className="auto-continue">Next round starts in 5 seconds...</p>
+          <p className="auto-continue">{t('roundResult.labels.nextRound')}</p>
           <button className="continue-button" onClick={onContinue}>
-            Continue Now
+            {t('roundResult.continueNow')}
           </button>
         </div>
       </div>

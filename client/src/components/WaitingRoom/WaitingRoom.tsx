@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
 import type { GameRoom } from '../../types/game.types';
 import './WaitingRoom.css';
@@ -16,6 +17,7 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
   onGameStart,
   onLeaveRoom 
 }) => {
+  const { t } = useTranslation();
   const [room, setRoom] = useState<GameRoom>(initialRoom);
   const [countdown, setCountdown] = useState<number | null>(null);
   const currentPlayer = room.players.find(p => p.id === playerId);
@@ -73,30 +75,30 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
 
   return (
     <div className="waiting-room">
-      <h2>Room Code: {room.id}</h2>
+      <h2>{t('waitingRoom.roomCode', { code: room.id })}</h2>
       
       <div className="players-section">
         <div className="player-card">
           <h3>{currentPlayer?.name || 'You'}</h3>
           <div className={`ready-status ${currentPlayer?.isReady ? 'ready' : 'not-ready'}`}>
-            {currentPlayer?.isReady ? 'Ready' : 'Not Ready'}
+            {currentPlayer?.isReady ? t('waitingRoom.status.ready') : t('waitingRoom.status.notReady')}
           </div>
         </div>
 
-        <div className="vs">VS</div>
+        <div className="vs">{t('waitingRoom.vs')}</div>
 
         <div className="player-card">
           {otherPlayer ? (
             <>
               <h3>{otherPlayer.name}</h3>
               <div className={`ready-status ${otherPlayer.isReady ? 'ready' : 'not-ready'}`}>
-                {otherPlayer.isReady ? 'Ready' : 'Not Ready'}
+                {otherPlayer.isReady ? t('waitingRoom.status.ready') : t('waitingRoom.status.notReady')}
               </div>
             </>
           ) : (
             <>
-              <h3>Waiting for opponent...</h3>
-              <div className="ready-status waiting">Waiting</div>
+              <h3>{t('waitingRoom.status.waitingForOpponent')}</h3>
+              <div className="ready-status waiting">{t('waitingRoom.status.waiting')}</div>
             </>
           )}
         </div>
@@ -104,7 +106,7 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
 
       {countdown !== null && (
         <div className="countdown">
-          <h2>Game starting in {countdown}...</h2>
+          <h2>{t('waitingRoom.gameStarting', { seconds: countdown })}</h2>
         </div>
       )}
 
@@ -114,20 +116,20 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
             className={`ready-btn ${currentPlayer?.isReady ? 'ready' : ''}`}
             onClick={handleReadyToggle}
           >
-            {currentPlayer?.isReady ? 'Cancel Ready' : 'Ready'}
+            {currentPlayer?.isReady ? t('waitingRoom.buttons.cancelReady') : t('waitingRoom.buttons.ready')}
           </button>
         )}
         
         {countdown === null && (
           <button className="leave-btn" onClick={handleLeaveRoom}>
-            Leave Room
+            {t('waitingRoom.buttons.leaveRoom')}
           </button>
         )}
       </div>
 
       {room.players.length === 1 && (
         <div className="waiting-message">
-          <p>Share this room code with your friend:</p>
+          <p>{t('waitingRoom.shareCode')}</p>
           <div className="room-code-display">{room.id}</div>
         </div>
       )}

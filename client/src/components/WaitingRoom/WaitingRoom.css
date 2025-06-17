@@ -1,141 +1,236 @@
+/* Chess.com-style Waiting Room */
 .waiting-room {
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--space-6);
   text-align: center;
 }
 
 .waiting-room h2 {
-  color: #333;
-  margin-bottom: 2rem;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-6);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  font-family: var(--font-primary);
 }
 
 .players-section {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 3rem;
-  margin: 3rem 0;
+  gap: var(--space-8);
+  margin: var(--space-8) 0;
 }
 
 .player-card {
-  background-color: #f5f5f5;
-  padding: 2rem;
-  border-radius: 12px;
-  min-width: 200px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-border-default);
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  min-width: 240px;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.player-card:hover {
+  border-color: var(--color-border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .player-card h3 {
-  margin-bottom: 1rem;
-  color: #333;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-primary);
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
 }
 
 .ready-status {
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: bold;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-bold);
   text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
+  letter-spacing: 0.05em;
 }
 
 .ready-status.ready {
-  background-color: #4CAF50;
-  color: white;
+  background-color: rgba(98, 151, 96, 0.2);
+  color: var(--color-success);
+  border: 1px solid rgba(98, 151, 96, 0.3);
 }
 
 .ready-status.not-ready {
-  background-color: #f44336;
-  color: white;
+  background-color: rgba(202, 52, 49, 0.2);
+  color: var(--color-error);
+  border: 1px solid rgba(202, 52, 49, 0.3);
 }
 
 .ready-status.waiting {
-  background-color: #FFC107;
-  color: #333;
+  background-color: rgba(240, 196, 92, 0.2);
+  color: var(--color-accent-gold);
+  border: 1px solid rgba(240, 196, 92, 0.3);
 }
 
 .vs {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #666;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-accent-gold);
+  text-transform: uppercase;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .countdown {
-  margin: 2rem 0;
+  margin: var(--space-6) 0;
   animation: pulse 1s infinite;
 }
 
 .countdown h2 {
-  color: #4CAF50;
-  font-size: 2rem;
+  color: var(--color-accent-primary);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  text-shadow: 0 0 20px rgba(129, 199, 132, 0.5);
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .room-actions {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin: 2rem 0;
+  gap: var(--space-4);
+  margin: var(--space-6) 0;
 }
 
 .ready-btn {
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  background-color: #f44336;
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-lg);
+  background: linear-gradient(135deg, var(--color-error), #dc2626);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all var(--transition-base);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-md);
 }
 
 .ready-btn.ready {
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, var(--color-success), #4ade80);
 }
 
 .ready-btn:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.ready-btn:active {
+  transform: translateY(0);
 }
 
 .leave-btn {
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  background-color: #666;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-base);
+  background-color: var(--color-surface-2);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all var(--transition-base);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .leave-btn:hover {
-  background-color: #555;
+  background-color: var(--color-surface-3);
+  border-color: var(--color-border-strong);
+  transform: translateY(-2px);
 }
 
 .waiting-message {
-  margin-top: 3rem;
-  padding: 1.5rem;
-  background-color: #E3F2FD;
-  border-radius: 8px;
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
 }
 
 .waiting-message p {
-  margin-bottom: 1rem;
-  color: #1976D2;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
 }
 
 .room-code-display {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #1976D2;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-accent-gold);
   letter-spacing: 0.2em;
-  padding: 1rem;
-  background-color: white;
-  border-radius: 8px;
+  padding: var(--space-4);
+  background-color: var(--color-bg-tertiary);
+  border: 2px solid var(--color-accent-gold);
+  border-radius: var(--radius-lg);
   display: inline-block;
+  box-shadow: 0 0 20px rgba(240, 196, 92, 0.2);
+  font-family: var(--font-mono);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .waiting-room {
+    padding: var(--space-4);
+  }
+
+  .players-section {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .player-card {
+    min-width: 200px;
+    padding: var(--space-4);
+  }
+
+  .vs {
+    font-size: var(--text-2xl);
+  }
+
+  .room-actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+    margin: var(--space-6) auto;
+  }
+
+  .ready-btn,
+  .leave-btn {
+    width: 100%;
+  }
+
+  .room-code-display {
+    font-size: var(--text-2xl);
+    padding: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .waiting-room h2 {
+    font-size: var(--text-xl);
+  }
+
+  .player-card {
+    min-width: 160px;
+  }
+
+  .room-code-display {
+    font-size: var(--text-xl);
+    letter-spacing: 0.1em;
+  }
 }

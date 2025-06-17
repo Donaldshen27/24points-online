@@ -164,21 +164,23 @@
 .keyboard-shortcut {
   position: absolute;
   top: var(--space-2);
-  left: var(--space-2);
+  right: var(--space-2);
   font-size: var(--text-xs);
   color: var(--color-text-muted);
-  background-color: var(--color-surface-1);
-  padding: var(--space-1) var(--space-2);
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
   border-radius: var(--radius-md);
-  font-weight: var(--font-bold);
+  font-weight: var(--font-semibold);
   font-family: var(--font-mono);
-  opacity: 0;
+  opacity: 0.7;
   transition: all var(--transition-base);
-  box-shadow: var(--shadow-sm);
+  min-width: 20px;
+  text-align: center;
 }
 
 .card:hover .keyboard-shortcut {
-  opacity: 0.9;
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.15);
 }
 
 .card.selected .keyboard-shortcut {

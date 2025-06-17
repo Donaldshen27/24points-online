@@ -1,15 +1,13 @@
 #root {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 .App {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -19,6 +17,7 @@
   background-color: var(--color-bg-tertiary);
   border-bottom: 1px solid var(--color-border-subtle);
   padding: var(--space-2) 0;
+  flex-shrink: 0; /* Prevent status bar from shrinking */
 }
 
 .status-bar-content {
@@ -62,12 +61,13 @@
 
 /* Main content area */
 .app-main {
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
   padding: var(--space-6) var(--space-4);
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  min-height: 0; /* This is important for flex children */
 }
 
 /* Connecting state */

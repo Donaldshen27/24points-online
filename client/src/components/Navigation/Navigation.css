@@ -7,6 +7,7 @@
   z-index: var(--z-sticky);
   backdrop-filter: blur(10px);
   background-color: rgba(39, 37, 34, 0.95);
+  flex-shrink: 0; /* Prevent navigation from shrinking */
 }
 
 .nav-container {

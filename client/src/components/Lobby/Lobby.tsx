@@ -124,11 +124,6 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
 
   return (
     <div className="lobby">
-      {/* Hero Section */}
-      <div className="lobby-hero">
-        <h1 className="lobby-title">{t('lobby.title')}</h1>
-        <p className="lobby-subtitle">{t('lobby.subtitle', 'Master the art of 24 points calculation')}</p>
-      </div>
       
       {/* Player Setup Section */}
       <div className="player-setup">

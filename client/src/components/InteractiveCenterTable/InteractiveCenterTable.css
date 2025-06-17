@@ -50,11 +50,13 @@
 
 .center-cards.interactive {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   min-height: 150px;
   justify-items: center;
   align-items: center;
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .card-wrapper {
@@ -212,6 +214,8 @@
 
   .center-cards.interactive {
     gap: 15px;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 250px;
   }
 
   .card-expression {

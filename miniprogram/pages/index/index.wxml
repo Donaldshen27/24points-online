@@ -1,0 +1,26 @@
+<!--pages/index/index.wxml-->
+<view class="index-container">
+  <view class="splash-content">
+    <view class="logo-section">
+      <text class="logo-number">24</text>
+      <text class="logo-text">点游戏</text>
+    </view>
+    
+    <view class="splash-cards">
+      <view class="splash-card">3</view>
+      <view class="splash-card">8</view>
+      <view class="splash-card">8</view>
+      <view class="splash-card">8</view>
+    </view>
+    
+    <text class="splash-hint">3 × 8 × (8 ÷ 8) = 24</text>
+    
+    <button class="btn btn-primary start-button pulse" bindtap="enterLobby">
+      开始游戏
+    </button>
+    
+    <view class="app-info">
+      <text class="version">v1.0.0</text>
+    </view>
+  </view>
+</view>

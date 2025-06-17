@@ -1,0 +1,104 @@
+/* pages/index/index.wxss */
+.index-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+}
+
+.splash-content {
+  text-align: center;
+  padding: 40rpx;
+}
+
+.logo-section {
+  margin-bottom: 60rpx;
+}
+
+.logo-number {
+  font-size: 120rpx;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-shadow: 0 4rpx 12rpx rgba(74, 144, 226, 0.3);
+}
+
+.logo-text {
+  font-size: 60rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-left: 20rpx;
+}
+
+.splash-cards {
+  display: flex;
+  gap: 20rpx;
+  justify-content: center;
+  margin-bottom: 40rpx;
+}
+
+.splash-card {
+  width: 100rpx;
+  height: 140rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.3);
+  animation: float 3s ease-in-out infinite;
+}
+
+.splash-card:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.splash-card:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.splash-card:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.splash-card:nth-child(4) {
+  animation-delay: 1.5s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20rpx);
+  }
+}
+
+.splash-hint {
+  font-size: 32rpx;
+  color: var(--text-secondary);
+  margin-bottom: 80rpx;
+  font-family: monospace;
+}
+
+.start-button {
+  width: 400rpx;
+  font-size: 40rpx;
+  padding: 30rpx 0;
+  margin-bottom: 60rpx;
+}
+
+.app-info {
+  position: absolute;
+  bottom: 40rpx;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.version {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,97 @@
+<!--pages/waiting/waiting.wxml-->
+<view class="waiting-container">
+  <view class="waiting-header">
+    <text class="waiting-title">等待玩家加入</text>
+    <view class="room-info-card card">
+      <text class="room-label">房间号</text>
+      <text class="room-code-large">{{roomCode}}</text>
+      <button class="btn btn-secondary copy-btn" bindtap="copyRoomCode">
+        复制房间号
+      </button>
+    </view>
+  </view>
+
+  <view class="players-section">
+    <!-- 玩家1 -->
+    <view class="player-slot {{players[0] ? 'occupied' : 'empty'}}">
+      <view class="player-avatar">
+        <image wx:if="{{players[0]}}" 
+               src="{{players[0].avatarUrl || '/images/default-avatar.png'}}"
+               class="avatar-image"></image>
+        <text wx:else class="empty-slot-icon">?</text>
+      </view>
+      <text class="player-name">{{players[0] ? players[0].name : '等待中...'}}</text>
+      <view wx:if="{{players[0] && players[0].ready}}" class="ready-badge">
+        <text>准备</text>
+      </view>
+    </view>
+
+    <view class="vs-divider">
+      <text class="vs-text">VS</text>
+    </view>
+
+    <!-- 玩家2 -->
+    <view class="player-slot {{players[1] ? 'occupied' : 'empty'}}">
+      <view class="player-avatar">
+        <image wx:if="{{players[1]}}" 
+               src="{{players[1].avatarUrl || '/images/default-avatar.png'}}"
+               class="avatar-image"></image>
+        <text wx:else class="empty-slot-icon">?</text>
+      </view>
+      <text class="player-name">{{players[1] ? players[1].name : '等待中...'}}</text>
+      <view wx:if="{{players[1] && players[1].ready}}" class="ready-badge">
+        <text>准备</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 游戏设置 (仅房主可见) -->
+  <view wx:if="{{isHost && players.length === 2}}" class="game-settings card">
+    <text class="settings-title">游戏设置</text>
+    <view class="setting-item">
+      <text class="setting-label">游戏模式</text>
+      <picker mode="selector" 
+              range="{{gameModes}}" 
+              range-key="name"
+              value="{{selectedModeIndex}}"
+              bindchange="onModeChange">
+        <view class="setting-value">
+          {{gameModes[selectedModeIndex].name}} ▼
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button wx:if="{{players.length === 2 && !isReady}}" 
+            class="btn btn-primary ready-btn"
+            bindtap="toggleReady">
+      准备
+    </button>
+    
+    <button wx:if="{{players.length === 2 && isReady}}" 
+            class="btn btn-secondary ready-btn"
+            bindtap="toggleReady">
+      取消准备
+    </button>
+
+    <button wx:if="{{isHost && allReady}}"
+            class="btn btn-primary start-btn pulse"
+            bindtap="startGame">
+      开始游戏
+    </button>
+
+    <button class="btn btn-secondary leave-btn" bindtap="leaveRoom">
+      离开房间
+    </button>
+  </view>
+
+  <!-- 倒计时提示 -->
+  <view wx:if="{{countdown > 0}}" class="countdown-overlay">
+    <view class="countdown-content">
+      <text class="countdown-number">{{countdown}}</text>
+      <text class="countdown-text">游戏即将开始</text>
+    </view>
+  </view>
+</view>

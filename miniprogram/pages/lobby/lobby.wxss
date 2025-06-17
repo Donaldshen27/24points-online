@@ -1,0 +1,135 @@
+/* pages/lobby/lobby.wxss */
+.lobby-container {
+  min-height: 100vh;
+  padding: 40rpx 30rpx;
+}
+
+.lobby-header {
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.lobby-title {
+  font-size: 56rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.lobby-subtitle {
+  font-size: 32rpx;
+  color: var(--text-secondary);
+}
+
+.game-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30rpx;
+  margin-bottom: 60rpx;
+}
+
+.mode-card {
+  padding: 40rpx 30rpx;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.mode-card:active {
+  transform: scale(0.98);
+}
+
+.mode-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.mode-title {
+  font-size: 36rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.mode-desc {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  display: block;
+}
+
+.user-info {
+  position: fixed;
+  bottom: 40rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  background-color: var(--bg-secondary);
+  padding: 20rpx 40rpx;
+  border-radius: 40rpx;
+}
+
+.user-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+}
+
+.user-name {
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+/* 弹窗样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-content {
+  width: 600rpx;
+  padding: 40rpx;
+  text-align: center;
+}
+
+.modal-title {
+  font-size: 40rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 40rpx;
+}
+
+.room-input {
+  width: 100%;
+  height: 88rpx;
+  background-color: var(--bg-primary);
+  border: 2rpx solid var(--border-color);
+  border-radius: 12rpx;
+  padding: 0 30rpx;
+  font-size: 36rpx;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.room-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 30rpx;
+  justify-content: center;
+}

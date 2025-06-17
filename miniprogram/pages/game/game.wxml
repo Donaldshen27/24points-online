@@ -1,0 +1,105 @@
+<!--pages/game/game.wxml-->
+<view class="game-container">
+  <!-- 顶部信息栏 -->
+  <view class="game-header">
+    <view class="room-info">
+      <text class="room-code">房间: {{roomCode}}</text>
+    </view>
+    <view class="timer" wx:if="{{gameState === 'SOLVING'}}">
+      <text class="timer-text">{{countdown}}s</text>
+    </view>
+  </view>
+
+  <!-- 对手信息 -->
+  <view class="opponent-section">
+    <view class="player-info">
+      <text class="player-name">{{opponent.name || '对手'}}</text>
+      <view class="card-count">
+        <text class="card-emoji">❤️</text>
+        <text class="card-number">{{opponent.cardCount || 10}}</text>
+      </view>
+    </view>
+    <view class="opponent-cards">
+      <view wx:for="{{opponent.cards}}" wx:key="index" class="card-back">
+        <text class="card-back-emoji">❤️</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 中央牌桌 -->
+  <view class="center-table">
+    <view class="table-cards">
+      <view wx:for="{{centerCards}}" wx:key="id" 
+            class="game-card {{item.selected ? 'selected' : ''}}"
+            data-index="{{index}}"
+            bindtap="selectCard">
+        <text class="card-value">{{item.value}}</text>
+      </view>
+    </view>
+    
+    <!-- 游戏状态提示 -->
+    <view class="game-status" wx:if="{{statusMessage}}">
+      <text class="status-text">{{statusMessage}}</text>
+    </view>
+
+    <!-- 抢答按钮 -->
+    <button wx:if="{{gameState === 'PLAYING' && !isSolving}}" 
+            class="btn btn-primary claim-button pulse"
+            bindtap="claimSolution">
+      我知道了! 💡
+    </button>
+
+    <!-- 解答界面 -->
+    <view wx:if="{{gameState === 'SOLVING' && isSolving}}" class="solution-builder">
+      <view class="solution-steps">
+        <view wx:for="{{solutionSteps}}" wx:key="index" class="solution-step fade-in">
+          <text class="step-text">{{item.left}} {{item.operator}} {{item.right}} = {{item.result}}</text>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="operation-buttons">
+        <button wx:for="{{['+', '-', '×', '÷']}}" wx:key="*this"
+                class="op-button"
+                data-op="{{item}}"
+                bindtap="selectOperator">
+          {{item}}
+        </button>
+      </view>
+
+      <!-- 提交和取消按钮 -->
+      <view class="action-buttons">
+        <button class="btn btn-secondary" bindtap="cancelSolution">取消</button>
+        <button class="btn btn-primary" bindtap="submitSolution">提交答案</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 自己的牌 -->
+  <view class="player-section">
+    <view class="player-cards">
+      <view wx:for="{{playerCards}}" wx:key="id" class="game-card player-card">
+        <text class="card-value">{{item.value}}</text>
+      </view>
+    </view>
+    <view class="player-info">
+      <text class="player-name">{{player.name || '我'}}</text>
+      <view class="card-count">
+        <text class="card-emoji">❤️</text>
+        <text class="card-number">{{player.cardCount || 10}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 游戏结束界面 -->
+  <view wx:if="{{gameState === 'GAME_OVER'}}" class="game-over-overlay">
+    <view class="game-over-card card">
+      <text class="game-over-title">{{isWinner ? '🎉 胜利!' : '😢 失败'}}</text>
+      <text class="game-over-message">{{gameOverMessage}}</text>
+      <view class="game-over-buttons">
+        <button class="btn btn-primary" bindtap="requestRematch">再来一局</button>
+        <button class="btn btn-secondary" bindtap="backToLobby">返回大厅</button>
+      </view>
+    </view>
+  </view>
+</view>

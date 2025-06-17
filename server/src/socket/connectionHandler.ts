@@ -14,18 +14,36 @@ export const handleConnection = (io: Server, socket: Socket) => {
   // Set io instance in RoomManager if not already set
   roomManager.setIo(io);
 
-  socket.on('create-room', (data: { playerName: string; roomType?: string }) => {
+  socket.on('create-room', (data: { playerName: string; roomType?: string; isSoloPractice?: boolean }) => {
     const playerId = `player-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     const roomType = data.roomType || 'classic';
     
     try {
-      const room = roomManager.createRoom(playerId, socket.id, data.playerName, roomType);
+      const room = roomManager.createRoom(playerId, socket.id, data.playerName, roomType, data.isSoloPractice);
       
       socket.join(room.id);
       socket.emit('room-created', { 
         room: roomManager.getRoomInfo(room.id), 
         playerId 
       });
+      
+      // If solo practice mode, add a bot player immediately
+      if (data.isSoloPractice) {
+        const botId = `bot-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+        const botSocketId = `bot-socket-${Math.random().toString(36).substring(2, 9)}`;
+        const botRoom = roomManager.joinRoom(room.id, botId, botSocketId, 'Practice Bot', false);
+        
+        if (botRoom) {
+          // Notify the room about the bot joining
+          io.to(room.id).emit('room-updated', roomManager.getRoomInfo(room.id));
+          
+          // Auto-ready the bot after a short delay
+          setTimeout(() => {
+            roomManager.updatePlayerReady(room.id, botId, true);
+            io.to(room.id).emit('room-updated', roomManager.getRoomInfo(room.id));
+          }, 500);
+        }
+      }
       
       io.emit('rooms-updated', roomManager.getOpenRooms());
     } catch (error: any) {
@@ -164,7 +182,13 @@ export const handleConnection = (io: Server, socket: Socket) => {
   });
 
   socket.on('player-ready', (data: { isReady: boolean }) => {
-    const room = roomManager.updatePlayerReady(socket.id, data.isReady);
+    const currentRoom = roomManager.getRoomBySocketId(socket.id);
+    if (!currentRoom) return;
+    
+    const player = currentRoom.players.find(p => p.socketId === socket.id);
+    if (!player) return;
+    
+    const room = roomManager.updatePlayerReady(currentRoom.id, player.id, data.isReady);
     
     if (room) {
       io.to(room.id).emit('room-updated', room);
@@ -209,7 +233,7 @@ export const handleConnection = (io: Server, socket: Socket) => {
   });
 
   socket.on('get-all-rooms', () => {
-    socket.emit('all-rooms-list', roomManager.getAllRooms());
+    socket.emit('all-rooms-list', roomManager.getAllRooms().filter(room => !room.isSoloPractice));
   });
 
   socket.on('claim-solution', () => {

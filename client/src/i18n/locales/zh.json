@@ -26,6 +26,7 @@
     "joinRoom": "加入房间",
     "joinBattle": "加入对战",
     "spectate": "👁️ 观战",
+    "soloPractice": "单人练习",
     "placeholders": {
       "enterName": "输入您的名字开始游戏",
       "roomCode": "房间代码"

@@ -17,6 +17,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [selectedRoomType, setSelectedRoomType] = useState('classic');
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isSoloPractice, setIsSoloPractice] = useState(false);
 
   useEffect(() => {
     socketService.on('rooms-list', () => {
@@ -73,7 +74,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
       return;
     }
     setIsCreating(true);
-    socketService.createRoom(playerName, selectedRoomType);
+    socketService.createRoom(playerName, selectedRoomType, isSoloPractice);
   };
 
   const handleJoinRoom = (roomId: string) => {
@@ -138,17 +139,28 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
       />
 
       <div className="lobby-actions">
-        <button 
-          onClick={() => {
-            setHasInteracted(true);
-            handleCreateRoom();
-          }} 
-          disabled={!playerName.trim() || isCreating}
-          className={`create-room-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
-          title={!playerName.trim() ? t('lobby.tooltips.enterNameFirst') : ''}
-        >
-          {!playerName.trim() ? '🔒 ' : ''}{t('lobby.createRoom')}
-        </button>
+        <div className="create-room-section">
+          <button 
+            onClick={() => {
+              setHasInteracted(true);
+              handleCreateRoom();
+            }} 
+            disabled={!playerName.trim() || isCreating}
+            className={`create-room-btn ${!playerName.trim() ? 'disabled-hint' : ''}`}
+            title={!playerName.trim() ? t('lobby.tooltips.enterNameFirst') : ''}
+          >
+            {!playerName.trim() ? '🔒 ' : ''}{t('lobby.createRoom')}
+          </button>
+          <label className="solo-practice-label">
+            <input
+              type="checkbox"
+              checked={isSoloPractice}
+              onChange={(e) => setIsSoloPractice(e.target.checked)}
+              className="solo-practice-checkbox"
+            />
+            <span>{t('lobby.soloPractice')}</span>
+          </label>
+        </div>
 
         <div className="join-with-code">
           <input

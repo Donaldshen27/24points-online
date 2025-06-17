@@ -61,9 +61,9 @@ class SocketService {
     }
   }
 
-  createRoom(playerName: string, roomType: string = 'classic', callback?: (response: any) => void): void {
+  createRoom(playerName: string, roomType: string = 'classic', isSoloPractice: boolean = false, callback?: (response: any) => void): void {
     if (this.socket) {
-      this.socket.emit('create-room', { playerName, roomType }, callback);
+      this.socket.emit('create-room', { playerName, roomType, isSoloPractice }, callback);
     }
   }
 

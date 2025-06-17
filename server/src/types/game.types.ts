@@ -29,6 +29,8 @@ export interface GameRoom {
   incorrectAttempts?: { [playerId: string]: number };
   // Room type support
   roomType?: string;
+  // Solo practice mode
+  isSoloPractice?: boolean;
 }
 
 export const GameState = {

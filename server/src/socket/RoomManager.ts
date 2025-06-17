@@ -21,7 +21,7 @@ export class RoomManager {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
-  createRoom(playerId: string, socketId: string, playerName: string, roomType: string = 'classic'): GameRoom {
+  createRoom(playerId: string, socketId: string, playerName: string, roomType: string = 'classic', isSoloPractice: boolean = false): GameRoom {
     const config = getRoomTypeConfig(roomType);
     if (!config) {
       throw new Error(`Invalid room type: ${roomType}`);
@@ -45,7 +45,8 @@ export class RoomManager {
       scores: {
         [playerId]: 0
       },
-      roomType
+      roomType,
+      isSoloPractice
     };
 
     this.rooms.set(roomId, room);
@@ -241,6 +242,9 @@ export class RoomManager {
 
   getOpenRooms(): GameRoom[] {
     return this.getAllRooms().filter(room => {
+      // Don't show solo practice rooms
+      if (room.isSoloPractice) return false;
+      
       // Show rooms with less than 2 players
       if (room.players.length < 2) return true;
       
@@ -251,14 +255,14 @@ export class RoomManager {
     });
   }
 
-  updatePlayerReady(socketId: string, isReady: boolean): GameRoom | null {
-    const room = this.getRoomBySocketId(socketId);
+  updatePlayerReady(roomId: string, playerId: string, isReady: boolean): GameRoom | null {
+    const room = this.rooms.get(roomId);
     
     if (!room) {
       return null;
     }
 
-    const player = room.players.find(p => p.socketId === socketId);
+    const player = room.players.find(p => p.id === playerId);
     
     if (player) {
       player.isReady = isReady;

@@ -26,6 +26,7 @@
     "joinRoom": "Join Room",
     "joinBattle": "JOIN BATTLE",
     "spectate": "👁️ SPECTATE",
+    "soloPractice": "Solo Practice",
     "placeholders": {
       "enterName": "Enter your name to start playing",
       "roomCode": "Room Code"

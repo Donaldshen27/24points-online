@@ -280,20 +280,18 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   return (
     <div className="game-screen">
-      {/* Game Header */}
-      <div className="game-header">
-        <div className="game-info">
-          <h2>{t('gameScreen.room', { code: room.id })}</h2>
-          <div className="round-info">{t('gameScreen.round', { number: currentRound })}</div>
-          {isSpectator && <div className="spectator-badge">{t('gameScreen.spectating')}</div>}
+      {/* Minimal Game Header */}
+      <div className="game-header minimal">
+        <div className="game-info compact">
+          <span className="room-code">{room.id}</span>
+          <span className="round-indicator">R{currentRound}</span>
+          {isSpectator && <span className="spectator-icon">👁️</span>}
         </div>
         
-        <div className="game-status">
-          <div className="status-message">{getStatusMessage()}</div>
-        </div>
+        <div className="status-mini">{getStatusMessage()}</div>
 
-        <button className="leave-btn" onClick={onLeaveGame}>
-          {isSpectator ? t('gameScreen.buttons.leaveSpectator') : t('gameScreen.buttons.leaveGame')}
+        <button className="leave-btn minimal" onClick={onLeaveGame}>
+          ✕
         </button>
       </div>
 

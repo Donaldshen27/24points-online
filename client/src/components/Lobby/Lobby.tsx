@@ -69,11 +69,13 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
   }, [onRoomJoined]);
 
   const handleCreateRoom = () => {
+    console.log('handleCreateRoom called', { playerName, selectedRoomType, isSoloPractice });
     if (!playerName.trim()) {
       alert(t('lobby.errors.enterName'));
       return;
     }
     setIsCreating(true);
+    console.log('Creating room with:', { playerName, selectedRoomType, isSoloPractice });
     socketService.createRoom(playerName, selectedRoomType, isSoloPractice);
   };
 
@@ -153,10 +155,13 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
           )}
         </div>
 
-        <RoomTypeSelector
-          selectedType={selectedRoomType}
-          onSelectType={setSelectedRoomType}
-        />
+        {/* Room Type Selection */}
+        <div className="room-type-section">
+          <RoomTypeSelector
+            selectedType={selectedRoomType}
+            onSelectType={setSelectedRoomType}
+          />
+        </div>
 
         {/* Game Options */}
         <div className="game-options">
@@ -173,7 +178,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
               disabled={!playerName.trim() || isCreating}
               className="quick-play-btn"
             >
-              {t('lobby.createRoom')}
+              {isCreating ? t('lobby.creating', 'Creating...') : t('lobby.createRoom')}
             </button>
             <div className="solo-practice-wrapper">
               <label className="solo-practice-label">

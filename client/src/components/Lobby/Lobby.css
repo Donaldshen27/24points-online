@@ -71,6 +71,24 @@
   box-shadow: 0 0 0 3px rgba(129, 199, 132, 0.1);
 }
 
+/* Error message */
+.error-message {
+  display: block;
+  margin-top: var(--space-2);
+  color: var(--color-error);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+/* Room Type Section */
+.room-type-section {
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-subtle);
+}
+
 /* Game Options Grid */
 .game-options {
   display: grid;
@@ -144,6 +162,9 @@
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-md);
 }
 
 .quick-play-btn::after {

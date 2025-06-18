@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import socketService from './services/socketService'
 import { Lobby } from './components/Lobby/Lobby'
@@ -32,6 +32,10 @@ function App() {
   const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | null>(null)
   const [gameCount, setGameCount] = useState<number>(0)
   const [isSpectator, setIsSpectator] = useState<boolean>(false)
+  
+  // Use ref to access current appState in event handlers without causing re-renders
+  const appStateRef = useRef(appState)
+  appStateRef.current = appState
 
   const handleRoomJoined = useCallback((room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectatorJoin: boolean = false) => {
     console.log('[App] handleRoomJoined called:', { roomId: room.id, playerId, isReconnection, isSpectatorJoin })
@@ -94,7 +98,7 @@ function App() {
       setCurrentRoom(gameState)
       
       // Transition to game screen if in waiting room and game has started
-      if (appState === AppState.WAITING_ROOM && gameState.state === GameState.PLAYING) {
+      if (appStateRef.current === AppState.WAITING_ROOM && gameState.state === GameState.PLAYING) {
         console.log('[App] Transitioning from waiting room to game')
         setAppState(AppState.IN_GAME)
       }
@@ -107,7 +111,7 @@ function App() {
       socketService.off('game-state-updated')
       socketService.disconnect()
     }
-  }, [handleRoomJoined, appState])
+  }, [handleRoomJoined])
 
   // Poll for game count updates
   useEffect(() => {

@@ -402,10 +402,18 @@ export class GameStateManager {
       this.room.state = GameState.REPLAY;
       this.replaySkipRequests.clear();
       
-      // Set a timeout for replay duration (15 seconds to ensure animations complete)
-      this.replayTimeout = setTimeout(() => {
-        this.endReplay();
-      }, 15000);
+      // In solo practice mode, skip replay immediately
+      if (this.room.isSoloPractice) {
+        console.log('[GameStateManager] Solo practice mode - skipping replay immediately');
+        this.replayTimeout = setTimeout(() => {
+          this.endReplay();
+        }, 100); // Minimal delay to ensure state updates propagate
+      } else {
+        // Set a timeout for replay duration (15 seconds to ensure animations complete)
+        this.replayTimeout = setTimeout(() => {
+          this.endReplay();
+        }, 15000);
+      }
     } else {
       // No replay needed, start next round after a delay
       setTimeout(() => {

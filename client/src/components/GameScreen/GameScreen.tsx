@@ -183,7 +183,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       if (data.winnerId && data.loserId && centerCards.length > 0) {
         // Don't transfer immediately if there will be a replay
         const hasReplay = data.solution && data.correct && data.solution.operations && data.solution.operations.length > 0;
-        const transferDelay = hasReplay ? 8000 : 2500; // Longer delay if replay
+        // In solo practice with auto-skip, use minimal delay
+        const transferDelay = hasReplay && !room.isSoloPractice ? 8000 : 2500;
         
         setTimeout(() => {
           const transferTo = data.loserId === playerId ? 'current' : 'opponent';

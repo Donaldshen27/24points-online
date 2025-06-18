@@ -1,23 +1,31 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { ChineseSEOContent } from './ChineseSEOContent';
 import './SEOContent.css';
 
 export const SEOContent: React.FC = () => {
+  const { i18n } = useTranslation();
+  
+  if (i18n.language === 'zh') {
+    return <ChineseSEOContent />;
+  }
+  
   return (
     <section className="seo-content" aria-label="Game Information">
       <div className="seo-container">
-        <h2>Welcome to 24 Points - The Ultimate Math Card Game</h2>
+        <h2>Welcome to 24 Points (24points) - The Ultimate Math Card Game</h2>
         
         <div className="seo-section">
-          <h3>What is 24 Points?</h3>
+          <h3>What is 24 Points (24points)?</h3>
           <p>
-            24 Points is an exciting multiplayer math card game that challenges your mental arithmetic skills. 
-            Players race against each other to solve mathematical puzzles by combining four cards to reach exactly 24 
+            24 Points (also known as 24points) is an exciting multiplayer math card game that challenges your mental arithmetic skills. 
+            In this fast-paced 24points game, players race against each other to solve mathematical puzzles by combining four cards to reach exactly 24 
             using addition, subtraction, multiplication, and division.
           </p>
         </div>
 
         <div className="seo-section">
-          <h3>How to Play 24 Points Online</h3>
+          <h3>How to Play 24 Points (24points) Online</h3>
           <ol>
             <li><strong>Join a Game Room:</strong> Create or join a multiplayer room with another player</li>
             <li><strong>Get Your Cards:</strong> Each player starts with 20 cards numbered 1-10 (two of each)</li>
@@ -29,7 +37,7 @@ export const SEOContent: React.FC = () => {
         </div>
 
         <div className="seo-section">
-          <h3>Why Play 24 Points?</h3>
+          <h3>Why Play 24 Points (24points)?</h3>
           <ul>
             <li><strong>Brain Training:</strong> Improve mental math and problem-solving skills</li>
             <li><strong>Competitive Fun:</strong> Real-time multiplayer gameplay against friends or strangers</li>
@@ -62,7 +70,7 @@ export const SEOContent: React.FC = () => {
         </div>
 
         <div className="seo-section">
-          <h3>Strategy Tips for 24 Points</h3>
+          <h3>Strategy Tips for 24 Points (24points)</h3>
           <ul>
             <li><strong>Look for Common Patterns:</strong> 6×4=24, 8×3=24, 12×2=24</li>
             <li><strong>Use All Operations:</strong> Don't forget about subtraction and division</li>
@@ -75,8 +83,8 @@ export const SEOContent: React.FC = () => {
         <div className="seo-section">
           <h3>Frequently Asked Questions</h3>
           <dl>
-            <dt>Is 24 Points free to play?</dt>
-            <dd>Yes! 24 Points is completely free to play with no hidden costs or premium features.</dd>
+            <dt>Is 24 Points (24points) free to play?</dt>
+            <dd>Yes! 24 Points (24points) is completely free to play with no hidden costs or premium features.</dd>
             
             <dt>Do I need to download anything?</dt>
             <dd>No downloads required. Play directly in your web browser on any device.</dd>
@@ -93,14 +101,14 @@ export const SEOContent: React.FC = () => {
         </div>
 
         <div className="seo-section">
-          <h3>Join the 24 Points Community</h3>
+          <h3>Join the 24 Points (24points) Community</h3>
           <p>
-            Thousands of players worldwide enjoy 24 Points every day. Whether you're a math enthusiast, 
+            Thousands of players worldwide enjoy 24 Points (24points) every day. Whether you're a math enthusiast, 
             a student looking to improve arithmetic skills, or someone who loves competitive puzzle games, 
-            24 Points offers endless entertainment and mental stimulation.
+            24points offers endless entertainment and mental stimulation.
           </p>
           <p className="cta">
-            <strong>Ready to test your skills? Start playing 24 Points now - no registration required!</strong>
+            <strong>Ready to test your skills? Start playing 24points now - no registration required!</strong>
           </p>
         </div>
       </div>

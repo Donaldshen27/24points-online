@@ -144,6 +144,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
             maxLength={20}
             className="player-name-input"
             autoFocus
+            aria-label="Enter your name to play 24 Points (24points) online game"
           />
           {!playerName && hasInteracted && (
             <span className="error-message">{t('lobby.errors.enterNameToContinue')}</span>
@@ -178,6 +179,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
               }} 
               disabled={!playerName.trim() || isCreating}
               className="quick-play-btn"
+              aria-label="Create a new 24 Points (24points) multiplayer game room"
             >
               <span className="btn-text-full">{isCreating ? t('lobby.creating', 'Creating...') : t('lobby.createRoom')}</span>
               <span className="btn-text-mobile">{isCreating ? '...' : 'Create'}</span>
@@ -214,6 +216,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                 onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
                 maxLength={6}
                 className="code-input"
+                aria-label="Enter 24 Points (24points) game room code"
               />
               <button 
                 onClick={() => {
@@ -222,6 +225,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
                 }}
                 disabled={!playerName.trim() || !joinRoomId.trim()}
                 className="join-code-btn"
+                aria-label="Join existing 24 Points (24points) game room with code"
               >
                 <span className="btn-text-full">{t('lobby.joinRoom')}</span>
                 <span className="btn-text-mobile">Join</span>

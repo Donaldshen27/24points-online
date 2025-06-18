@@ -8,6 +8,7 @@ import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
 import { SEOContent } from './components/SEO/SEOContent'
+import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
@@ -142,6 +143,7 @@ function App() {
 
   return (
     <div className="App">
+      <DynamicSEO />
       <Navigation 
         username={currentRoom?.players.find(p => p.id === playerId)?.name} 
         onSignOut={handleLeaveRoom}

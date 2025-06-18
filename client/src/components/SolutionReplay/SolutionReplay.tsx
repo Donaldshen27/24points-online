@@ -10,6 +10,7 @@ interface SolutionReplayProps {
   onComplete?: () => void;
   autoPlay?: boolean;
   speed?: number; // 0.5 = slow, 1 = normal, 2 = fast
+  autoSkip?: boolean; // Auto-skip for solo practice mode
 }
 
 interface AnimationStep {
@@ -22,7 +23,8 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
   solution,
   onComplete,
   autoPlay = true,
-  speed = 1
+  speed = 1,
+  autoSkip = false
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
@@ -190,6 +192,19 @@ export const SolutionReplay: React.FC<SolutionReplayProps> = ({
       }
     };
   }, []);
+
+  // Auto-skip for solo practice mode
+  useEffect(() => {
+    if (autoSkip) {
+      console.log('[SolutionReplay] Auto-skipping replay for solo practice mode');
+      // Immediately complete the replay
+      setCurrentStep(steps.length);
+      setAnimationComplete(true);
+      if (onComplete) {
+        setTimeout(onComplete, 100); // Small delay to ensure state updates
+      }
+    }
+  }, [autoSkip, onComplete, steps.length]);
 
   const handleTogglePlay = () => {
     setIsPlaying(!isPlaying);

@@ -371,7 +371,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
             }, 300);
           }}
           autoPlay={true}
-          speed={1}
+          speed={1.5}
+          autoSkip={room.isSoloPractice}
         />
       )}
 

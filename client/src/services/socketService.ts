@@ -12,7 +12,6 @@ class SocketService {
         return;
       }
       // If socket exists but is disconnected, remove it first
-      console.log('Removing disconnected socket before creating new one');
       this.socket.removeAllListeners();
       this.socket.disconnect();
       this.socket = null;
@@ -20,7 +19,8 @@ class SocketService {
     
     // Use environment variable or fallback to localhost for development
     const serverUrl = url || import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
-    console.log('Creating new socket connection to:', serverUrl);
+    console.log('Connecting to server URL:', serverUrl);
+    console.log('Environment variables:', import.meta.env);
     this.socket = io(serverUrl, {
       autoConnect: true,
     });
@@ -40,7 +40,6 @@ class SocketService {
 
   disconnect(): void {
     if (this.socket) {
-      console.log('Disconnecting socket');
       this.socket.disconnect();
       this.socket = null;
     }
@@ -52,15 +51,11 @@ class SocketService {
 
   on(event: string, callback: (...args: any[]) => void): void {
     if (this.socket) {
-      this.socket.on(event, (...args: any[]) => {
-        console.log(`[SocketService] Event received: ${event}`, args);
-        callback(...args);
-      });
+      this.socket.on(event, callback);
     }
   }
 
   emit(event: string, ...args: any[]): void {
-    console.log(`[SocketService] Emitting event: ${event}`, args);
     if (this.socket) {
       this.socket.emit(event, ...args);
     }
@@ -80,12 +75,8 @@ class SocketService {
   }
 
   createRoom(playerName: string, roomType: string = 'classic', isSoloPractice: boolean = false, callback?: (response: any) => void): void {
-    console.log('[SocketService] Creating room:', { playerName, roomType, isSoloPractice });
     if (this.socket) {
-      this.socket.emit('create-room', { playerName, roomType, isSoloPractice }, (response: any) => {
-        console.log('[SocketService] Create room response:', response);
-        if (callback) callback(response);
-      });
+      this.socket.emit('create-room', { playerName, roomType, isSoloPractice }, callback);
     }
   }
 

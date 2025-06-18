@@ -5,10 +5,22 @@ class SocketService {
   private socket: Socket | null = null;
 
   connect(url?: string): void {
+    // If socket exists, check its state
+    if (this.socket) {
+      if (this.socket.connected) {
+        console.log('Socket already connected, skipping connection');
+        return;
+      }
+      // If socket exists but is disconnected, remove it first
+      console.log('Removing disconnected socket before creating new one');
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+      this.socket = null;
+    }
+    
     // Use environment variable or fallback to localhost for development
     const serverUrl = url || import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
-    console.log('Connecting to server URL:', serverUrl);
-    console.log('Environment variables:', import.meta.env);
+    console.log('Creating new socket connection to:', serverUrl);
     this.socket = io(serverUrl, {
       autoConnect: true,
     });
@@ -28,7 +40,9 @@ class SocketService {
 
   disconnect(): void {
     if (this.socket) {
+      console.log('Disconnecting socket');
       this.socket.disconnect();
+      this.socket = null;
     }
   }
 

@@ -8,7 +8,7 @@
       "disconnected": "Disconnected",
       "connecting": "Connecting to server..."
     },
-    "gameCounter": "{{count}} games played since server start",
+    "onlineUsers": "{{count}} people online",
     "testMenu": {
       "title": "Select Test Component",
       "deckSystem": "Deck System Test",

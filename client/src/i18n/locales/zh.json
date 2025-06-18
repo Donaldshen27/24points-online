@@ -8,7 +8,7 @@
       "disconnected": "已断开",
       "connecting": "正在连接服务器..."
     },
-    "gameCounter": "服务器启动以来已进行 {{count}} 场游戏",
+    "onlineUsers": "{{count}} 人在线",
     "testMenu": {
       "title": "选择测试组件",
       "deckSystem": "牌组系统测试",

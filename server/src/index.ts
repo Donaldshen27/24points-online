@@ -40,6 +40,10 @@ app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'Server is running' });
 });
 
+// Import auth routes
+import authRoutes from './routes/auth';
+app.use('/api/auth', authRoutes);
+
 import { handleConnection } from './socket/connectionHandler';
 
 io.on('connection', (socket) => {

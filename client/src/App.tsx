@@ -31,7 +31,7 @@ function App() {
   const [currentRoom, setCurrentRoom] = useState<GameRoom | null>(null)
   const [playerId, setPlayerId] = useState<string>('')
   const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | null>(null)
-  const [gameCount, setGameCount] = useState<number>(0)
+  const [onlineUsers, setOnlineUsers] = useState<number>(0)
   const [isSpectator, setIsSpectator] = useState<boolean>(false)
   
   // Use ref to access current appState in event handlers without causing re-renders
@@ -70,9 +70,9 @@ function App() {
       setIsConnected(true)
       setAppState(AppState.LOBBY)
       
-      // Get initial game count
-      socketService.emit('get-game-count', (data: { count: number }) => {
-        setGameCount(data.count)
+      // Get initial online users count
+      socketService.emit('get-online-users', (data: { count: number }) => {
+        setOnlineUsers(data.count)
       })
     })
 
@@ -114,13 +114,13 @@ function App() {
     }
   }, [handleRoomJoined])
 
-  // Poll for game count updates
+  // Poll for online users updates
   useEffect(() => {
     if (!isConnected) return
 
     const interval = setInterval(() => {
-      socketService.emit('get-game-count', (data: { count: number }) => {
-        setGameCount(data.count)
+      socketService.emit('get-online-users', (data: { count: number }) => {
+        setOnlineUsers(data.count)
       })
     }, 5000) // Update every 5 seconds
 
@@ -158,7 +158,7 @@ function App() {
       <div className="status-bar">
         <div className="status-bar-content">
           <div className="game-counter">
-            {t('app.gameCounter', { count: gameCount })}
+            {t('app.onlineUsers', { count: onlineUsers })}
           </div>
           <div className="connection-status">
             <span className={`status-dot ${isConnected ? 'connected' : 'disconnected'}`}></span>

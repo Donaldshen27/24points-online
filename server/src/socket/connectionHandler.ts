@@ -573,6 +573,11 @@ export const handleConnection = (io: Server, socket: Socket) => {
     callback({ count });
   });
 
+  socket.on('get-online-users', (callback) => {
+    const count = io.engine.clientsCount || 0;
+    callback({ count });
+  });
+
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);

@@ -18,6 +18,14 @@ export const handleConnection = (io: Server, socket: Socket) => {
     const playerId = `player-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     const roomType = data.roomType || 'classic';
     
+    console.log('[ConnectionHandler] Creating room:', {
+      playerName: data.playerName,
+      roomType,
+      isSoloPractice: data.isSoloPractice,
+      playerId,
+      socketId: socket.id
+    });
+    
     try {
       const room = roomManager.createRoom(playerId, socket.id, data.playerName, roomType, data.isSoloPractice);
       
@@ -27,21 +35,37 @@ export const handleConnection = (io: Server, socket: Socket) => {
         playerId 
       });
       
+      console.log('[ConnectionHandler] Room created:', {
+        roomId: room.id,
+        players: room.players.length,
+        isSoloPractice: room.isSoloPractice
+      });
+      
       // If solo practice mode, add a bot player immediately
       if (data.isSoloPractice) {
+        console.log('[ConnectionHandler] Adding practice bot to room:', room.id);
         const botId = `bot-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
         const botSocketId = `bot-socket-${Math.random().toString(36).substring(2, 9)}`;
         const botRoom = roomManager.joinRoom(room.id, botId, botSocketId, 'Practice Bot', false);
         
         if (botRoom) {
+          console.log('[ConnectionHandler] Bot joined successfully:', {
+            roomId: room.id,
+            botId,
+            players: botRoom.players.map(p => ({ id: p.id, name: p.name }))
+          });
+          
           // Notify the room about the bot joining
           io.to(room.id).emit('room-updated', roomManager.getRoomInfo(room.id));
           
           // Auto-ready the bot after a short delay
           setTimeout(() => {
+            console.log('[ConnectionHandler] Auto-readying bot:', botId);
             roomManager.updatePlayerReady(room.id, botId, true);
             io.to(room.id).emit('room-updated', roomManager.getRoomInfo(room.id));
           }, 500);
+        } else {
+          console.error('[ConnectionHandler] Failed to add bot to room:', room.id);
         }
       }
       

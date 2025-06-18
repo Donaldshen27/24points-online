@@ -545,10 +545,11 @@ export class RoomManager {
     
     const config = room.roomType ? getRoomTypeConfig(room.roomType) : null;
     
-    return {
+    const roomInfo = {
       id: room.id,
       roomType: room.roomType || 'classic',
       config,
+      isSoloPractice: room.isSoloPractice,
       players: room.players.map(p => ({
         id: p.id,
         name: p.name,
@@ -559,6 +560,15 @@ export class RoomManager {
       state: room.state,
       currentRound: room.currentRound
     };
+    
+    console.log('[RoomManager] getRoomInfo:', {
+      roomId,
+      isSoloPractice: room.isSoloPractice,
+      players: roomInfo.players,
+      state: room.state
+    });
+    
+    return roomInfo;
   }
 
   getRoomConfig(roomType: string): any {

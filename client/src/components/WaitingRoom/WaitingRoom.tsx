@@ -23,8 +23,21 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
   const currentPlayer = room.players.find(p => p.id === playerId);
   const otherPlayer = room.players.find(p => p.id !== playerId);
 
+  console.log('[WaitingRoom] Component mounted:', {
+    roomId: room?.id,
+    isSoloPractice: room?.isSoloPractice,
+    players: room?.players?.map(p => ({ id: p.id, name: p.name, isReady: p.isReady })),
+    currentPlayer: currentPlayer ? { id: currentPlayer.id, name: currentPlayer.name, isReady: currentPlayer.isReady } : null,
+    otherPlayer: otherPlayer ? { id: otherPlayer.id, name: otherPlayer.name, isReady: otherPlayer.isReady } : null
+  });
+
   useEffect(() => {
     socketService.on('room-updated', (updatedRoom: GameRoom) => {
+      console.log('[WaitingRoom] Room updated:', {
+        roomId: updatedRoom?.id,
+        isSoloPractice: updatedRoom?.isSoloPractice,
+        players: updatedRoom?.players?.map(p => ({ id: p.id, name: p.name, isReady: p.isReady }))
+      });
       setRoom(updatedRoom);
     });
 
@@ -37,6 +50,7 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
     });
 
     socketService.on('game-starting', (data: { countdown: number }) => {
+      console.log('[WaitingRoom] Game starting with countdown:', data.countdown);
       setCountdown(data.countdown);
       
       const timer = setInterval(() => {
@@ -44,6 +58,7 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
           if (prev === null || prev <= 1) {
             clearInterval(timer);
             if (prev === 1) {
+              console.log('[WaitingRoom] Countdown finished, calling onGameStart');
               // Call onGameStart outside of setState
               setTimeout(() => onGameStart(), 0);
             }

@@ -17,7 +17,13 @@ interface GameStateHook {
 }
 
 export const useGameState = (playerId: string | null, initialRoom?: GameRoom | null): GameStateHook => {
-  console.log('[useGameState] Hook initialized with:', { playerId, hasInitialRoom: !!initialRoom, initialRoomState: initialRoom?.state });
+  console.log('[useGameState] Hook initialized with:', { 
+    playerId, 
+    hasInitialRoom: !!initialRoom, 
+    initialRoomState: initialRoom?.state,
+    isSoloPractice: initialRoom?.isSoloPractice,
+    initialPlayers: initialRoom?.players?.map(p => ({ id: p.id, name: p.name, isReady: p.isReady }))
+  });
   const [gameState, setGameState] = useState<GameRoom | null>(initialRoom || null);
   const [currentRound, setCurrentRound] = useState(initialRoom?.currentRound || 0);
   const [centerCards, setCenterCards] = useState<Card[]>(initialRoom?.centerCards || []);
@@ -41,7 +47,9 @@ export const useGameState = (playerId: string | null, initialRoom?: GameRoom | n
         opponentDeckSize: state.players.find(p => p.id !== playerId)?.deck.length,
         centerCards: state.centerCards?.length || 0,
         hasPlayers: !!state.players,
-        playerCount: state.players?.length || 0
+        playerCount: state.players?.length || 0,
+        isSoloPractice: state.isSoloPractice,
+        players: state.players?.map(p => ({ id: p.id, name: p.name, isReady: p.isReady }))
       });
       setGameState(state);
       setCenterCards(state.centerCards || []);

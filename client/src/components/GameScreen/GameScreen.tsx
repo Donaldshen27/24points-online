@@ -23,7 +23,14 @@ interface GameScreenProps {
 
 export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveGame, isSpectator = false }) => {
   const { t } = useTranslation();
-  console.log('[GameScreen] Component mounted with:', { roomId: room?.id, roomState: room?.state, playerId, isSpectator });
+  console.log('[GameScreen] Component mounted with:', { 
+    roomId: room?.id, 
+    roomState: room?.state, 
+    playerId, 
+    isSpectator,
+    isSoloPractice: room?.isSoloPractice,
+    players: room?.players?.map(p => ({ id: p.id, name: p.name, isReady: p.isReady }))
+  });
   
   const {
     gameState,
@@ -59,6 +66,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const opponent = isSpectator 
     ? gameState?.players?.[1] 
     : gameState?.players.find(p => p.id !== playerId);
+
+  console.log('[GameScreen] Player state:', {
+    gameState: gameState?.state,
+    currentPlayer: currentPlayer ? { id: currentPlayer.id, name: currentPlayer.name } : null,
+    opponent: opponent ? { id: opponent.id, name: opponent.name } : null,
+    centerCards: centerCards?.length,
+    currentRound,
+    isSoloPractice: room?.isSoloPractice
+  });
 
 
 
@@ -262,6 +278,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   // For spectators, we need to wait for game state but not for player matching
   if (!gameState || (!isSpectator && (!currentPlayer || !opponent))) {
+    console.log('[GameScreen] Still loading - missing data:', {
+      hasGameState: !!gameState,
+      hasCurrentPlayer: !!currentPlayer,
+      hasOpponent: !!opponent,
+      isSpectator,
+      roomId: room?.id,
+      isSoloPractice: room?.isSoloPractice,
+      playersInRoom: room?.players?.length
+    });
     return (
       <div className="game-screen loading">
         <h2>{t('gameScreen.status.loading')}</h2>

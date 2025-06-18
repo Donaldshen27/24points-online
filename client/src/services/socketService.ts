@@ -38,11 +38,15 @@ class SocketService {
 
   on(event: string, callback: (...args: any[]) => void): void {
     if (this.socket) {
-      this.socket.on(event, callback);
+      this.socket.on(event, (...args: any[]) => {
+        console.log(`[SocketService] Event received: ${event}`, args);
+        callback(...args);
+      });
     }
   }
 
   emit(event: string, ...args: any[]): void {
+    console.log(`[SocketService] Emitting event: ${event}`, args);
     if (this.socket) {
       this.socket.emit(event, ...args);
     }
@@ -62,8 +66,12 @@ class SocketService {
   }
 
   createRoom(playerName: string, roomType: string = 'classic', isSoloPractice: boolean = false, callback?: (response: any) => void): void {
+    console.log('[SocketService] Creating room:', { playerName, roomType, isSoloPractice });
     if (this.socket) {
-      this.socket.emit('create-room', { playerName, roomType, isSoloPractice }, callback);
+      this.socket.emit('create-room', { playerName, roomType, isSoloPractice }, (response: any) => {
+        console.log('[SocketService] Create room response:', response);
+        if (callback) callback(response);
+      });
     }
   }
 

@@ -177,6 +177,13 @@ export class GameStateManager {
    * Start a new round
    */
   private startNewRound(): void {
+    console.log(`[GameStateManager] Starting new round:`, {
+      roomId: this.room.id,
+      isSoloPractice: this.room.isSoloPractice,
+      currentRound: this.room.currentRound,
+      players: this.room.players.map(p => ({ id: p.id, name: p.name, deckSize: p.deck.length }))
+    });
+    
     // Check if game should end before starting new round
     const player1 = this.room.players[0];
     const player2 = this.room.players[1];

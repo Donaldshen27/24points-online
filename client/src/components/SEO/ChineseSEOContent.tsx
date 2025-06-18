@@ -1,4 +1,3 @@
-import React from 'react';
 import './SEOContent.css';
 
 export function ChineseSEOContent() {

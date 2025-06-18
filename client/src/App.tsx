@@ -84,13 +84,30 @@ function App() {
       handleRoomJoined(data.room, data.playerId, false, true)
     })
 
+    // Handle game state updates (important for solo practice)
+    socketService.on('game-state-updated', (gameState: GameRoom) => {
+      console.log('[App] game-state-updated received:', {
+        state: gameState.state,
+        players: gameState.players?.length,
+        isSoloPractice: gameState.isSoloPractice
+      })
+      setCurrentRoom(gameState)
+      
+      // Transition to game screen if in waiting room and game has started
+      if (appState === AppState.WAITING_ROOM && gameState.state === GameState.PLAYING) {
+        console.log('[App] Transitioning from waiting room to game')
+        setAppState(AppState.IN_GAME)
+      }
+    })
+
     return () => {
       socketService.off('connect')
       socketService.off('disconnect')
       socketService.off('spectator-joined')
+      socketService.off('game-state-updated')
       socketService.disconnect()
     }
-  }, [handleRoomJoined])
+  }, [handleRoomJoined, appState])
 
   // Poll for game count updates
   useEffect(() => {

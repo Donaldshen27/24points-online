@@ -228,7 +228,11 @@ export const handleConnection = (io: Server, socket: Socket) => {
               // Send personalized state to each player
               gameState.players.forEach(player => {
                 const playerState = roomManager.getGameStateForPlayer(room.id, player.id);
-                io.to(player.socketId).emit('game-state-updated', playerState);
+                // Skip bot players (they don't have real socket connections)
+                if (!player.id.startsWith('bot-')) {
+                  console.log('[ConnectionHandler] Sending game-state-updated to player:', player.id);
+                  io.to(player.socketId).emit('game-state-updated', playerState);
+                }
               });
               
               // Send full game state to spectators

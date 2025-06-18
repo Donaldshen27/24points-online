@@ -8,7 +8,24 @@
   # Build command
   command = "npm run build"
 
-# Redirects for SPA
+# Language-specific redirects (must come before catch-all)
+[[redirects]]
+  from = "/zh"
+  to = "/index-zh.html"
+  status = 200
+
+[[redirects]]
+  from = "/zh/*"
+  to = "/index-zh.html"
+  status = 200
+
+# Default English version
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# Catch-all redirect for SPA routing
 [[redirects]]
   from = "/*"
   to = "/index.html"

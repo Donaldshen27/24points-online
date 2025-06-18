@@ -36,12 +36,6 @@ export function DynamicSEO() {
       updateMetaTag('meta[name="twitter:description"]', '在线24点多人对战！使用4张牌通过数学运算得到24。');
       updateMetaTag('meta[name="language"]', 'Chinese');
       document.documentElement.lang = 'zh';
-      
-      // Update canonical URL
-      const canonical = document.querySelector('link[rel="canonical"]');
-      if (canonical) {
-        canonical.setAttribute('href', 'https://twentyfourpoints.com/zh');
-      }
     } else {
       // Update English meta tags with 24points variations
       document.title = '24 Points Game - 24points Multiplayer Math Card Game | Play Online Free';
@@ -54,12 +48,6 @@ export function DynamicSEO() {
       updateMetaTag('meta[name="twitter:description"]', 'Challenge friends in 24points real-time! Solve math puzzles by combining 4 cards to reach exactly 24.');
       updateMetaTag('meta[name="language"]', 'English');
       document.documentElement.lang = 'en';
-      
-      // Update canonical URL
-      const canonical = document.querySelector('link[rel="canonical"]');
-      if (canonical) {
-        canonical.setAttribute('href', 'https://twentyfourpoints.com');
-      }
     }
   }, [isZh]);
 

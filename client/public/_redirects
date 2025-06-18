@@ -1,1 +1,6 @@
-/*    /index.html   200
+# Language-specific redirects
+/zh              /index-zh.html    200
+/zh/*            /index-zh.html    200
+
+# Default catch-all for SPA
+/*               /index.html       200

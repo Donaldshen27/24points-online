@@ -61,10 +61,10 @@ export class ExtendedGameRules extends BaseGameRules {
   }
   
   checkWinCondition(room: GameRoom): WinResult | null {
-    // Check if any player has reached 5 points (wins)
-    const winner = room.players.find(p => (p.points || 0) >= 5);
+    // Check if any player has reached 4 points (wins)
+    const winner = room.players.find(p => (p.points || 0) >= 4);
     if (winner) {
-      return { winnerId: winner.id, reason: 'reached_5_points' };
+      return { winnerId: winner.id, reason: 'reached_4_points' };
     }
     
     return null;

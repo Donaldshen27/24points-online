@@ -23,10 +23,10 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
   // Generate display based on game mode
   const getDisplay = () => {
     if (isExtendedMode) {
-      // Extended mode: show points (0-5)
+      // Extended mode: show points (0-4)
       const stars = '⭐'.repeat(points);
-      const emptyStars = '☆'.repeat(5 - points);
-      const className = points >= 4 ? 'points-display near-win' : 'points-display';
+      const emptyStars = '☆'.repeat(4 - points);
+      const className = points >= 3 ? 'points-display near-win' : 'points-display';
       return <span className={className}>{stars}{emptyStars}</span>;
     } else {
       // Classic/Super mode: show hearts based on card count
@@ -56,7 +56,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
         <div className="card-display">
           {getDisplay()}
           <span className="card-count">
-            {isExtendedMode ? `(${points}/5)` : `(${cardCount})`}
+            {isExtendedMode ? `(${points}/4)` : `(${cardCount})`}
           </span>
         </div>
       </div>

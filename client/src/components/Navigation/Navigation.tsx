@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../LanguageToggle';
+import { AuthModal } from '../AuthModal';
 import './Navigation.css';
 
 interface NavigationProps {
@@ -8,10 +9,13 @@ interface NavigationProps {
   onSignOut?: () => void;
   onTestModeToggle?: () => void;
   isTestMode?: boolean;
+  onAuthSuccess?: (user: any) => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode }) => {
+const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess }) => {
   const { t } = useTranslation();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
   return (
     <nav className="navigation">
       <div className="nav-container">
@@ -90,8 +94,22 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
             </>
           ) : (
             <div className="nav-auth">
-              <button className="btn btn-secondary" disabled>{t('app.nav.signIn')}</button>
-              <button className="btn btn-primary" disabled>
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => {
+                  setAuthDefaultTab('signin');
+                  setShowAuthModal(true);
+                }}
+              >
+                {t('app.nav.signIn')}
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={() => {
+                  setAuthDefaultTab('signup');
+                  setShowAuthModal(true);
+                }}
+              >
                 <span className="auth-full">{t('app.nav.signUp')}</span>
                 <span className="auth-mobile">Join</span>
               </button>
@@ -99,6 +117,18 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
           )}
         </div>
       </div>
+      
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={(user) => {
+          if (onAuthSuccess) {
+            onAuthSuccess(user);
+          }
+          setShowAuthModal(false);
+        }}
+        defaultTab={authDefaultTab}
+      />
     </nav>
   );
 };

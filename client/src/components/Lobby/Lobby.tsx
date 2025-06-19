@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
 import type { GameRoom } from '../../types/game.types';
+import type { AuthUser } from '../../services/authService';
 import { RoomTypeSelector } from '../RoomTypeSelector/RoomTypeSelector';
 import './Lobby.css';
 
 interface LobbyProps {
   onRoomJoined: (room: GameRoom, playerId: string, isReconnection?: boolean) => void;
+  authUser?: AuthUser | null;
 }
 
-export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
+export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
   const { t } = useTranslation();
-  const [playerName, setPlayerName] = useState('');
+  const [playerName, setPlayerName] = useState(authUser?.username || '');
   const [allRooms, setAllRooms] = useState<GameRoom[]>([]);
   const [joinRoomId, setJoinRoomId] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -19,6 +21,13 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isSoloPractice, setIsSoloPractice] = useState(false);
 
+  useEffect(() => {
+    // If user is authenticated, use their username
+    if (authUser?.username) {
+      setPlayerName(authUser.username);
+    }
+  }, [authUser]);
+  
   useEffect(() => {
     socketService.on('rooms-list', () => {
       // We don't use rooms-list anymore, just keeping the handler for compatibility
@@ -145,6 +154,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined }) => {
             className="player-name-input"
             autoFocus
             aria-label="Enter your name to play 24 Points (24points) online game"
+            disabled={!!authUser}
           />
           {!playerName && hasInteracted && (
             <span className="error-message">{t('lobby.errors.enterNameToContinue')}</span>

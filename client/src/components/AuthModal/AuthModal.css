@@ -1,0 +1,224 @@
+/* Auth Modal Styles */
+.auth-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: var(--z-modal);
+  animation: fadeIn var(--transition-base);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.auth-modal {
+  position: relative;
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideIn var(--transition-slow);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  z-index: 1;
+}
+
+.modal-close:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-2);
+}
+
+.modal-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding: 0 var(--space-6);
+  padding-top: var(--space-6);
+}
+
+.modal-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-base);
+}
+
+.modal-tab:hover {
+  color: var(--color-text-primary);
+}
+
+.modal-tab.active {
+  color: var(--color-accent-primary);
+  font-weight: var(--font-semibold);
+}
+
+.modal-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--color-accent-primary);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.modal-content {
+  padding: var(--space-8) var(--space-6);
+}
+
+.modal-divider {
+  position: relative;
+  text-align: center;
+  margin: 0 var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.modal-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--color-border-subtle);
+}
+
+.modal-divider span {
+  position: relative;
+  background-color: var(--color-surface-1);
+  padding: 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+
+.social-auth {
+  padding: 0 var(--space-6) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.social-btn:hover:not(:disabled) {
+  background-color: var(--color-surface-3);
+  border-color: var(--color-border-strong);
+  transform: translateY(-1px);
+}
+
+.social-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.google-btn {
+  background-color: white;
+  color: #3c4043;
+  border-color: #dadce0;
+}
+
+.google-btn:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  box-shadow: var(--shadow-sm);
+}
+
+.guest-btn {
+  background-color: var(--color-button-secondary);
+  border-color: var(--color-border-default);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .auth-modal {
+    max-width: 100%;
+    margin: var(--space-4);
+  }
+  
+  .modal-content,
+  .social-auth {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  .modal-tabs {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  .modal-divider {
+    margin-left: var(--space-4);
+    margin-right: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-modal-backdrop {
+    padding: 0;
+  }
+  
+  .auth-modal {
+    max-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  .modal-close {
+    top: var(--space-3);
+    right: var(--space-3);
+  }
+}

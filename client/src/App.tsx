@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import socketService from './services/socketService'
+import { authService, type AuthUser } from './services/authService'
 import { Lobby } from './components/Lobby/Lobby'
 import { WaitingRoom } from './components/WaitingRoom/WaitingRoom'
 import { GameScreen } from './components/GameScreen/GameScreen'
@@ -33,6 +34,7 @@ function App() {
   const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | null>(null)
   const [onlineUsers, setOnlineUsers] = useState<number>(0)
   const [isSpectator, setIsSpectator] = useState<boolean>(false)
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null)
   
   // Use ref to access current appState in event handlers without causing re-renders
   const appStateRef = useRef(appState)
@@ -64,6 +66,15 @@ function App() {
   }, [])
 
   useEffect(() => {
+    // Check if user is already authenticated
+    const checkAuth = async () => {
+      const user = await authService.getCurrentUser()
+      if (user) {
+        setAuthUser(user)
+      }
+    }
+    checkAuth()
+    
     socketService.connect()
     
     socketService.on('connect', () => {
@@ -140,18 +151,29 @@ function App() {
     setIsSpectator(false)
     setAppState(AppState.LOBBY)
   }
+  
+  const handleAuthSuccess = (user: AuthUser) => {
+    setAuthUser(user)
+  }
+  
+  const handleSignOut = async () => {
+    await authService.logout()
+    setAuthUser(null)
+    handleLeaveRoom()
+  }
 
   return (
     <div className="App">
       <DynamicSEO />
       <Navigation 
-        username={currentRoom?.players.find(p => p.id === playerId)?.name} 
-        onSignOut={handleLeaveRoom}
+        username={authUser?.username || currentRoom?.players.find(p => p.id === playerId)?.name} 
+        onSignOut={authUser ? handleSignOut : handleLeaveRoom}
         onTestModeToggle={() => {
           setAppState(appState === AppState.TEST_MODE ? AppState.LOBBY : AppState.TEST_MODE);
           setTestComponent(null);
         }}
         isTestMode={appState === AppState.TEST_MODE}
+        onAuthSuccess={handleAuthSuccess}
       />
       
       {/* Connection status bar */}
@@ -175,7 +197,7 @@ function App() {
         )}
 
         {appState === AppState.LOBBY && (
-          <Lobby onRoomJoined={handleRoomJoined} />
+          <Lobby onRoomJoined={handleRoomJoined} authUser={authUser} />
         )}
 
         {appState === AppState.WAITING_ROOM && currentRoom && (

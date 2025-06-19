@@ -9,3 +9,6 @@ export { RoundTimer } from './RoundTimer/RoundTimer';
 export { RoundResult } from './RoundResult/RoundResult';
 export { GameOver } from './GameOver/GameOver';
 export { CardTransfer } from './CardTransfer/CardTransfer';
+export { SignInForm } from './SignInForm';
+export { SignUpForm } from './SignUpForm';
+export { AuthModal } from './AuthModal';

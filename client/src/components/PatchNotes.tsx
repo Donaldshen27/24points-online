@@ -14,6 +14,14 @@ interface PatchNote {
 const patchNotes: PatchNote[] = [
   {
     date: '2025-01-19',
+    version: '1.4.1',
+    changes: [
+      { type: 'feature', description: 'Guest usernames are now remembered across sessions' },
+      { type: 'performance', description: 'Improved user experience - no need to re-enter username every time' }
+    ]
+  },
+  {
+    date: '2025-01-19',
     version: '1.4.0',
     changes: [
       { type: 'feature', description: 'New point-based scoring for Extended Range mode - first to 4 points wins!' },

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
 import type { GameRoom } from '../../types/game.types';
 import type { AuthUser } from '../../services/authService';
+import { guestService } from '../../services/guestService';
 import { RoomTypeSelector } from '../RoomTypeSelector/RoomTypeSelector';
 import './Lobby.css';
 
@@ -13,7 +14,13 @@ interface LobbyProps {
 
 export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
   const { t } = useTranslation();
-  const [playerName, setPlayerName] = useState(authUser?.username || '');
+  const [playerName, setPlayerName] = useState(() => {
+    // Priority: authenticated user > cached guest username > empty
+    if (authUser?.username) {
+      return authUser.username;
+    }
+    return guestService.getGuestUsername() || '';
+  });
   const [allRooms, setAllRooms] = useState<GameRoom[]>([]);
   const [joinRoomId, setJoinRoomId] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -25,6 +32,8 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
     // If user is authenticated, use their username
     if (authUser?.username) {
       setPlayerName(authUser.username);
+      // Clear guest username when authenticated
+      guestService.clearGuestUsername();
     }
   }, [authUser]);
   
@@ -83,6 +92,10 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
       alert(t('lobby.errors.enterName'));
       return;
     }
+    // Save guest username if not authenticated
+    if (!authUser) {
+      guestService.setGuestUsername(playerName);
+    }
     setIsCreating(true);
     console.log('Creating room with:', { playerName, selectedRoomType, isSoloPractice });
     socketService.createRoom(playerName, selectedRoomType, isSoloPractice);
@@ -92,6 +105,10 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
     if (!playerName.trim()) {
       alert(t('lobby.errors.enterName'));
       return;
+    }
+    // Save guest username if not authenticated
+    if (!authUser) {
+      guestService.setGuestUsername(playerName);
     }
     socketService.emit('join-room', { roomId, playerName });
   };
@@ -104,6 +121,10 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
     if (!joinRoomId.trim()) {
       alert(t('lobby.errors.enterRoomCode'));
       return;
+    }
+    // Save guest username if not authenticated
+    if (!authUser) {
+      guestService.setGuestUsername(playerName);
     }
     socketService.emit('join-room', { roomId: joinRoomId.toUpperCase(), playerName });
   };
@@ -148,6 +169,10 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
             onChange={(e) => {
               setPlayerName(e.target.value);
               if (!hasInteracted) setHasInteracted(true);
+              // Save guest username on change if not authenticated
+              if (!authUser && e.target.value.trim()) {
+                guestService.setGuestUsername(e.target.value.trim());
+              }
             }}
             onBlur={() => setHasInteracted(true)}
             maxLength={20}

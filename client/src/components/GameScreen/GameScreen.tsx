@@ -186,7 +186,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         // Don't transfer immediately if there will be a replay
         const hasReplay = data.solution && data.correct && data.solution.operations && data.solution.operations.length > 0;
         // In solo practice with auto-skip, use minimal delay
-        const transferDelay = hasReplay && !room.isSoloPractice ? 8000 : 2500;
+        const transferDelay = hasReplay && !gameState?.isSoloPractice ? 8000 : 2500;
         
         setTimeout(() => {
           const transferTo = data.loserId === playerId ? 'current' : 'opponent';
@@ -281,7 +281,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   // Handle new record notification
   useEffect(() => {
-    if (room.newRecordSet && room.state === GameState.ROUND_END) {
+    if (gameState?.newRecordSet && gameState?.state === GameState.ROUND_END) {
       setShowNewRecord(true);
       // Clear after 3 seconds
       const timer = setTimeout(() => {
@@ -291,7 +291,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     } else {
       setShowNewRecord(false);
     }
-  }, [room.newRecordSet, room.state]);
+  }, [gameState?.newRecordSet, gameState?.state]);
 
   // For spectators, we need to wait for game state but not for player matching
   if (!gameState || (!isSpectator && (!currentPlayer || !opponent))) {
@@ -353,13 +353,21 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         {/* Center Table */}
         <div className="center-area">
           {/* Puzzle Records */}
-          {gameState?.state === GameState.PLAYING && room.currentPuzzleStats && (
-            <PuzzleRecords
-              occurrenceCount={room.currentPuzzleStats.occurrenceCount}
-              bestRecord={room.currentPuzzleStats.bestRecord}
-              showNewRecord={showNewRecord}
-            />
-          )}
+          {(() => {
+            console.log('[GameScreen] Puzzle Records check:', {
+              gameState: gameState?.state,
+              isPlaying: gameState?.state === GameState.PLAYING,
+              hasPuzzleStats: !!gameState?.currentPuzzleStats,
+              puzzleStats: gameState?.currentPuzzleStats
+            });
+            return gameState?.state === GameState.PLAYING && gameState?.currentPuzzleStats && (
+              <PuzzleRecords
+                occurrenceCount={gameState.currentPuzzleStats.occurrenceCount}
+                bestRecord={gameState.currentPuzzleStats.bestRecord}
+                showNewRecord={showNewRecord}
+              />
+            );
+          })()}
           
           <InteractiveCenterTable 
             cards={centerCards}
@@ -367,7 +375,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
             disabled={isSpectator || gameState?.state !== GameState.PLAYING}
             allowInteraction={!isSpectator && gameState?.state === GameState.PLAYING && centerCards.length > 0}
           />
-          {room.roomType === 'super' && (
+          {gameState?.roomType === 'super' && (
             <div className="super-mode-hint">
               <svg className="hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 2v6m0 4v6m0 4v2m0-18a2 2 0 110 4 2 2 0 010-4zm0 8a2 2 0 110 4 2 2 0 010-4z" />
@@ -423,7 +431,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           }}
           autoPlay={true}
           speed={1.5}
-          autoSkip={room.isSoloPractice}
+          autoSkip={gameState?.isSoloPractice}
         />
       )}
 

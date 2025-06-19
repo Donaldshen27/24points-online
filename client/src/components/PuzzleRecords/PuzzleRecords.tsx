@@ -19,21 +19,19 @@ export const PuzzleRecords: React.FC<PuzzleRecordsProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  // Don't show anything if no occurrence data
-  if (occurrenceCount === 0 && !bestRecord) {
-    return null;
-  }
+  // Always show the component if we have any data
+  // (even if occurrenceCount is 0, it might be loading or a first-time puzzle)
 
   return (
     <div className="puzzle-records">
       <motion.div 
-        className={`records-container ${occurrenceCount === 1 && !bestRecord ? 'first-time' : ''}`}
+        className={`records-container ${occurrenceCount <= 1 && !bestRecord ? 'first-time' : ''}`}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         <div className="record-info">
-          {occurrenceCount === 1 && !bestRecord ? (
+          {occurrenceCount <= 1 && !bestRecord ? (
             <>
               <span className="first-time-icon">✨</span>
               <span className="first-time-message">

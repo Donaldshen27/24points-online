@@ -254,8 +254,22 @@ export class GameStateManager {
     console.log('New round started with cards:', cardValues);
     
     // Track puzzle occurrence and get stats
-    trackPuzzle(cardValues).catch(err => console.error('Error tracking puzzle:', err));
+    try {
+      await trackPuzzle(cardValues);
+    } catch (err) {
+      console.error('Error tracking puzzle:', err);
+    }
     const puzzleStats = await getPuzzleStats(cardValues);
+    
+    console.log('[GameStateManager] Puzzle stats retrieved:', {
+      cardValues,
+      occurrenceCount: puzzleStats.occurrenceCount,
+      hasBestRecord: !!puzzleStats.bestRecord,
+      bestRecord: puzzleStats.bestRecord ? {
+        username: puzzleStats.bestRecord.username,
+        timeSeconds: puzzleStats.bestRecord.solveTimeMs / 1000
+      } : null
+    });
     
     // Store puzzle stats in room for clients to display
     this.room.currentPuzzleStats = {
@@ -265,6 +279,11 @@ export class GameStateManager {
         timeSeconds: puzzleStats.bestRecord.solveTimeMs / 1000
       } : null
     };
+    
+    // Trigger game state update to send puzzle stats to clients
+    if (this.onGameStateChangeCallback) {
+      this.onGameStateChangeCallback();
+    }
   }
 
   /**

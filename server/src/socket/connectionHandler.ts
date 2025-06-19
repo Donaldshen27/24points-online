@@ -236,6 +236,12 @@ export const handleConnection = (io: Server, socket: Socket) => {
                 // Skip bot players (they don't have real socket connections)
                 if (!player.id.startsWith('bot-')) {
                   console.log('[ConnectionHandler] Sending game-state-updated to player:', player.id);
+                  console.log('[ConnectionHandler] Player state includes:', {
+                    state: playerState.state,
+                    currentRound: playerState.currentRound,
+                    hasPuzzleStats: !!playerState.currentPuzzleStats,
+                    puzzleStats: playerState.currentPuzzleStats
+                  });
                   io.to(player.socketId).emit('game-state-updated', playerState);
                 }
               });

@@ -49,7 +49,8 @@ export const useGameState = (playerId: string | null, initialRoom?: GameRoom | n
         hasPlayers: !!state.players,
         playerCount: state.players?.length || 0,
         isSoloPractice: state.isSoloPractice,
-        players: state.players?.map(p => ({ id: p.id, name: p.name, isReady: p.isReady }))
+        players: state.players?.map(p => ({ id: p.id, name: p.name, isReady: p.isReady })),
+        currentPuzzleStats: state.currentPuzzleStats
       });
       setGameState(state);
       setCenterCards(state.centerCards || []);

@@ -40,6 +40,14 @@ function App() {
   const appStateRef = useRef(appState)
   appStateRef.current = appState
 
+  // Load authenticated user on mount
+  useEffect(() => {
+    const user = authService.getUser()
+    if (user) {
+      setAuthUser(user)
+    }
+  }, [])
+
   const handleRoomJoined = useCallback((room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectatorJoin: boolean = false) => {
     console.log('[App] handleRoomJoined called:', { roomId: room.id, playerId, isReconnection, isSpectatorJoin })
     setCurrentRoom(room)

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
 import './PuzzleRecordsView.css';
 
@@ -17,7 +16,6 @@ interface PuzzleRecord {
 type SortMode = 'occurrence' | 'shortest' | 'longest' | 'numbersAsc' | 'numbersDesc';
 
 export const PuzzleRecordsView: React.FC = () => {
-  const { t } = useTranslation();
   const [puzzleRecords, setPuzzleRecords] = useState<PuzzleRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

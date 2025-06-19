@@ -41,7 +41,7 @@ if (import.meta.hot && (window as any).__socket) {
 class SocketService {
   private socket: Socket = socket;
 
-  connect(url?: string): void {
+  connect(_url?: string): void {
     // Socket is already connected at module load
     console.log('[SocketService] connect() called - socket already initialized');
   }

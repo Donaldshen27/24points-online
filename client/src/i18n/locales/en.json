@@ -67,7 +67,8 @@
       "enterNameFirst": "Enter your name first",
       "enterRoomCode": "Enter room code",
       "watchBattle": "Watch this battle live!"
-    }
+    },
+    "usernameHint": "Use the same username each time to track your records on the leaderboard!"
   },
   "waitingRoom": {
     "roomCode": "Room Code: {{code}}",
@@ -285,5 +286,16 @@
         "termsRequired": "You must accept the terms and conditions"
       }
     }
+  },
+  "leaderboard": {
+    "recordHoldings": "Record Holdings",
+    "eloRank": "Elo Rank (Coming Soon)",
+    "totalPuzzles": "Total unique puzzles: {{count}}",
+    "noRecordsYet": "No records yet. Be the first to set a record!",
+    "you": "You",
+    "records": "records",
+    "loading": "Loading...",
+    "comingSoon": "Coming Soon",
+    "eloDescription": "Elo ranking system will track your competitive performance"
   }
 }

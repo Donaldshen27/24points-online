@@ -100,6 +100,19 @@
   text-align: center;
 }
 
+/* Username hint */
+.username-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: var(--space-2);
+  color: var(--color-accent-primary);
+  font-size: var(--text-sm);
+  text-align: center;
+  justify-content: center;
+  line-height: 1.5;
+}
+
 /* Room Type Section */
 .room-type-section {
   margin-bottom: var(--space-4);

@@ -1,0 +1,236 @@
+.leaderboard-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #1a1b26;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.leaderboard-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.view-toggle {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.toggle-btn {
+  padding: 0.75rem 2rem;
+  border: 2px solid #3b82f6;
+  background: transparent;
+  color: #3b82f6;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover:not(.disabled) {
+  background: rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.toggle-btn.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.toggle-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.leaderboard-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.total-puzzles {
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.leaderboard-entry {
+  display: grid;
+  grid-template-columns: 60px 1fr 120px 150px;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-entry:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+}
+
+.leaderboard-entry.current-user {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.rank-column {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.username-column {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.username {
+  font-size: 1.2rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.you-badge {
+  background: #3b82f6;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.records-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.record-count {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fbbf24;
+}
+
+.record-label {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.percentage-column {
+  position: relative;
+}
+
+.percentage-bar {
+  position: relative;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.percentage-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transition: width 0.5s ease;
+}
+
+.percentage-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #94a3b8;
+  font-size: 1.2rem;
+}
+
+.coming-soon {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.coming-soon-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.coming-soon h3 {
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.coming-soon p {
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 4rem;
+  color: #94a3b8;
+  font-size: 1.2rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .leaderboard-title {
+    font-size: 2rem;
+  }
+
+  .toggle-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .leaderboard-entry {
+    grid-template-columns: 50px 1fr 80px;
+    gap: 0.5rem;
+  }
+
+  .percentage-column {
+    display: none;
+  }
+
+  .username {
+    font-size: 1rem;
+  }
+
+  .record-count {
+    font-size: 1.2rem;
+  }
+
+  .rank-column {
+    font-size: 1.2rem;
+  }
+}

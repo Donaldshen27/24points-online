@@ -12,10 +12,11 @@ interface NavigationProps {
   onAuthSuccess?: (user: any) => void;
   onPuzzlesClick?: () => void;
   onPlayClick?: () => void;
+  onLeaderboardClick?: () => void;
   currentView?: string;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess, onPuzzlesClick, onPlayClick, currentView }) => {
+const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess, onPuzzlesClick, onPlayClick, onLeaderboardClick, currentView }) => {
   const { t } = useTranslation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
@@ -47,7 +48,10 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
               <span className="nav-link-icon">📚</span>
               {t('app.nav.learn')}
             </button>
-            <button className="nav-link" disabled>
+            <button 
+              className={`nav-link ${currentView === 'leaderboard' ? 'active' : ''}`}
+              onClick={onLeaderboardClick}
+            >
               <span className="nav-link-icon">🏆</span>
               {t('app.nav.leaderboard')}
             </button>

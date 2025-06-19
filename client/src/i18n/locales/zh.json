@@ -67,7 +67,8 @@
       "enterNameFirst": "请先输入您的名字",
       "enterRoomCode": "输入房间代码",
       "watchBattle": "观看这场对战！"
-    }
+    },
+    "usernameHint": "每次使用相同的用户名，以便在排行榜上跟踪您的记录！"
   },
   "waitingRoom": {
     "roomCode": "房间代码：{{code}}",
@@ -285,5 +286,16 @@
         "termsRequired": "您必须同意条款和条件"
       }
     }
+  },
+  "leaderboard": {
+    "recordHoldings": "记录保持者",
+    "eloRank": "Elo排名（即将推出）",
+    "totalPuzzles": "总题目数：{{count}}",
+    "noRecordsYet": "还没有记录。成为第一个创造记录的人！",
+    "you": "你",
+    "records": "个记录",
+    "loading": "加载中...",
+    "comingSoon": "即将推出",
+    "eloDescription": "Elo排名系统将跟踪您的竞技表现"
   }
 }

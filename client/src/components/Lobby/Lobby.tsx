@@ -156,6 +156,11 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
             aria-label="Enter your name to play 24 Points (24points) online game"
             disabled={!!authUser}
           />
+          {!authUser && (
+            <div className="username-hint">
+              💡 {t('lobby.usernameHint')}
+            </div>
+          )}
           {!playerName && hasInteracted && (
             <span className="error-message">{t('lobby.errors.enterNameToContinue')}</span>
           )}

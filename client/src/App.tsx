@@ -9,6 +9,7 @@ import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
 import { PuzzleRecordsView } from './components/PuzzleRecordsView/PuzzleRecordsView'
+import { Leaderboard } from './components/Leaderboard/Leaderboard'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
@@ -22,7 +23,8 @@ const AppState = {
   WAITING_ROOM: 'waiting_room',
   IN_GAME: 'in_game',
   TEST_MODE: 'test_mode',
-  PUZZLES: 'puzzles'
+  PUZZLES: 'puzzles',
+  LEADERBOARD: 'leaderboard'
 } as const;
 
 type AppState = typeof AppState[keyof typeof AppState];
@@ -199,6 +201,7 @@ function App() {
         onAuthSuccess={handleAuthSuccess}
         onPuzzlesClick={() => setAppState(AppState.PUZZLES)}
         onPlayClick={() => setAppState(AppState.LOBBY)}
+        onLeaderboardClick={() => setAppState(AppState.LEADERBOARD)}
         currentView={appState}
       />
       
@@ -279,6 +282,10 @@ function App() {
 
         {appState === AppState.PUZZLES && (
           <PuzzleRecordsView />
+        )}
+
+        {appState === AppState.LEADERBOARD && (
+          <Leaderboard />
         )}
       </main>
       

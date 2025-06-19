@@ -619,6 +619,97 @@ export const handleConnection = (io: Server, socket: Socket) => {
     }
   });
 
+  socket.on('get-leaderboard-data', async (callback) => {
+    try {
+      const { getAllPuzzles, solveRecords } = require('../models/puzzleRepository');
+      const { supabase, isDatabaseConfigured } = require('../db/supabase');
+      
+      let recordHoldings: { username: string; recordCount: number; rank: number }[] = [];
+      let totalPuzzles = 0;
+      
+      if (isDatabaseConfigured() && supabase) {
+        // Use efficient SQL query for database
+        const { data, error } = await supabase.rpc('get_record_holdings');
+        
+        if (!error && data) {
+          recordHoldings = data.map((entry: any, index: number) => ({
+            username: entry.username,
+            recordCount: entry.record_count,
+            rank: index + 1
+          }));
+        } else {
+          // Fallback query if RPC function doesn't exist
+          const { data: recordsData, error: recordsError } = await supabase
+            .from('solve_records')
+            .select('puzzle_key, username, solve_time_ms')
+            .order('puzzle_key')
+            .order('solve_time_ms');
+          
+          if (!recordsError && recordsData) {
+            // Process to find best record per puzzle
+            const bestRecordsByPuzzle = new Map<string, string>();
+            let currentPuzzle = '';
+            
+            recordsData.forEach(record => {
+              if (record.puzzle_key !== currentPuzzle) {
+                currentPuzzle = record.puzzle_key;
+                bestRecordsByPuzzle.set(record.puzzle_key, record.username);
+              }
+            });
+            
+            // Count records per username
+            const recordCounts = new Map<string, number>();
+            bestRecordsByPuzzle.forEach(username => {
+              recordCounts.set(username, (recordCounts.get(username) || 0) + 1);
+            });
+            
+            // Convert to sorted array
+            recordHoldings = Array.from(recordCounts.entries())
+              .map(([username, count]) => ({ username, recordCount: count, rank: 0 }))
+              .sort((a, b) => b.recordCount - a.recordCount)
+              .map((entry, index) => ({ ...entry, rank: index + 1 }));
+          }
+        }
+        
+        // Get total puzzles count
+        const { count } = await supabase
+          .from('puzzles')
+          .select('*', { count: 'exact', head: true });
+        totalPuzzles = count || 0;
+        
+      } else {
+        // In-memory fallback
+        const allPuzzles = await getAllPuzzles();
+        totalPuzzles = allPuzzles.length;
+        
+        // Count records per username
+        const recordCounts = new Map<string, number>();
+        
+        allPuzzles.forEach(puzzle => {
+          const records = solveRecords.get(puzzle.puzzleKey) || [];
+          if (records.length > 0) {
+            const bestRecord = records[0]; // Already sorted by time
+            recordCounts.set(bestRecord.username, (recordCounts.get(bestRecord.username) || 0) + 1);
+          }
+        });
+        
+        // Convert to sorted array
+        recordHoldings = Array.from(recordCounts.entries())
+          .map(([username, count]) => ({ username, recordCount: count, rank: 0 }))
+          .sort((a, b) => b.recordCount - a.recordCount)
+          .map((entry, index) => ({ ...entry, rank: index + 1 }));
+      }
+      
+      callback({
+        recordHoldings: recordHoldings.slice(0, 100), // Top 100 players
+        totalPuzzles
+      });
+    } catch (error) {
+      console.error('Error fetching leaderboard data:', error);
+      callback({ recordHoldings: [], totalPuzzles: 0 });
+    }
+  });
+
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);

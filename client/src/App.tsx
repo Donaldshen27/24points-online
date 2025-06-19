@@ -13,6 +13,7 @@ import { Leaderboard } from './components/Leaderboard/Leaderboard'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
+import { puzzleRecordsCache } from './services/puzzleRecordsCache'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
 import './App.css'
@@ -99,6 +100,17 @@ function App() {
       // Get initial online users count
       socketService.emit('get-online-users', (data: { count: number }) => {
         setOnlineUsers(data.count)
+      })
+      
+      // Preload puzzle records data in background
+      puzzleRecordsCache.preload(() => {
+        return new Promise((resolve) => {
+          socketService.emit('get-puzzle-records', (data: { records: any[] }) => {
+            const filtered = data.records.filter(record => record.cards.length === 4);
+            puzzleRecordsCache.set('puzzle-records', filtered);
+            resolve(filtered);
+          });
+        });
       })
     }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import socketService from '../../services/socketService';
+import { puzzleRecordsCache } from '../../services/puzzleRecordsCache';
 import './PuzzleRecordsView.css';
 
 interface PuzzleRecord {
@@ -23,21 +24,44 @@ export const PuzzleRecordsView: React.FC = () => {
   const [rawRecords, setRawRecords] = useState<PuzzleRecord[]>([]);
 
   useEffect(() => {
-    // Fetch puzzle records from server
-    const fetchRecords = () => {
-      socketService.emit('get-puzzle-records', (data: { records: PuzzleRecord[] }) => {
-        const filtered = data.records.filter(record => record.cards.length === 4);
-        setRawRecords(filtered);
-        setLoading(false);
-      });
-    };
+    // Check cache first
+    const cachedData = puzzleRecordsCache.get('puzzle-records');
+    if (cachedData) {
+      setRawRecords(cachedData);
+      setLoading(false);
+      
+      // Still fetch fresh data in background for next time
+      fetchRecordsInBackground();
+    } else {
+      // No cache, fetch immediately
+      fetchRecords();
+    }
 
-    fetchRecords();
-
-    // Refresh every 5 seconds
-    const interval = setInterval(fetchRecords, 5000);
+    // Refresh every 30 seconds (less aggressive)
+    const interval = setInterval(fetchRecordsInBackground, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  const fetchRecords = () => {
+    socketService.emit('get-puzzle-records', (data: { records: PuzzleRecord[] }) => {
+      const filtered = data.records.filter(record => record.cards.length === 4);
+      setRawRecords(filtered);
+      puzzleRecordsCache.set('puzzle-records', filtered);
+      setLoading(false);
+    });
+  };
+
+  const fetchRecordsInBackground = () => {
+    socketService.emit('get-puzzle-records', (data: { records: PuzzleRecord[] }) => {
+      const filtered = data.records.filter(record => record.cards.length === 4);
+      puzzleRecordsCache.set('puzzle-records', filtered);
+      
+      // Only update state if data changed significantly
+      if (JSON.stringify(filtered) !== JSON.stringify(rawRecords)) {
+        setRawRecords(filtered);
+      }
+    });
+  };
 
   // Sort records based on current sort mode
   useEffect(() => {

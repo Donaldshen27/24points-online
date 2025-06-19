@@ -259,7 +259,7 @@ export async function isNewRecord(cards: number[], solveTimeMs: number): Promise
 export async function getAllPuzzles(): Promise<PuzzleRecord[]> {
   if (isDatabaseConfigured() && supabase) {
     try {
-      // Get all puzzles with their top records
+      // Get all puzzles with their top records in a single query
       const { data: puzzles, error } = await supabase
         .from('puzzles')
         .select('*')
@@ -267,36 +267,46 @@ export async function getAllPuzzles(): Promise<PuzzleRecord[]> {
       
       if (error) throw error;
       
-      // Get all solve records grouped by puzzle
-      const puzzleRecords: PuzzleRecord[] = [];
+      // Get ALL best records in a single query
+      const { data: allRecords, error: recordsError } = await supabase
+        .from('solve_records')
+        .select('*')
+        .order('puzzle_key')
+        .order('solve_time_ms');
       
-      for (const puzzle of puzzles || []) {
-        const { data: records } = await supabase
-          .from('solve_records')
-          .select('*')
-          .eq('puzzle_key', puzzle.puzzle_key)
-          .order('solve_time_ms', { ascending: true })
-          .limit(10);
-        
-        // Store in memory for connection handler access
-        if (records && records.length > 0) {
-          solveRecords.set(puzzle.puzzle_key, records.map(r => ({
-            puzzleKey: r.puzzle_key,
-            username: r.username,
-            solveTimeMs: r.solve_time_ms,
-            solution: r.solution,
-            createdAt: new Date(r.created_at)
-          })));
+      if (recordsError) throw recordsError;
+      
+      // Group records by puzzle_key efficiently
+      const recordsByPuzzle = new Map<string, any[]>();
+      allRecords?.forEach(record => {
+        if (!recordsByPuzzle.has(record.puzzle_key)) {
+          recordsByPuzzle.set(record.puzzle_key, []);
         }
-        
-        puzzleRecords.push({
-          puzzleKey: puzzle.puzzle_key,
-          cards: puzzle.cards,
-          occurrenceCount: puzzle.occurrence_count,
-          firstSeen: new Date(puzzle.first_seen),
-          lastSeen: new Date(puzzle.last_seen)
-        });
-      }
+        const puzzleRecords = recordsByPuzzle.get(record.puzzle_key)!;
+        if (puzzleRecords.length < 10) { // Keep only top 10
+          puzzleRecords.push(record);
+        }
+      });
+      
+      // Store in memory for connection handler access
+      recordsByPuzzle.forEach((records, puzzleKey) => {
+        solveRecords.set(puzzleKey, records.map(r => ({
+          puzzleKey: r.puzzle_key,
+          username: r.username,
+          solveTimeMs: r.solve_time_ms,
+          solution: r.solution,
+          createdAt: new Date(r.created_at)
+        })));
+      });
+      
+      // Build final result
+      const puzzleRecords: PuzzleRecord[] = puzzles?.map(puzzle => ({
+        puzzleKey: puzzle.puzzle_key,
+        cards: puzzle.cards,
+        occurrenceCount: puzzle.occurrence_count,
+        firstSeen: new Date(puzzle.first_seen),
+        lastSeen: new Date(puzzle.last_seen)
+      })) || [];
       
       return puzzleRecords;
     } catch (error) {

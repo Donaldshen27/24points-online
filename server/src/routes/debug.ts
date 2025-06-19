@@ -24,8 +24,7 @@ router.get('/health', async (req, res) => {
       // Try a simple query
       const { data, error } = await supabase
         .from('puzzles')
-        .select('count(*)')
-        .limit(1);
+        .select('*', { count: 'exact', head: true });
       
       if (error) {
         dbStatus = `error: ${error.message}`;

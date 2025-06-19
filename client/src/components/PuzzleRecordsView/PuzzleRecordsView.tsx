@@ -77,7 +77,7 @@ export const PuzzleRecordsView: React.FC = () => {
         break;
     }
     
-    setPuzzleRecords(sorted.slice(0, 20)); // Top 20
+    setPuzzleRecords(sorted); // Display all records
   }, [rawRecords, sortMode]);
 
   const formatTime = (ms: number) => {

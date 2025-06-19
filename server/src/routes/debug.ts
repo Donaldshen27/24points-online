@@ -33,7 +33,7 @@ router.get('/health', async (req, res) => {
         dbStatus = 'connected';
       }
     } catch (e) {
-      dbStatus = `exception: ${e.message}`;
+      dbStatus = `exception: ${e instanceof Error ? e.message : String(e)}`;
     }
   }
 

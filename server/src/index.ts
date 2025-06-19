@@ -44,7 +44,9 @@ app.get('/health', (req: express.Request, res: express.Response) => {
 
 // API Routes
 import authRoutes from './routes/auth';
+import debugRoutes from './routes/debug';
 app.use('/api/auth', authRoutes);
+app.use('/api/debug', debugRoutes);
 
 import { handleConnection } from './socket/connectionHandler';
 

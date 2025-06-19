@@ -120,7 +120,7 @@
       "appeared": "Appeared {{count}} times",
       "record": "Record: {{username}} in {{time}}s",
       "newRecord": "NEW RECORD!",
-      "firstTime": "We have not seen this problem. It's your time to shine!"
+      "firstTime": "First time puzzle! You'll set the record!"
     }
   },
   "roomTypeSelector": {

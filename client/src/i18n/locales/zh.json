@@ -120,7 +120,7 @@
       "appeared": "出现过 {{count}} 次",
       "record": "记录：{{username}} 用时 {{time}} 秒",
       "newRecord": "新纪录！",
-      "firstTime": "这是一个全新的题目，现在是你创造记录的时刻！"
+      "firstTime": "首次出现的题目！你将创造新纪录！"
     }
   },
   "roomTypeSelector": {

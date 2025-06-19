@@ -32,6 +32,32 @@
 .game-counter {
   color: var(--color-text-muted);
   font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.patch-notes-link {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  margin-left: var(--space-2);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  opacity: 0.8;
+  transition: opacity 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 4px;
+}
+
+.patch-notes-link:hover {
+  opacity: 1;
+  color: var(--color-text-primary);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .connection-status {

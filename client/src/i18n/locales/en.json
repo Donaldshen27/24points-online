@@ -9,6 +9,7 @@
       "connecting": "Connecting to server..."
     },
     "onlineUsers": "{{count}} people online",
+    "patchNotes": "Patch Notes",
     "testMenu": {
       "title": "Select Test Component",
       "deckSystem": "Deck System Test",
@@ -297,5 +298,8 @@
     "loading": "Loading...",
     "comingSoon": "Coming Soon",
     "eloDescription": "Elo ranking system will track your competitive performance"
+  },
+  "patchNotes": {
+    "title": "Patch Notes"
   }
 }

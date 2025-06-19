@@ -13,6 +13,7 @@ import { Leaderboard } from './components/Leaderboard/Leaderboard'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
+import PatchNotes from './components/PatchNotes'
 import { puzzleRecordsCache, leaderboardCache } from './services/puzzleRecordsCache'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
@@ -40,6 +41,7 @@ function App() {
   const [onlineUsers, setOnlineUsers] = useState<number>(0)
   const [isSpectator, setIsSpectator] = useState<boolean>(false)
   const [authUser, setAuthUser] = useState<AuthUser | null>(null)
+  const [showPatchNotes, setShowPatchNotes] = useState<boolean>(false)
   
   // Use ref to access current appState in event handlers without causing re-renders
   const appStateRef = useRef(appState)
@@ -232,6 +234,13 @@ function App() {
         <div className="status-bar-content">
           <div className="game-counter">
             {t('app.onlineUsers', { count: onlineUsers })}
+            <button 
+              className="patch-notes-link" 
+              onClick={() => setShowPatchNotes(true)}
+              title={t('app.patchNotes', 'Patch Notes')}
+            >
+              📋 {t('app.patchNotes', 'Patch Notes')}
+            </button>
           </div>
           <div className="connection-status">
             <span className={`status-dot ${isConnected ? 'connected' : 'disconnected'}`}></span>
@@ -314,6 +323,11 @@ function App() {
       {/* SEO Content - visible to search engines but can be hidden visually */}
       {appState === AppState.LOBBY && (
         <SEOContent />
+      )}
+      
+      {/* Patch Notes Modal */}
+      {showPatchNotes && (
+        <PatchNotes onClose={() => setShowPatchNotes(false)} />
       )}
     </div>
   )

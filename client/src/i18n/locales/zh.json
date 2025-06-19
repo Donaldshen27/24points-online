@@ -9,6 +9,7 @@
       "connecting": "正在连接服务器..."
     },
     "onlineUsers": "{{count}} 人在线",
+    "patchNotes": "更新日志",
     "testMenu": {
       "title": "选择测试组件",
       "deckSystem": "牌组系统测试",
@@ -297,5 +298,8 @@
     "loading": "加载中...",
     "comingSoon": "即将推出",
     "eloDescription": "Elo排名系统将跟踪您的竞技表现"
+  },
+  "patchNotes": {
+    "title": "更新日志"
   }
 }

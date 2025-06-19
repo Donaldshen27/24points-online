@@ -583,6 +583,36 @@ export const handleConnection = (io: Server, socket: Socket) => {
     callback({ count });
   });
 
+  socket.on('get-puzzle-records', (callback) => {
+    try {
+      const { getAllPuzzles } = require('../models/puzzleRepository');
+      const allPuzzles = getAllPuzzles();
+      
+      // Transform data for client
+      const records = allPuzzles.map(puzzle => {
+        const { solveRecords } = require('../models/puzzleRepository');
+        const records = solveRecords.get(puzzle.puzzleKey) || [];
+        const bestRecord = records[0]; // Already sorted by time
+        
+        return {
+          puzzleKey: puzzle.puzzleKey,
+          cards: puzzle.puzzleKey.split(',').map(Number),
+          occurrenceCount: puzzle.occurrenceCount,
+          bestRecord: bestRecord ? {
+            username: bestRecord.username,
+            solveTimeMs: bestRecord.solveTimeMs,
+            solution: bestRecord.solution
+          } : undefined
+        };
+      });
+      
+      callback({ records });
+    } catch (error) {
+      console.error('Error fetching puzzle records:', error);
+      callback({ records: [] });
+    }
+  });
+
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);

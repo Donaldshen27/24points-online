@@ -13,6 +13,12 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+.records-container.first-time {
+  background: linear-gradient(135deg, rgba(139, 69, 255, 0.15), rgba(255, 107, 107, 0.15));
+  border-color: rgba(139, 69, 255, 0.3);
+  box-shadow: 0 2px 12px rgba(139, 69, 255, 0.3);
+}
+
 .record-info {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.9);
@@ -35,6 +41,29 @@
 .best-record {
   color: #00ff88;
   font-weight: 500;
+}
+
+.first-time-icon {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.first-time-message {
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(139, 69, 255, 0.5);
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
 }
 
 .new-record-celebration {

@@ -10,9 +10,12 @@ interface NavigationProps {
   onTestModeToggle?: () => void;
   isTestMode?: boolean;
   onAuthSuccess?: (user: any) => void;
+  onPuzzlesClick?: () => void;
+  onPlayClick?: () => void;
+  currentView?: string;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess }) => {
+const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess, onPuzzlesClick, onPlayClick, currentView }) => {
   const { t } = useTranslation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
@@ -26,11 +29,17 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
           </a>
           
           <div className="nav-links">
-            <button className="nav-link active">
+            <button 
+              className={`nav-link ${currentView === 'lobby' || currentView === 'waiting_room' || currentView === 'in_game' ? 'active' : ''}`}
+              onClick={onPlayClick}
+            >
               <span className="nav-link-icon">🎮</span>
               {t('app.nav.play')}
             </button>
-            <button className="nav-link" disabled>
+            <button 
+              className={`nav-link ${currentView === 'puzzles' ? 'active' : ''}`}
+              onClick={onPuzzlesClick}
+            >
               <span className="nav-link-icon">🧩</span>
               {t('app.nav.puzzles')}
             </button>

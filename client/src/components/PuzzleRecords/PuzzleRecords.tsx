@@ -19,31 +19,43 @@ export const PuzzleRecords: React.FC<PuzzleRecordsProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  if (occurrenceCount === 0) {
+  // Don't show anything if no occurrence data
+  if (occurrenceCount === 0 && !bestRecord) {
     return null;
   }
 
   return (
     <div className="puzzle-records">
       <motion.div 
-        className="records-container"
+        className={`records-container ${occurrenceCount === 1 && !bestRecord ? 'first-time' : ''}`}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         <div className="record-info">
-          <span className="occurrence-count">
-            {t('game.puzzleRecords.appeared', { count: occurrenceCount })}
-          </span>
-          {bestRecord && (
+          {occurrenceCount === 1 && !bestRecord ? (
             <>
-              <span className="separator">•</span>
-              <span className="best-record">
-                {t('game.puzzleRecords.record', { 
-                  username: bestRecord.username, 
-                  time: bestRecord.timeSeconds.toFixed(1) 
-                })}
+              <span className="first-time-icon">✨</span>
+              <span className="first-time-message">
+                {t('gameScreen.puzzleRecords.firstTime')}
               </span>
+            </>
+          ) : (
+            <>
+              <span className="occurrence-count">
+                {t('gameScreen.puzzleRecords.appeared', { count: occurrenceCount })}
+              </span>
+              {bestRecord && (
+                <>
+                  <span className="separator">•</span>
+                  <span className="best-record">
+                    {t('gameScreen.puzzleRecords.record', { 
+                      username: bestRecord.username, 
+                      time: bestRecord.timeSeconds.toFixed(1) 
+                    })}
+                  </span>
+                </>
+              )}
             </>
           )}
         </div>
@@ -59,7 +71,7 @@ export const PuzzleRecords: React.FC<PuzzleRecordsProps> = ({
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             <div className="celebration-text">
-              🏆 {t('game.puzzleRecords.newRecord')} 🏆
+              🏆 {t('gameScreen.puzzleRecords.newRecord')} 🏆
             </div>
           </motion.div>
         )}

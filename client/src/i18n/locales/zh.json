@@ -14,11 +14,12 @@
       "deckSystem": "牌组系统测试",
       "calculator": "计算器测试",
       "interactiveTable": "互动桌面测试",
+      "puzzleRecords": "题目记录",
       "back": "← 返回测试菜单"
     },
     "nav": {
       "play": "开始游戏",
-      "puzzles": "谜题",
+      "puzzles": "记录",
       "learn": "学习",
       "leaderboard": "排行榜",
       "signIn": "登录",
@@ -116,7 +117,8 @@
     "puzzleRecords": {
       "appeared": "出现过 {{count}} 次",
       "record": "记录：{{username}} 用时 {{time}} 秒",
-      "newRecord": "新纪录！"
+      "newRecord": "新纪录！",
+      "firstTime": "这是一个全新的题目，现在是你创造记录的时刻！"
     }
   },
   "roomTypeSelector": {

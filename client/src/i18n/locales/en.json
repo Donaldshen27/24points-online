@@ -14,11 +14,12 @@
       "deckSystem": "Deck System Test",
       "calculator": "Calculator Test",
       "interactiveTable": "Interactive Table Test",
+      "puzzleRecords": "Puzzle Records",
       "back": "← Back to Test Menu"
     },
     "nav": {
       "play": "Play",
-      "puzzles": "Puzzles",
+      "puzzles": "Records",
       "learn": "Learn",
       "leaderboard": "Leaderboard",
       "signIn": "Sign In",
@@ -116,7 +117,8 @@
     "puzzleRecords": {
       "appeared": "Appeared {{count}} times",
       "record": "Record: {{username}} in {{time}}s",
-      "newRecord": "NEW RECORD!"
+      "newRecord": "NEW RECORD!",
+      "firstTime": "We have not seen this problem. It's your time to shine!"
     }
   },
   "roomTypeSelector": {

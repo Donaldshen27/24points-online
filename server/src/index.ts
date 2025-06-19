@@ -47,7 +47,6 @@ import authRoutes from './routes/auth';
 app.use('/api/auth', authRoutes);
 
 import { handleConnection } from './socket/connectionHandler';
-import { seedPuzzleRecords } from './models/puzzleSeeds';
 
 io.on('connection', (socket) => {
   handleConnection(io, socket);
@@ -57,9 +56,4 @@ const port = typeof PORT === 'string' ? parseInt(PORT, 10) : PORT;
 server.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
   console.log(`Server accessible on local network at http://192.168.0.83:${port}`);
-  
-  // Seed puzzle records for demonstration (only in development)
-  if (process.env.NODE_ENV !== 'production') {
-    seedPuzzleRecords();
-  }
 });

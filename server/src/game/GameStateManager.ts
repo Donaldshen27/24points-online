@@ -336,7 +336,11 @@ export class GameStateManager {
       // Record solve time for puzzle records
       const solveTimeMs = solveTime * 1000; // Convert to milliseconds
       const cardValues = this.room.centerCards.map(c => c.value);
-      const solutionSteps = solution.operations?.join(' → ') || '';
+      
+      // Convert operations to readable string format
+      const solutionSteps = solution.operations?.map(op => 
+        `${op.left} ${op.operator} ${op.right} = ${op.result}`
+      ).join(' → ') || '';
       
       const wasNewRecord = isNewRecord(cardValues, solveTimeMs);
       recordSolveTime(

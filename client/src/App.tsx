@@ -8,6 +8,7 @@ import { GameScreen } from './components/GameScreen/GameScreen'
 import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
+import { PuzzleRecordsView } from './components/PuzzleRecordsView/PuzzleRecordsView'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
@@ -20,7 +21,8 @@ const AppState = {
   LOBBY: 'lobby',
   WAITING_ROOM: 'waiting_room',
   IN_GAME: 'in_game',
-  TEST_MODE: 'test_mode'
+  TEST_MODE: 'test_mode',
+  PUZZLES: 'puzzles'
 } as const;
 
 type AppState = typeof AppState[keyof typeof AppState];
@@ -195,6 +197,9 @@ function App() {
         }}
         isTestMode={appState === AppState.TEST_MODE}
         onAuthSuccess={handleAuthSuccess}
+        onPuzzlesClick={() => setAppState(AppState.PUZZLES)}
+        onPlayClick={() => setAppState(AppState.LOBBY)}
+        currentView={appState}
       />
       
       {/* Connection status bar */}
@@ -270,6 +275,10 @@ function App() {
               </div>
             )}
           </div>
+        )}
+
+        {appState === AppState.PUZZLES && (
+          <PuzzleRecordsView />
         )}
       </main>
       

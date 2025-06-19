@@ -23,6 +23,9 @@ interface SolveRecord {
 const puzzles: Map<string, PuzzleRecord> = new Map();
 const solveRecords: Map<string, SolveRecord[]> = new Map();
 
+// Export for access in connection handler
+export { solveRecords };
+
 /**
  * Normalize card combination to create a unique key
  * Cards are sorted to ensure [1,2,3,4] and [4,3,2,1] map to same key
@@ -83,7 +86,11 @@ export function recordSolveTime(
   // Keep records sorted by solve time
   records.sort((a, b) => a.solveTimeMs - b.solveTimeMs);
   
-  solveRecords.set(key, records);
+  // Keep only top 10 records per puzzle to save memory
+  // But we keep records for ALL puzzle combinations
+  const topRecords = records.slice(0, 10);
+  
+  solveRecords.set(key, topRecords);
   return record;
 }
 

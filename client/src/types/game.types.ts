@@ -10,6 +10,7 @@ export interface Player {
   name: string;
   deck: Card[];
   isReady: boolean;
+  points?: number; // For point-based scoring in Extended Range mode
 }
 
 export interface GameRoom {

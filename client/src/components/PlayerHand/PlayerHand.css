@@ -47,6 +47,21 @@
   animation: shake 0.5s ease-in-out infinite;
 }
 
+.points-display {
+  font-size: 1.2rem;
+  line-height: 1;
+  color: #ffd700;
+}
+
+.points-display.near-win {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-2px); }

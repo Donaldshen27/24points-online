@@ -412,13 +412,44 @@ export class GameStateManager {
       const loser = this.room.players.find(p => p.id === result.loserId);
       
       if (winner && loser) {
-        // Loser takes all center cards
         console.log(`[GameStateManager] Round ended - Winner: ${winner.name} (${winner.id}), Loser: ${loser.name} (${loser.id})`);
-        console.log(`[GameStateManager] Before transfer - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length}`);
-        loser.deck.push(...result.cards);
-        // Shuffle the loser's deck to prevent the same cards from appearing repeatedly
-        this.gameRules.shuffleDeck(loser.deck);
-        console.log(`[GameStateManager] After transfer - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length} (added ${result.cards.length} cards)`);
+        
+        // Handle Extended Range mode point-based scoring
+        if (this.config.id === 'extended') {
+          // Update points instead of transferring cards
+          if (loser.points === undefined) loser.points = 0;
+          if (winner.points === undefined) winner.points = 0;
+          
+          if (loser.points > 0) {
+            // Loser has points, so they lose one
+            loser.points--;
+            console.log(`[GameStateManager] Extended mode: ${loser.name} loses 1 point (now ${loser.points})`);
+          } else {
+            // Loser has no points, so winner gains one
+            winner.points++;
+            console.log(`[GameStateManager] Extended mode: ${winner.name} gains 1 point (now ${winner.points})`);
+          }
+          
+          // Return cards to their original owners' decks
+          result.cards.forEach(card => {
+            const owner = this.room.players.find(p => p.id === card.owner);
+            if (owner) {
+              owner.deck.push(card);
+            }
+          });
+          
+          // Shuffle both decks
+          this.room.players.forEach(player => {
+            this.gameRules.shuffleDeck(player.deck);
+          });
+        } else {
+          // Classic/Super mode: transfer cards
+          console.log(`[GameStateManager] Before transfer - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length}`);
+          loser.deck.push(...result.cards);
+          // Shuffle the loser's deck to prevent the same cards from appearing repeatedly
+          this.gameRules.shuffleDeck(loser.deck);
+          console.log(`[GameStateManager] After transfer - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length} (added ${result.cards.length} cards)`);
+        }
         
         // Update scores using game rules scoring
         const timeElapsed = Date.now() - this.roundStartTime;

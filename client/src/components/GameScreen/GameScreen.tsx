@@ -344,6 +344,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
             player={opponent} 
             isCurrentPlayer={false}
             isDisconnected={!!opponentDisconnectedTime}
+            roomType={room.roomType}
           />
         )}
       </div>
@@ -392,6 +393,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           <PlayerHand 
             player={currentPlayer} 
             isCurrentPlayer={true}
+            roomType={room.roomType}
           />
         )}
       </div>

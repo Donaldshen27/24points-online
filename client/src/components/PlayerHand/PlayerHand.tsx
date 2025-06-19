@@ -7,30 +7,43 @@ interface PlayerHandProps {
   isCurrentPlayer: boolean;
   isDisconnected?: boolean;
   isSpectatorView?: boolean;
+  roomType?: string;
 }
 
 export const PlayerHand: React.FC<PlayerHandProps> = ({
   player,
   isCurrentPlayer,
-  isDisconnected = false
+  isDisconnected = false,
+  roomType
 }) => {
   const cardCount = player.deck.length;
+  const points = player.points || 0;
+  const isExtendedMode = roomType === 'extended';
   
-  // Generate heart display based on card count
-  const getHeartDisplay = () => {
-    if (cardCount === 0) {
-      // Victory - show empty hearts
-      return '🤍🤍🤍🤍🤍';
+  // Generate display based on game mode
+  const getDisplay = () => {
+    if (isExtendedMode) {
+      // Extended mode: show points (0-5)
+      const stars = '⭐'.repeat(points);
+      const emptyStars = '☆'.repeat(5 - points);
+      const className = points >= 4 ? 'points-display near-win' : 'points-display';
+      return <span className={className}>{stars}{emptyStars}</span>;
+    } else {
+      // Classic/Super mode: show hearts based on card count
+      if (cardCount === 0) {
+        // Victory - show empty hearts
+        return '🤍🤍🤍🤍🤍';
+      }
+      
+      const fullHearts = Math.floor(cardCount / 2);
+      const hasHalfHeart = cardCount % 2 === 1;
+      const hearts = '❤️'.repeat(fullHearts) + (hasHalfHeart ? '💔' : '');
+      
+      // Add shaking class for low health (2 or less cards)
+      const className = cardCount <= 2 ? 'hearts-display shaking' : 'hearts-display';
+      
+      return <span className={className}>{hearts}</span>;
     }
-    
-    const fullHearts = Math.floor(cardCount / 2);
-    const hasHalfHeart = cardCount % 2 === 1;
-    const hearts = '❤️'.repeat(fullHearts) + (hasHalfHeart ? '💔' : '');
-    
-    // Add shaking class for low health (2 or less cards)
-    const className = cardCount <= 2 ? 'hearts-display shaking' : 'hearts-display';
-    
-    return <span className={className}>{hearts}</span>;
   };
 
   return (
@@ -41,8 +54,10 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
           {isDisconnected && <span className="disconnect-icon">⚠️</span>}
         </span>
         <div className="card-display">
-          {getHeartDisplay()}
-          <span className="card-count">({cardCount})</span>
+          {getDisplay()}
+          <span className="card-count">
+            {isExtendedMode ? `(${points}/5)` : `(${cardCount})`}
+          </span>
         </div>
       </div>
     </div>

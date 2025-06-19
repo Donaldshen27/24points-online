@@ -7,6 +7,7 @@ export class ExtendedGameRules extends BaseGameRules {
   initializeDecks(players: Player[]): void {
     players.forEach(player => {
       player.deck = [];
+      player.points = 0; // Initialize points for Extended Range mode
       // Extended mode: cards from 1-20
       for (let i = 1; i <= 20; i++) {
         player.deck.push({
@@ -60,18 +61,10 @@ export class ExtendedGameRules extends BaseGameRules {
   }
   
   checkWinCondition(room: GameRoom): WinResult | null {
-    // Check if any player has no cards (wins)
-    const winner = room.players.find(p => p.deck.length === 0);
+    // Check if any player has reached 5 points (wins)
+    const winner = room.players.find(p => (p.points || 0) >= 5);
     if (winner) {
-      return { winnerId: winner.id, reason: 'no_cards' };
-    }
-    
-    // Check if any player has all cards (loses)
-    const totalCards = 40; // 20 cards per player * 2 players
-    const loser = room.players.find(p => p.deck.length === totalCards);
-    if (loser) {
-      const winnerId = room.players.find(p => p.id !== loser.id)?.id;
-      return { winnerId: winnerId!, reason: 'opponent_all_cards' };
+      return { winnerId: winner.id, reason: 'reached_5_points' };
     }
     
     return null;

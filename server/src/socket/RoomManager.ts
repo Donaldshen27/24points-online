@@ -331,7 +331,7 @@ export class RoomManager {
     }
   }
 
-  submitSolution(roomId: string, playerId: string, solution: Solution): boolean {
+  async submitSolution(roomId: string, playerId: string, solution: Solution): Promise<boolean> {
     const gameManager = this.gameManagers.get(roomId);
     
     if (!gameManager) {
@@ -339,7 +339,7 @@ export class RoomManager {
     }
 
     try {
-      gameManager.submitSolution(playerId, solution);
+      await gameManager.submitSolution(playerId, solution);
       return true;
     } catch (error) {
       console.error('Failed to submit solution:', error);

@@ -1,6 +1,8 @@
 /**
- * In-memory storage for puzzle records (replace with database in production)
+ * Puzzle records repository with database and in-memory fallback
  */
+
+import { supabase, isDatabaseConfigured, PuzzleRecord as DbPuzzleRecord, SolveRecord as DbSolveRecord } from '../db/supabase';
 
 interface PuzzleRecord {
   puzzleKey: string;  // Normalized card combination (e.g., "1,2,3,4")
@@ -19,7 +21,7 @@ interface SolveRecord {
   createdAt: Date;
 }
 
-// In-memory storage
+// In-memory storage (fallback when database not configured)
 const puzzles: Map<string, PuzzleRecord> = new Map();
 const solveRecords: Map<string, SolveRecord[]> = new Map();
 
@@ -37,8 +39,71 @@ export function normalizePuzzleKey(cards: number[]): string {
 /**
  * Track a puzzle occurrence
  */
-export function trackPuzzle(cards: number[]): PuzzleRecord {
+export async function trackPuzzle(cards: number[]): Promise<PuzzleRecord> {
   const key = normalizePuzzleKey(cards);
+  
+  if (isDatabaseConfigured() && supabase) {
+    try {
+      // Try database first
+      const { data: existing, error: fetchError } = await supabase
+        .from('puzzles')
+        .select('*')
+        .eq('puzzle_key', key)
+        .single();
+      
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = not found
+        throw fetchError;
+      }
+      
+      if (existing) {
+        // Update existing record
+        const { data, error } = await supabase
+          .from('puzzles')
+          .update({
+            occurrence_count: existing.occurrence_count + 1,
+            last_seen: new Date().toISOString()
+          })
+          .eq('puzzle_key', key)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        
+        return {
+          puzzleKey: data.puzzle_key,
+          cards: data.cards,
+          occurrenceCount: data.occurrence_count,
+          firstSeen: new Date(data.first_seen),
+          lastSeen: new Date(data.last_seen)
+        };
+      } else {
+        // Insert new record
+        const { data, error } = await supabase
+          .from('puzzles')
+          .insert({
+            puzzle_key: key,
+            cards: [...cards],
+            occurrence_count: 1
+          })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        
+        return {
+          puzzleKey: data.puzzle_key,
+          cards: data.cards,
+          occurrenceCount: data.occurrence_count,
+          firstSeen: new Date(data.first_seen),
+          lastSeen: new Date(data.last_seen)
+        };
+      }
+    } catch (error) {
+      console.error('Database error, falling back to in-memory:', error);
+    }
+  }
+  
+  // Fallback to in-memory
   const existing = puzzles.get(key);
   
   if (existing) {
@@ -62,13 +127,13 @@ export function trackPuzzle(cards: number[]): PuzzleRecord {
 /**
  * Record a solve time for a puzzle
  */
-export function recordSolveTime(
+export async function recordSolveTime(
   cards: number[], 
   username: string, 
   solveTimeMs: number,
   solution?: string,
   userId?: string
-): SolveRecord {
+): Promise<SolveRecord> {
   const key = normalizePuzzleKey(cards);
   
   const record: SolveRecord = {
@@ -80,6 +145,35 @@ export function recordSolveTime(
     createdAt: new Date()
   };
   
+  if (isDatabaseConfigured() && supabase) {
+    try {
+      // Insert into database
+      const { data, error } = await supabase
+        .from('solve_records')
+        .insert({
+          puzzle_key: key,
+          username,
+          solve_time_ms: solveTimeMs,
+          solution
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return {
+        puzzleKey: data.puzzle_key,
+        username: data.username,
+        solveTimeMs: data.solve_time_ms,
+        solution: data.solution,
+        createdAt: new Date(data.created_at)
+      };
+    } catch (error) {
+      console.error('Database error, falling back to in-memory:', error);
+    }
+  }
+  
+  // Fallback to in-memory
   const records = solveRecords.get(key) || [];
   records.push(record);
   
@@ -87,7 +181,6 @@ export function recordSolveTime(
   records.sort((a, b) => a.solveTimeMs - b.solveTimeMs);
   
   // Keep only top 10 records per puzzle to save memory
-  // But we keep records for ALL puzzle combinations
   const topRecords = records.slice(0, 10);
   
   solveRecords.set(key, topRecords);
@@ -97,8 +190,48 @@ export function recordSolveTime(
 /**
  * Get puzzle statistics including occurrence count and best record
  */
-export function getPuzzleStats(cards: number[]) {
+export async function getPuzzleStats(cards: number[]) {
   const key = normalizePuzzleKey(cards);
+  
+  if (isDatabaseConfigured() && supabase) {
+    try {
+      // Get puzzle info
+      const { data: puzzle } = await supabase
+        .from('puzzles')
+        .select('*')
+        .eq('puzzle_key', key)
+        .single();
+      
+      // Get top records
+      const { data: records } = await supabase
+        .from('solve_records')
+        .select('*')
+        .eq('puzzle_key', key)
+        .order('solve_time_ms', { ascending: true })
+        .limit(5);
+      
+      const solveRecords = records?.map(r => ({
+        puzzleKey: r.puzzle_key,
+        username: r.username,
+        solveTimeMs: r.solve_time_ms,
+        solution: r.solution,
+        createdAt: new Date(r.created_at)
+      })) || [];
+      
+      return {
+        puzzleKey: key,
+        occurrenceCount: puzzle?.occurrence_count || 0,
+        firstSeen: puzzle ? new Date(puzzle.first_seen) : undefined,
+        lastSeen: puzzle ? new Date(puzzle.last_seen) : undefined,
+        bestRecord: solveRecords[0] || null,
+        topRecords: solveRecords
+      };
+    } catch (error) {
+      console.error('Database error, falling back to in-memory:', error);
+    }
+  }
+  
+  // Fallback to in-memory
   const puzzle = puzzles.get(key);
   const records = solveRecords.get(key) || [];
   
@@ -115,22 +248,79 @@ export function getPuzzleStats(cards: number[]) {
 /**
  * Check if a new solve time beats the current record
  */
-export function isNewRecord(cards: number[], solveTimeMs: number): boolean {
-  const stats = getPuzzleStats(cards);
+export async function isNewRecord(cards: number[], solveTimeMs: number): Promise<boolean> {
+  const stats = await getPuzzleStats(cards);
   return !stats.bestRecord || solveTimeMs < stats.bestRecord.solveTimeMs;
 }
 
 /**
  * Get all puzzles (for debugging/admin)
  */
-export function getAllPuzzles(): PuzzleRecord[] {
+export async function getAllPuzzles(): Promise<PuzzleRecord[]> {
+  if (isDatabaseConfigured() && supabase) {
+    try {
+      // Get all puzzles with their top records
+      const { data: puzzles, error } = await supabase
+        .from('puzzles')
+        .select('*')
+        .order('occurrence_count', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Get all solve records grouped by puzzle
+      const puzzleRecords: PuzzleRecord[] = [];
+      
+      for (const puzzle of puzzles || []) {
+        const { data: records } = await supabase
+          .from('solve_records')
+          .select('*')
+          .eq('puzzle_key', puzzle.puzzle_key)
+          .order('solve_time_ms', { ascending: true })
+          .limit(10);
+        
+        // Store in memory for connection handler access
+        if (records && records.length > 0) {
+          solveRecords.set(puzzle.puzzle_key, records.map(r => ({
+            puzzleKey: r.puzzle_key,
+            username: r.username,
+            solveTimeMs: r.solve_time_ms,
+            solution: r.solution,
+            createdAt: new Date(r.created_at)
+          })));
+        }
+        
+        puzzleRecords.push({
+          puzzleKey: puzzle.puzzle_key,
+          cards: puzzle.cards,
+          occurrenceCount: puzzle.occurrence_count,
+          firstSeen: new Date(puzzle.first_seen),
+          lastSeen: new Date(puzzle.last_seen)
+        });
+      }
+      
+      return puzzleRecords;
+    } catch (error) {
+      console.error('Database error, falling back to in-memory:', error);
+    }
+  }
+  
+  // Fallback to in-memory
   return Array.from(puzzles.values()).sort((a, b) => b.occurrenceCount - a.occurrenceCount);
 }
 
 /**
  * Clear all data (for testing)
  */
-export function clearAllPuzzleData() {
+export async function clearAllPuzzleData() {
+  if (isDatabaseConfigured() && supabase) {
+    try {
+      await supabase.from('solve_records').delete().neq('id', 0);
+      await supabase.from('puzzles').delete().neq('puzzle_key', '');
+    } catch (error) {
+      console.error('Database error:', error);
+    }
+  }
+  
   puzzles.clear();
   solveRecords.clear();
 }

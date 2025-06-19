@@ -177,7 +177,7 @@ export class GameStateManager {
   /**
    * Start a new round
    */
-  private startNewRound(): void {
+  private async startNewRound(): Promise<void> {
     console.log(`[GameStateManager] Starting new round:`, {
       roomId: this.room.id,
       isSoloPractice: this.room.isSoloPractice,
@@ -254,8 +254,8 @@ export class GameStateManager {
     console.log('New round started with cards:', cardValues);
     
     // Track puzzle occurrence and get stats
-    trackPuzzle(cardValues);
-    const puzzleStats = getPuzzleStats(cardValues);
+    trackPuzzle(cardValues).catch(err => console.error('Error tracking puzzle:', err));
+    const puzzleStats = await getPuzzleStats(cardValues);
     
     // Store puzzle stats in room for clients to display
     this.room.currentPuzzleStats = {
@@ -298,7 +298,7 @@ export class GameStateManager {
   /**
    * Submit a solution attempt
    */
-  submitSolution(playerId: string, solution: Solution): void {
+  async submitSolution(playerId: string, solution: Solution): Promise<void> {
     if (this.room.state !== GameState.SOLVING) {
       throw new Error('Not in solving state');
     }
@@ -342,14 +342,14 @@ export class GameStateManager {
         `${op.left} ${op.operator} ${op.right} = ${op.result}`
       ).join(' → ') || '';
       
-      const wasNewRecord = isNewRecord(cardValues, solveTimeMs);
+      const wasNewRecord = await isNewRecord(cardValues, solveTimeMs);
       recordSolveTime(
         cardValues, 
         winner?.name || 'Unknown', 
         solveTimeMs,
         solutionSteps,
         playerId
-      );
+      ).catch(err => console.error('Error recording solve time:', err));
       
       // Store if this was a new record
       this.room.newRecordSet = wasNewRecord;

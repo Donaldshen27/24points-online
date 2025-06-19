@@ -296,14 +296,14 @@ export const handleConnection = (io: Server, socket: Socket) => {
     }
   });
 
-  socket.on('submit-solution', (data: { solution: Solution }) => {
+  socket.on('submit-solution', async (data: { solution: Solution }) => {
     const room = roomManager.getRoomBySocketId(socket.id);
     if (!room) return;
 
     const player = room.players.find(p => p.socketId === socket.id);
     if (!player) return;
 
-    if (roomManager.submitSolution(room.id, player.id, data.solution)) {
+    if (await roomManager.submitSolution(room.id, player.id, data.solution)) {
       const gameState = roomManager.getGameState(room.id);
       if (!gameState) return;
 
@@ -583,10 +583,10 @@ export const handleConnection = (io: Server, socket: Socket) => {
     callback({ count });
   });
 
-  socket.on('get-puzzle-records', (callback) => {
+  socket.on('get-puzzle-records', async (callback) => {
     try {
       const { getAllPuzzles } = require('../models/puzzleRepository');
-      const allPuzzles = getAllPuzzles();
+      const allPuzzles = await getAllPuzzles();
       
       // Transform data for client
       const records = allPuzzles.map(puzzle => {

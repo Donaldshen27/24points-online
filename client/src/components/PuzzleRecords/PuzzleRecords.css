@@ -2,6 +2,8 @@
   position: relative;
   margin-bottom: 1rem;
   text-align: center;
+  z-index: 10; /* Ensure it's above other elements */
+  width: 100%;
 }
 
 .records-container {
@@ -99,17 +101,43 @@
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+  .puzzle-records {
+    margin-bottom: 0.5rem;
+  }
+  
   .records-container {
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.8rem;
+    margin: 0 0.5rem;
+    background: rgba(0, 0, 0, 0.7); /* Darker background for better visibility */
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
   
   .record-info {
-    font-size: 0.8rem;
-    gap: 0.5rem;
+    font-size: 0.75rem;
+    gap: 0.4rem;
+  }
+  
+  .separator {
+    display: none; /* Hide separator on mobile to save space */
+  }
+  
+  .occurrence-count,
+  .best-record {
+    font-size: 0.75rem;
+  }
+  
+  .first-time-icon {
+    font-size: 1rem;
+    margin-right: 0.3rem;
   }
   
   .celebration-text {
-    font-size: 1rem;
-    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.8rem;
+    top: -50px;
+  }
+  
+  .new-record-celebration {
+    top: -50px;
   }
 }

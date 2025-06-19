@@ -52,6 +52,24 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
               {t('app.nav.leaderboard')}
             </button>
           </div>
+          
+          {/* Mobile navigation buttons */}
+          <div className="nav-links-mobile">
+            <button 
+              className={`nav-link ${currentView === 'lobby' || currentView === 'waiting_room' || currentView === 'in_game' ? 'active' : ''}`}
+              onClick={onPlayClick}
+              title={t('app.nav.play')}
+            >
+              <span className="nav-link-icon">🎮</span>
+            </button>
+            <button 
+              className={`nav-link ${currentView === 'puzzles' ? 'active' : ''}`}
+              onClick={onPuzzlesClick}
+              title={t('app.nav.puzzles')}
+            >
+              <span className="nav-link-icon">🧩</span>
+            </button>
+          </div>
         </div>
         
         <div className="nav-right">

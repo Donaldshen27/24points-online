@@ -67,6 +67,12 @@
   gap: var(--space-2);
 }
 
+/* Mobile navigation - hidden by default */
+.nav-links-mobile {
+  display: none;
+  gap: var(--space-1);
+}
+
 .nav-link {
   display: flex;
   align-items: center;
@@ -339,6 +345,25 @@
   }
 
   .nav-links {
+    display: none;
+  }
+  
+  /* Show mobile navigation */
+  .nav-links-mobile {
+    display: flex;
+  }
+  
+  /* Adjust mobile nav link styles */
+  .nav-links-mobile .nav-link {
+    padding: var(--space-1) var(--space-2);
+  }
+  
+  .nav-links-mobile .nav-link-icon {
+    font-size: var(--text-base);
+  }
+  
+  /* Hide the bottom border indicator on mobile */
+  .nav-links-mobile .nav-link.active::after {
     display: none;
   }
   

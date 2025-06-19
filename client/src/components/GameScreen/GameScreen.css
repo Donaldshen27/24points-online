@@ -625,6 +625,14 @@
     padding: var(--space-3);
   }
 
+  .game-board {
+    padding: 0.5rem 0;
+  }
+
+  .center-area {
+    gap: var(--space-3);
+  }
+
   .player-area,
   .opponent-area {
     margin: 0.25rem 0.5rem;

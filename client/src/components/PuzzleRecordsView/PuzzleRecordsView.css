@@ -79,6 +79,7 @@
   padding: 1.5rem;
   transition: all 0.3s ease;
   cursor: pointer;
+  z-index: 1;
 }
 
 .record-item:hover {
@@ -86,6 +87,11 @@
   border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.record-item.hovered {
+  z-index: 1000;
 }
 
 .rank {
@@ -149,7 +155,7 @@
   border-radius: 8px;
   padding: 1rem;
   min-width: 200px;
-  z-index: 10;
+  z-index: 9999;
   animation: fadeIn 0.2s ease;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }

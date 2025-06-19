@@ -47,6 +47,8 @@ This guide will help you set up Supabase for persistent puzzle records storage i
    SUPABASE_ANON_KEY=your-anon-key-here
    ```
 
+   **Note**: You only need these 2 environment variables. Supabase provides many others (like `POSTGRES_URL`, `SERVICE_ROLE_KEY`, etc.) but they're not needed for the puzzle records feature.
+
 ### 5. Deploy and Test (5 minutes)
 
 1. Commit your changes:

@@ -55,6 +55,17 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
         </div>
         
         <div className="nav-right">
+          {/* Mobile-only Puzzles/Records button */}
+          {onPuzzlesClick && (
+            <button 
+              className={`nav-link-mobile ${currentView === 'puzzles' ? 'active' : ''}`}
+              onClick={onPuzzlesClick}
+              title={t('app.nav.puzzles')}
+            >
+              🧩
+            </button>
+          )}
+          
           {onTestModeToggle && (
             <button 
               className="test-mode-btn"

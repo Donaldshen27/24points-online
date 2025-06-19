@@ -14,6 +14,16 @@ interface PatchNote {
 const patchNotes: PatchNote[] = [
   {
     date: '2025-01-19',
+    version: '1.4.0',
+    changes: [
+      { type: 'feature', description: 'New point-based scoring for Extended Range mode - first to 5 points wins!' },
+      { type: 'feature', description: 'Extended Range games are now much shorter (max 9 rounds vs 40+)' },
+      { type: 'feature', description: 'Added momentum system: win gains +1 point or opponent loses -1 point' },
+      { type: 'performance', description: 'Cards now return to original owners after each round in Extended mode' }
+    ]
+  },
+  {
+    date: '2025-01-19',
     version: '1.3.0',
     changes: [
       { type: 'feature', description: 'Added leaderboard with record holdings ranking' },

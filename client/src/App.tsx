@@ -74,6 +74,8 @@ function App() {
   }, [])
 
   useEffect(() => {
+    console.log('[App] useEffect mounting, connecting to socket...')
+    
     // Check if user is already authenticated
     const checkAuth = async () => {
       const user = await authService.getCurrentUser()
@@ -83,9 +85,10 @@ function App() {
     }
     checkAuth()
     
+    // Connect to socket
     socketService.connect()
     
-    socketService.on('connect', () => {
+    const handleConnect = () => {
       setIsConnected(true)
       setAppState(AppState.LOBBY)
       
@@ -93,23 +96,21 @@ function App() {
       socketService.emit('get-online-users', (data: { count: number }) => {
         setOnlineUsers(data.count)
       })
-    })
+    }
 
-    socketService.on('disconnect', () => {
+    const handleDisconnect = () => {
       setIsConnected(false)
       setAppState(AppState.CONNECTING)
       setCurrentRoom(null)
       setIsSpectator(false)
-    })
+    }
 
-    // Handle spectator joins separately
-    socketService.on('spectator-joined', (data: { room: GameRoom; playerId: string }) => {
+    const handleSpectatorJoined = (data: { room: GameRoom; playerId: string }) => {
       console.log('App.tsx: spectator-joined event received:', data)
       handleRoomJoined(data.room, data.playerId, false, true)
-    })
+    }
 
-    // Handle game state updates (important for solo practice)
-    socketService.on('game-state-updated', (gameState: GameRoom) => {
+    const handleGameStateUpdated = (gameState: GameRoom) => {
       console.log('[App] game-state-updated received:', {
         state: gameState.state,
         players: gameState.players?.length,
@@ -122,14 +123,26 @@ function App() {
         console.log('[App] Transitioning from waiting room to game')
         setAppState(AppState.IN_GAME)
       }
-    })
+    }
+
+    // Setup event listeners
+    socketService.on('connect', handleConnect)
+    socketService.on('disconnect', handleDisconnect)
+    socketService.on('spectator-joined', handleSpectatorJoined)
+    socketService.on('game-state-updated', handleGameStateUpdated)
 
     return () => {
-      socketService.off('connect')
-      socketService.off('disconnect')
-      socketService.off('spectator-joined')
-      socketService.off('game-state-updated')
-      socketService.disconnect()
+      // Clean up event listeners
+      socketService.off('connect', handleConnect)
+      socketService.off('disconnect', handleDisconnect)
+      socketService.off('spectator-joined', handleSpectatorJoined)
+      socketService.off('game-state-updated', handleGameStateUpdated)
+      
+      // Only disconnect if no other component is using the socket
+      // This prevents disconnection during StrictMode double-render
+      if (socketService.getSocket()?.connected) {
+        console.log('App unmounting but keeping socket connected for potential re-mount')
+      }
     }
   }, [handleRoomJoined])
 

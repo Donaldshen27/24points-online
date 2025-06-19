@@ -6,7 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    host: true
+    host: true,
+    hmr: {
+      overlay: false
+    }
   },
   build: {
     // Generate source maps for better debugging
@@ -31,6 +34,7 @@ export default defineConfig({
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: ['react', 'react-dom', 'socket.io-client']
+    include: ['react', 'react-dom'],
+    exclude: ['socket.io-client']
   }
 })

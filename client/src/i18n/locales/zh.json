@@ -112,6 +112,11 @@
       "submittingSolution": "提交解决方案：",
       "claimError": "认领错误：",
       "submitError": "提交错误："
+    },
+    "puzzleRecords": {
+      "appeared": "出现过 {{count}} 次",
+      "record": "记录：{{username}} 用时 {{time}} 秒",
+      "newRecord": "新纪录！"
     }
   },
   "roomTypeSelector": {

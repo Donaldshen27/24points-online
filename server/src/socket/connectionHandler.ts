@@ -9,7 +9,12 @@ function broadcastToSpectators(io: Server, roomId: string, event: string, data: 
 }
 
 export const handleConnection = (io: Server, socket: Socket) => {
-  console.log('New client connected:', socket.id);
+  console.log('New client connected:', socket.id, 'Transport:', socket.conn.transport.name);
+  
+  // Log connection details
+  socket.on('error', (error) => {
+    console.error('Socket error for', socket.id, ':', error);
+  });
   
   // Set io instance in RoomManager if not already set
   roomManager.setIo(io);

@@ -31,6 +31,15 @@ export interface GameRoom {
   config?: any;
   // Solo practice mode
   isSoloPractice?: boolean;
+  // Puzzle records
+  currentPuzzleStats?: {
+    occurrenceCount: number;
+    bestRecord?: {
+      username: string;
+      timeSeconds: number;
+    } | null;
+  };
+  newRecordSet?: boolean;
 }
 
 export const GameState = {

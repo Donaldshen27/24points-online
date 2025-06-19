@@ -112,6 +112,11 @@
       "submittingSolution": "Submitting solution:",
       "claimError": "Claim error:",
       "submitError": "Submit error:"
+    },
+    "puzzleRecords": {
+      "appeared": "Appeared {{count}} times",
+      "record": "Record: {{username}} in {{time}}s",
+      "newRecord": "NEW RECORD!"
     }
   },
   "roomTypeSelector": {

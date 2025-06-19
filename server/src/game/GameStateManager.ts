@@ -7,6 +7,7 @@ import { BaseGameRules } from './rules/BaseGameRules';
 import { ClassicGameRules } from './rules/ClassicGameRules';
 import { SuperGameRules } from './rules/SuperGameRules';
 import { ExtendedGameRules } from './rules/ExtendedGameRules';
+import { trackPuzzle, recordSolveTime, getPuzzleStats, isNewRecord } from '../models/puzzleRepository';
 
 export interface GameEvent {
   type: 'round_start' | 'player_claim' | 'solution_attempt' | 'round_end' | 'game_over';
@@ -251,6 +252,19 @@ export class GameStateManager {
     this.room.centerCards = dealtCards;
     this.room.state = GameState.PLAYING;
     console.log('New round started with cards:', cardValues);
+    
+    // Track puzzle occurrence and get stats
+    trackPuzzle(cardValues);
+    const puzzleStats = getPuzzleStats(cardValues);
+    
+    // Store puzzle stats in room for clients to display
+    this.room.currentPuzzleStats = {
+      occurrenceCount: puzzleStats.occurrenceCount,
+      bestRecord: puzzleStats.bestRecord ? {
+        username: puzzleStats.bestRecord.username,
+        timeSeconds: puzzleStats.bestRecord.solveTimeMs / 1000
+      } : null
+    };
   }
 
   /**
@@ -309,6 +323,7 @@ export class GameStateManager {
     if (isValid) {
       // Player wins
       const otherPlayer = this.room.players.find(p => p.id !== playerId);
+      const winner = this.room.players.find(p => p.id === playerId);
       
       // Track statistics
       if (this.room.roundTimes && this.room.roundTimes[playerId]) {
@@ -317,6 +332,23 @@ export class GameStateManager {
       if (this.room.correctSolutions) {
         this.room.correctSolutions[playerId]++;
       }
+      
+      // Record solve time for puzzle records
+      const solveTimeMs = solveTime * 1000; // Convert to milliseconds
+      const cardValues = this.room.centerCards.map(c => c.value);
+      const solutionSteps = solution.operations?.join(' → ') || '';
+      
+      const wasNewRecord = isNewRecord(cardValues, solveTimeMs);
+      recordSolveTime(
+        cardValues, 
+        winner?.name || 'Unknown', 
+        solveTimeMs,
+        solutionSteps,
+        playerId
+      );
+      
+      // Store if this was a new record
+      this.room.newRecordSet = wasNewRecord;
       
       this.endRound({
         winnerId: playerId,
@@ -394,6 +426,9 @@ export class GameStateManager {
 
     // Clear center cards
     this.room.centerCards = [];
+    
+    // Clear puzzle record flag after round ends
+    this.room.newRecordSet = false;
 
     // Check if we should show replay (only for correct solutions)
     if (result.reason === 'correct_solution' && result.solution && 

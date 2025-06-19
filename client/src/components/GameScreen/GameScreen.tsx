@@ -9,6 +9,7 @@ import { CardTransfer } from '../CardTransfer/CardTransfer';
 import { SolutionReplay } from '../SolutionReplay/SolutionReplay';
 import { VictoryCelebration } from '../VictoryCelebration/VictoryCelebration';
 import DisconnectNotification from '../DisconnectNotification/DisconnectNotification';
+import { PuzzleRecords } from '../PuzzleRecords/PuzzleRecords';
 import socketService from '../../services/socketService';
 import type { GameRoom, Solution, Card, Operation } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
@@ -57,6 +58,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [gameOverWinnerId, setGameOverWinnerId] = useState<string | null>(null);
   const [opponentDisconnectedTime, setOpponentDisconnectedTime] = useState<number | null>(null);
+  const [showNewRecord, setShowNewRecord] = useState(false);
 
   // Get current player and opponent
   // For spectators, just show the first player as "current" and second as "opponent"
@@ -277,6 +279,20 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     };
   }, [playerId]);
 
+  // Handle new record notification
+  useEffect(() => {
+    if (room.newRecordSet && room.state === GameState.ROUND_END) {
+      setShowNewRecord(true);
+      // Clear after 3 seconds
+      const timer = setTimeout(() => {
+        setShowNewRecord(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowNewRecord(false);
+    }
+  }, [room.newRecordSet, room.state]);
+
   // For spectators, we need to wait for game state but not for player matching
   if (!gameState || (!isSpectator && (!currentPlayer || !opponent))) {
     console.log('[GameScreen] Still loading - missing data:', {
@@ -336,6 +352,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       <div className="game-board">
         {/* Center Table */}
         <div className="center-area">
+          {/* Puzzle Records */}
+          {gameState?.state === GameState.PLAYING && room.currentPuzzleStats && (
+            <PuzzleRecords
+              occurrenceCount={room.currentPuzzleStats.occurrenceCount}
+              bestRecord={room.currentPuzzleStats.bestRecord}
+              showNewRecord={showNewRecord}
+            />
+          )}
+          
           <InteractiveCenterTable 
             cards={centerCards}
             onSolutionFound={handleDirectSolution}

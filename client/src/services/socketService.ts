@@ -1,48 +1,53 @@
 import { io, Socket } from 'socket.io-client';
 import type { RoomTypeInfo } from '../types/roomTypes';
 
+let socket: Socket;
+
+// Check if socket already exists on window (for HMR)
+if (import.meta.hot && (window as any).__socket) {
+  console.log('[SocketService] Reusing existing socket from HMR');
+  socket = (window as any).__socket;
+} else {
+  // Initialize socket connection
+  const serverUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
+  console.log('[SocketService] Creating new socket connection to:', serverUrl);
+  
+  socket = io(serverUrl, {
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    reconnectionAttempts: 5,
+    transports: ['websocket', 'polling'],
+  });
+
+  socket.on('connect', () => {
+    console.log('[SocketService] Connected to server, socket ID:', socket.id);
+  });
+
+  socket.on('disconnect', (reason) => {
+    console.log('[SocketService] Disconnected from server, reason:', reason);
+  });
+
+  socket.on('connect_error', (error) => {
+    console.error('[SocketService] Connection error:', error.message);
+  });
+
+  // Store on window for HMR
+  if (import.meta.hot) {
+    (window as any).__socket = socket;
+  }
+}
+
 class SocketService {
-  private socket: Socket | null = null;
+  private socket: Socket = socket;
 
   connect(url?: string): void {
-    // If socket exists, check its state
-    if (this.socket) {
-      if (this.socket.connected) {
-        console.log('Socket already connected, skipping connection');
-        return;
-      }
-      // If socket exists but is disconnected, remove it first
-      this.socket.removeAllListeners();
-      this.socket.disconnect();
-      this.socket = null;
-    }
-    
-    // Use environment variable or fallback to localhost for development
-    const serverUrl = url || import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
-    console.log('Connecting to server URL:', serverUrl);
-    console.log('Environment variables:', import.meta.env);
-    this.socket = io(serverUrl, {
-      autoConnect: true,
-    });
-
-    this.socket.on('connect', () => {
-      console.log('Connected to server');
-    });
-
-    this.socket.on('disconnect', () => {
-      console.log('Disconnected from server');
-    });
-
-    this.socket.on('connect_error', (error) => {
-      console.error('Connection error:', error.message);
-    });
+    // Socket is already connected at module load
+    console.log('[SocketService] connect() called - socket already initialized');
   }
 
   disconnect(): void {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
-    }
+    this.socket.disconnect();
   }
 
   getSocket(): Socket | null {
@@ -50,41 +55,40 @@ class SocketService {
   }
 
   on(event: string, callback: (...args: any[]) => void): void {
-    if (this.socket) {
-      this.socket.on(event, callback);
-    }
+    this.socket.on(event, callback);
   }
 
   emit(event: string, ...args: any[]): void {
-    if (this.socket) {
-      this.socket.emit(event, ...args);
-    }
+    this.socket.emit(event, ...args);
   }
 
   off(event: string, callback?: (...args: any[]) => void): void {
-    if (this.socket) {
-      this.socket.off(event, callback);
-    }
+    this.socket.off(event, callback);
   }
 
   // Room type methods
   getRoomTypes(callback: (roomTypes: RoomTypeInfo[]) => void): void {
-    if (this.socket) {
-      this.socket.emit('get-room-types', callback);
-    }
+    this.socket.emit('get-room-types', callback);
   }
 
   createRoom(playerName: string, roomType: string = 'classic', isSoloPractice: boolean = false, callback?: (response: any) => void): void {
-    if (this.socket) {
-      this.socket.emit('create-room', { playerName, roomType, isSoloPractice }, callback);
-    }
+    this.socket.emit('create-room', { playerName, roomType, isSoloPractice }, callback);
   }
 
   joinRoom(roomId: string, playerName: string, callback?: (response: any) => void): void {
-    if (this.socket) {
-      this.socket.emit('join-room', { roomId, playerName }, callback);
-    }
+    this.socket.emit('join-room', { roomId, playerName }, callback);
   }
+}
+
+// Handle HMR cleanup
+if (import.meta.hot) {
+  import.meta.hot.accept(() => {
+    console.log('[SocketService] HMR update accepted');
+  });
+  
+  import.meta.hot.dispose(() => {
+    console.log('[SocketService] HMR disposing - keeping socket alive');
+  });
 }
 
 export default new SocketService();

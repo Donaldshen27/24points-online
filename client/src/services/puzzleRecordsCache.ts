@@ -3,7 +3,7 @@ interface CachedData<T> {
   timestamp: number;
 }
 
-class PuzzleRecordsCache {
+class DataCache {
   private cache = new Map<string, CachedData<any>>();
   private readonly TTL = 30000; // 30 seconds cache TTL
 
@@ -31,13 +31,15 @@ class PuzzleRecordsCache {
     this.cache.clear();
   }
 
-  // Method to preload puzzle records data
-  preload(fetchFunction: () => Promise<any>): void {
+  // Method to preload data
+  preload(key: string, fetchFunction: () => Promise<any>): void {
     // Only preload if cache is empty or expired
-    if (!this.get('puzzle-records')) {
+    if (!this.get(key)) {
       fetchFunction().catch(console.error);
     }
   }
 }
 
-export const puzzleRecordsCache = new PuzzleRecordsCache();
+// Create separate instances for different data types
+export const puzzleRecordsCache = new DataCache();
+export const leaderboardCache = new DataCache();

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
+import { leaderboardCache } from '../../services/puzzleRecordsCache';
 import './Leaderboard.css';
 
 interface LeaderboardEntry {
@@ -28,20 +29,45 @@ export const Leaderboard: React.FC = () => {
     const storedUsername = localStorage.getItem('playerName') || '';
     setCurrentUsername(storedUsername);
 
-    // Fetch leaderboard data
-    const fetchLeaderboard = () => {
-      socketService.emit('get-leaderboard-data', (data: LeaderboardData) => {
-        setLeaderboardData(data);
-        setLoading(false);
-      });
-    };
+    // Check cache first
+    const cachedData = leaderboardCache.get('leaderboard-data');
+    if (cachedData) {
+      setLeaderboardData(cachedData);
+      setLoading(false);
+      
+      // Still fetch fresh data in background for next time
+      fetchLeaderboardInBackground();
+    } else {
+      // No cache, fetch immediately
+      fetchLeaderboard();
+    }
 
-    fetchLeaderboard();
-
-    // Refresh every 30 seconds
-    const interval = setInterval(fetchLeaderboard, 30000);
+    // Refresh every 60 seconds (less frequent than puzzle records)
+    const interval = setInterval(fetchLeaderboardInBackground, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  const fetchLeaderboard = () => {
+    socketService.emit('get-leaderboard-data', (data: LeaderboardData) => {
+      setLeaderboardData(data);
+      leaderboardCache.set('leaderboard-data', data);
+      setLoading(false);
+    });
+  };
+
+  const fetchLeaderboardInBackground = () => {
+    socketService.emit('get-leaderboard-data', (data: LeaderboardData) => {
+      leaderboardCache.set('leaderboard-data', data);
+      
+      // Only update state if data changed
+      setLeaderboardData(prevData => {
+        if (JSON.stringify(prevData) !== JSON.stringify(data)) {
+          return data;
+        }
+        return prevData;
+      });
+    });
+  };
 
   const getPercentage = (recordCount: number) => {
     if (!leaderboardData || leaderboardData.totalPuzzles === 0) return 0;

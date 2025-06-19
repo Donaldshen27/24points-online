@@ -13,7 +13,7 @@ import { Leaderboard } from './components/Leaderboard/Leaderboard'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
-import { puzzleRecordsCache } from './services/puzzleRecordsCache'
+import { puzzleRecordsCache, leaderboardCache } from './services/puzzleRecordsCache'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
 import './App.css'
@@ -103,12 +103,22 @@ function App() {
       })
       
       // Preload puzzle records data in background
-      puzzleRecordsCache.preload(() => {
+      puzzleRecordsCache.preload('puzzle-records', () => {
         return new Promise((resolve) => {
           socketService.emit('get-puzzle-records', (data: { records: any[] }) => {
             const filtered = data.records.filter(record => record.cards.length === 4);
             puzzleRecordsCache.set('puzzle-records', filtered);
             resolve(filtered);
+          });
+        });
+      });
+      
+      // Preload leaderboard data in background
+      leaderboardCache.preload('leaderboard-data', () => {
+        return new Promise((resolve) => {
+          socketService.emit('get-leaderboard-data', (data: any) => {
+            leaderboardCache.set('leaderboard-data', data);
+            resolve(data);
           });
         });
       })

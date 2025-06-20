@@ -40,8 +40,8 @@
   font-size: 80px;
 }
 
-/* Card value styling */
-.card-value {
+/* Card value styling - only for cards in game */
+.card .card-value {
   font-weight: 700;
   color: #1a1a1a;
   z-index: 2;
@@ -57,8 +57,8 @@
   text-shadow: none !important;
 }
 
-.card-value::before,
-.card-value::after {
+.card .card-value::before,
+.card .card-value::after {
   display: none !important;
   background: none !important;
 }
@@ -71,7 +71,6 @@
 
 .card-wrapper .card[style*="--card-color: #ff6b6b"] .card-value {
   color: #ff4757;
-  background: transparent !important;
 }
 
 .card-wrapper .card[style*="--card-color: #4ecdc4"] {
@@ -81,7 +80,6 @@
 
 .card-wrapper .card[style*="--card-color: #4ecdc4"] .card-value {
   color: #00b8a9;
-  background: transparent !important;
 }
 
 /* Hover and interaction states */

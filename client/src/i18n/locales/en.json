@@ -92,6 +92,11 @@
     "room": "Room: {{code}}",
     "round": "Round {{number}}",
     "spectating": "👁️ Spectating",
+    "winConditions": {
+      "classic": "Win by running out of cards",
+      "extended": "First to 4 points",
+      "super": "Win by running out of cards"
+    },
     "status": {
       "loading": "Loading game...",
       "waitingForData": "Waiting for game data...",
@@ -224,8 +229,6 @@
     "or": "OR",
     "continueWithGoogle": "Continue with Google",
     "continueAsGuest": "Continue as Guest",
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
     "password": "Password",

@@ -12,6 +12,17 @@
   flex-direction: column;
 }
 
+/* Prevent scrolling only when in game */
+.App.in-game {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.App.in-game .app-main {
+  flex: 1;
+  overflow: hidden;
+}
+
 /* Status bar */
 .status-bar {
   background-color: var(--color-bg-tertiary);

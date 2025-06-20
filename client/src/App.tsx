@@ -212,7 +212,7 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className={`App ${appState === AppState.IN_GAME ? 'in-game' : ''}`}>
       <DynamicSEO />
       <Navigation 
         username={authUser?.username || currentRoom?.players.find(p => p.id === playerId)?.name} 

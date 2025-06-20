@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-4);
-  z-index: var(--z-modal);
+  z-index: 1000;
   animation: fadeIn var(--transition-base);
 }
 
@@ -27,13 +27,15 @@
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
+  margin: auto;
   overflow-y: auto;
-  animation: slideIn var(--transition-slow);
+  overflow-x: hidden;
+  animation: slideIn 0.3s ease;
 }
 
 @keyframes slideIn {
   from {
-    transform: translateY(20px);
+    transform: translateY(100%);
     opacity: 0;
   }
   to {
@@ -65,7 +67,7 @@
   display: flex;
   border-bottom: 1px solid var(--color-border-subtle);
   padding: 0 var(--space-6);
-  padding-top: var(--space-6);
+  padding-top: var(--space-5);
 }
 
 .modal-tab {
@@ -102,14 +104,14 @@
 }
 
 .modal-content {
-  padding: var(--space-8) var(--space-6);
+  padding: var(--space-6) var(--space-6) var(--space-4);
 }
 
 .modal-divider {
   position: relative;
   text-align: center;
   margin: 0 var(--space-6);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
 }
 
 .modal-divider::before {
@@ -132,10 +134,10 @@
 }
 
 .social-auth {
-  padding: 0 var(--space-6) var(--space-6);
+  padding: 0 var(--space-6) var(--space-5);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .social-btn {
@@ -144,7 +146,7 @@
   justify-content: center;
   gap: var(--space-3);
   width: 100%;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-4);
   background-color: var(--color-surface-2);
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-md);
@@ -208,17 +210,31 @@
 
 @media (max-width: 480px) {
   .auth-modal-backdrop {
-    padding: 0;
+    padding: var(--space-2);
+    align-items: center;
   }
   
   .auth-modal {
-    max-height: 100vh;
-    border-radius: 0;
+    max-height: calc(100vh - var(--space-4));
+    max-width: calc(100vw - var(--space-4));
+    border-radius: var(--radius-xl);
     margin: 0;
   }
   
   .modal-close {
     top: var(--space-3);
     right: var(--space-3);
+  }
+  
+  .modal-content {
+    padding: var(--space-4) var(--space-4) var(--space-3);
+  }
+  
+  .modal-tabs {
+    padding-top: var(--space-4);
+  }
+  
+  .form-group {
+    margin-bottom: var(--space-3);
   }
 }

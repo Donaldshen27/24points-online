@@ -337,20 +337,30 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         </button>
       </div>
 
-      {/* Opponent Area */}
-      <div className="opponent-area">
-        {opponent && (
-          <PlayerHand 
-            player={opponent} 
-            isCurrentPlayer={false}
-            isDisconnected={!!opponentDisconnectedTime}
-            roomType={room.roomType}
-          />
-        )}
-      </div>
+      {/* Compact Score Display */}
+      {gameState && (
+        <div className="score-container">
+          <div className="compact-scores">
+            <div className="score-item current">
+              <span className="score-name">{currentPlayer?.name || 'You'}</span>
+              <span className="score-value">{gameState.scores?.[currentPlayer?.id || ''] || 0}</span>
+            </div>
+            <div className="score-separator">-</div>
+            <div className="score-item opponent">
+              <span className="score-value">{gameState.scores?.[opponent?.id || ''] || 0}</span>
+              <span className="score-name">{opponent?.name || 'Opponent'}</span>
+            </div>
+          </div>
+          <div className="win-condition">
+            {t(`gameScreen.winConditions.${room.roomType || 'classic'}`)}
+          </div>
+        </div>
+      )}
 
-      {/* Game Board */}
-      <div className="game-board">
+      {/* Main Game Content */}
+      <div className="game-content">
+        {/* Game Board */}
+        <div className="game-board">
         {/* Center Table */}
         <div className="center-area">
           {/* Puzzle Records */}
@@ -387,17 +397,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         </div>
       </div>
 
-      {/* Current Player Area */}
-      <div className="player-area">
-        {currentPlayer && (
-          <PlayerHand 
-            player={currentPlayer} 
-            isCurrentPlayer={true}
-            roomType={room.roomType}
-          />
-        )}
       </div>
-
 
       {/* Round Result Modal */}
       {roundResult && gameState.state === GameState.ROUND_END && !showingSolutionReplay && (

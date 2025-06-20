@@ -5,6 +5,7 @@
   height: 100vh;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
+  overflow: hidden;
 }
 
 /* Minimal Game Header */
@@ -12,9 +13,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   background-color: rgba(255, 255, 255, 0.05);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .header-left {
@@ -115,119 +117,83 @@
   color: var(--color-error);
 }
 
-/* Main Game Area */
-.game-main {
+/* Main Game Content */
+.game-content {
   flex: 1;
   display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  padding: var(--space-6);
-  gap: var(--space-6);
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
-/* Minimal Player Areas */
-.player-area,
-.opponent-area {
-  padding: 0.5rem;
-  margin: 0.5rem 1rem;
-}
-
-/* Player Info */
-.player-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-4);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--color-border-subtle);
-}
-
-.player-details {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.player-avatar {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: var(--font-bold);
-  color: var(--color-bg-primary);
-  font-size: var(--text-xl);
-}
-
-.player-name {
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-primary);
-}
-
-.player-stats {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
-  background-color: var(--color-surface-2);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--color-accent-gold);
-}
-
-/* Card Hand */
-.player-hand,
-.opponent-hand {
-  display: flex;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: var(--space-3);
-  background-color: var(--color-bg-tertiary);
-  border-radius: var(--radius-lg);
-  min-height: 120px;
-}
-
-/* Card Back for Opponent */
-.card-back {
-  width: 70px;
-  height: 100px;
-  background: linear-gradient(135deg, var(--color-surface-2), var(--color-surface-3));
-  border: 2px solid var(--color-border-strong);
-  border-radius: var(--radius-lg);
-  position: relative;
-  transition: all var(--transition-base);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-back::before {
-  content: '24';
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-  color: var(--color-text-muted);
-  opacity: 0.3;
-}
-
-.card-back:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
-
-/* Game Board Center */
-.game-board {
-  flex: 2;
+/* Score Container */
+.score-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-2);
+  flex-shrink: 0;
+}
+
+/* Compact Score Display */
+.compact-scores {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: var(--space-6);
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-surface-1);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+}
+
+.win-condition {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+  font-weight: var(--font-medium);
+}
+
+.score-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.score-item.current .score-name {
+  color: var(--color-accent-primary);
+}
+
+.score-item.opponent .score-name {
+  color: var(--color-text-secondary);
+}
+
+.score-value {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+.score-separator {
+  color: var(--color-text-muted);
+  font-size: var(--text-base);
+}
+
+
+
+/* Game Board Center */
+.game-board {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  overflow: hidden;
+  min-height: 0;
+  padding: 0;
 }
 
 .center-area {
@@ -235,18 +201,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-6);
+  gap: var(--space-3);
 }
 
 /* Round Timer */
 .round-timer-container {
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-2) var(--space-4);
   background-color: var(--color-surface-1);
   border: 2px solid var(--color-border-default);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .timer-label {
@@ -257,7 +223,7 @@
 }
 
 .timer-value {
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: var(--font-bold);
   color: var(--color-text-primary);
   font-family: var(--font-mono);
@@ -565,10 +531,19 @@
 }
 
 @media (max-width: 768px) {
+  .game-screen {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
   /* Minimal header for mobile */
   .game-header.minimal {
-    padding: 0.4rem 0.75rem;
-    height: 40px;
+    padding: 0.3rem 0.5rem;
+    height: 36px;
+    flex-shrink: 0;
   }
 
   .game-info.compact {
@@ -621,23 +596,19 @@
     font-size: 0.8rem;
   }
 
-  .game-main {
-    padding: var(--space-3);
+  .game-content {
+    padding: var(--space-2);
   }
 
   .game-board {
-    padding: 0.5rem 0;
+    padding: 0.25rem 0;
+    gap: var(--space-2);
   }
 
   .center-area {
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
-  .player-area,
-  .opponent-area {
-    margin: 0.25rem 0.5rem;
-    padding: 0.25rem;
-  }
 
   .card-back {
     width: 60px;
@@ -645,8 +616,30 @@
   }
 
   .claim-solution-btn {
-    padding: var(--space-3) var(--space-6);
-    font-size: var(--text-lg);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-base);
+  }
+
+  .score-container {
+    padding: var(--space-1) var(--space-1);
+  }
+
+  .compact-scores {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .score-value {
+    font-size: var(--text-base);
+  }
+  
+  .score-name {
+    font-size: var(--text-xs);
+  }
+  
+  .win-condition {
+    font-size: 0.65rem;
   }
 
   .solution-modal-content {

@@ -92,6 +92,11 @@
     "room": "房间：{{code}}",
     "round": "第 {{number}} 回合",
     "spectating": "👁️ 观战中",
+    "winConditions": {
+      "classic": "用完所有牌即获胜",
+      "extended": "率先获得4分获胜",
+      "super": "用完所有牌即获胜"
+    },
     "status": {
       "loading": "加载游戏中...",
       "waitingForData": "等待游戏数据...",
@@ -224,8 +229,6 @@
     "or": "或",
     "continueWithGoogle": "使用 Google 继续",
     "continueAsGuest": "游客身份继续",
-    "signIn": "登录",
-    "signUp": "注册",
     "email": "邮箱",
     "emailPlaceholder": "请输入您的邮箱",
     "password": "密码",

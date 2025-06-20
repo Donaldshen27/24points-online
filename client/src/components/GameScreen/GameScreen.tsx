@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useGameState } from '../../hooks/useGameState';
 import { InteractiveCenterTable } from '../InteractiveCenterTable/InteractiveCenterTable';
 import { PlayerHand } from '../PlayerHand/PlayerHand';
-import { RoundResult } from '../RoundResult/RoundResult';
 import { GameOverEnhanced } from '../GameOver/GameOverEnhanced';
 import { CardTransfer } from '../CardTransfer/CardTransfer';
 import { SolutionReplay } from '../SolutionReplay/SolutionReplay';
@@ -164,11 +163,17 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       // Store solve time for the round
       if (data.solveTime) {
         setCurrentSolveTime(data.solveTime);
+        console.log('[GameScreen] Solve time stored:', data.solveTime);
       }
       
       // Show victory celebration for correct solutions
       if (data.correct && data.winnerId) {
         const winnerName = data.winnerId === playerId ? currentPlayer?.name : opponent?.name;
+        console.log('[GameScreen] SETTING VICTORY CELEBRATION:', {
+          winnerName,
+          data,
+          timestamp: new Date().toISOString()
+        });
         if (winnerName) {
           setShowVictoryCelebration(winnerName);
         }
@@ -288,6 +293,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   // Handle new record notification
   useEffect(() => {
+    console.log('[GameScreen] NEW RECORD CHECK:', {
+      newRecordSet: gameState?.newRecordSet,
+      state: gameState?.state,
+      isRoundEnd: gameState?.state === GameState.ROUND_END,
+      timestamp: new Date().toISOString()
+    });
     if (gameState?.newRecordSet && gameState?.state === GameState.ROUND_END) {
       setShowNewRecord(true);
       // Clear after 3 seconds
@@ -306,6 +317,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       setCurrentSolveTime(undefined);
     }
   }, [gameState?.state]);
+
+
+  // Debug showVictoryCelebration changes
+  useEffect(() => {
+    console.log('[GameScreen] SHOW_VICTORY_CELEBRATION CHANGED:', {
+      showVictoryCelebration,
+      timestamp: new Date().toISOString()
+    });
+  }, [showVictoryCelebration]);
 
   // For spectators, we need to wait for game state but not for player matching
   if (!gameState || (!isSpectator && (!currentPlayer || !opponent))) {
@@ -385,13 +405,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
               hasPuzzleStats: !!gameState?.currentPuzzleStats,
               puzzleStats: gameState?.currentPuzzleStats
             });
-            return gameState?.state === GameState.PLAYING && gameState?.currentPuzzleStats && (
+            return gameState?.state === GameState.PLAYING && gameState?.currentPuzzleStats && !showVictoryCelebration && (
               <PuzzleRecords
                 occurrenceCount={gameState.currentPuzzleStats.occurrenceCount}
                 bestRecord={gameState.currentPuzzleStats.bestRecord}
-                showNewRecord={showNewRecord}
-                currentSolveTime={currentSolveTime}
-                currentPlayerName={currentPlayer?.name}
               />
             );
           })()}
@@ -415,29 +432,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
       </div>
 
-      {/* Round Result Modal */}
-      {roundResult && (gameState.state === GameState.ROUND_END || gameState.state === GameState.SOLVING) && !showingSolutionReplay && (
-        <RoundResult
-          winnerId={roundResult.winnerId}
-          winnerName={isSpectator 
-            ? (gameState.players.find(p => p.id === roundResult.winnerId)?.name || 'Winner')
-            : (roundResult.winnerId === playerId ? (currentPlayer?.name || 'Player') : (opponent?.name || 'Opponent'))}
-          loserId={roundResult.loserId}
-          loserName={isSpectator
-            ? (gameState.players.find(p => p.id === roundResult.loserId)?.name || 'Loser')
-            : (roundResult.loserId === playerId ? (currentPlayer?.name || 'Player') : (opponent?.name || 'Opponent'))}
-          solution={roundResult.solution}
-          reason={roundResult.reason}
-          onContinue={() => {
-            setRoundResult(null);
-            setCurrentSolveTime(undefined);
-          }}
-          hideForReplay={showingSolutionReplay}
-        />
-      )}
 
-      {/* Solution Replay */}
-      {showingSolutionReplay && replaySolution && (
+      {/* Solution Replay - skip in solo practice */}
+      {showingSolutionReplay && replaySolution && !gameState?.isSoloPractice && (
         <SolutionReplay
           solution={replaySolution}
           onComplete={() => {
@@ -468,15 +465,30 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       )}
 
       {/* Victory Celebration */}
-      {showVictoryCelebration && (
-        <VictoryCelebration
-          playerName={showVictoryCelebration}
-          onComplete={() => setShowVictoryCelebration(null)}
-          isFirstSolve={gameState?.currentPuzzleStats && 
-            (gameState.currentPuzzleStats.occurrenceCount <= 1 || !gameState.currentPuzzleStats.bestRecord)}
-          solveTime={currentSolveTime}
-        />
-      )}
+      {showVictoryCelebration && (() => {
+        console.log('[GameScreen] Victory Celebration Props:', {
+          playerName: showVictoryCelebration,
+          currentSolveTime,
+          gameStateNewRecordSet: gameState?.newRecordSet,
+          puzzleStats: gameState?.currentPuzzleStats,
+          previousRecord: gameState?.currentPuzzleStats?.bestRecord,
+          timestamp: new Date().toISOString()
+        });
+        return (
+          <VictoryCelebration
+            playerName={showVictoryCelebration}
+            onComplete={() => setShowVictoryCelebration(null)}
+            isFirstSolve={gameState?.currentPuzzleStats && 
+              (gameState.currentPuzzleStats.occurrenceCount <= 1 || !gameState.currentPuzzleStats.bestRecord)}
+            solveTime={currentSolveTime}
+            isNewRecord={gameState?.newRecordSet || 
+              (currentSolveTime && gameState?.currentPuzzleStats && 
+                (!gameState.currentPuzzleStats.bestRecord || 
+                 currentSolveTime < gameState.currentPuzzleStats.bestRecord.timeSeconds))}
+            previousRecord={gameState?.currentPuzzleStats?.bestRecord}
+          />
+        );
+      })()}
 
       {/* Game Over Modal */}
       {gameState.state === GameState.GAME_OVER && (

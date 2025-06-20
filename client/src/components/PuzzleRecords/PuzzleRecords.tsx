@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import './PuzzleRecords.css';
 
 interface PuzzleRecordsProps {
@@ -9,19 +9,20 @@ interface PuzzleRecordsProps {
     username: string;
     timeSeconds: number;
   } | null;
-  showNewRecord?: boolean;
-  currentSolveTime?: number; // Time in seconds for current player's solve
-  currentPlayerName?: string;
 }
 
 export const PuzzleRecords: React.FC<PuzzleRecordsProps> = ({ 
   occurrenceCount = 0, 
-  bestRecord,
-  showNewRecord = false,
-  currentSolveTime,
-  currentPlayerName
+  bestRecord
 }) => {
   const { t } = useTranslation();
+
+  console.log('[PuzzleRecords] RENDERING:', {
+    occurrenceCount,
+    bestRecord,
+    isFirstTime: occurrenceCount <= 1 && !bestRecord,
+    timestamp: new Date().toISOString()
+  });
 
   // Always show the component if we have any data
   // (even if occurrenceCount is 0, it might be loading or a first-time puzzle)
@@ -56,14 +57,6 @@ export const PuzzleRecords: React.FC<PuzzleRecordsProps> = ({
                       time: bestRecord.timeSeconds.toFixed(1) 
                     })}
                   </span>
-                  {currentSolveTime && currentPlayerName && currentSolveTime < bestRecord.timeSeconds && (
-                    <div className="beat-record">
-                      {t('gameScreen.puzzleRecords.beatRecord', {
-                        playerName: currentPlayerName,
-                        difference: (bestRecord.timeSeconds - currentSolveTime).toFixed(1)
-                      })}
-                    </div>
-                  )}
                 </>
               ) : occurrenceCount > 1 ? (
                 <>
@@ -78,21 +71,6 @@ export const PuzzleRecords: React.FC<PuzzleRecordsProps> = ({
         </div>
       </motion.div>
 
-      <AnimatePresence>
-        {showNewRecord && (
-          <motion.div 
-            className="new-record-celebration"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          >
-            <div className="celebration-text">
-              🏆 {t('gameScreen.puzzleRecords.newRecord')} 🏆
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

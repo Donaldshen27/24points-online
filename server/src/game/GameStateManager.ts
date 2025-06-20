@@ -186,6 +186,9 @@ export class GameStateManager {
       players: this.room.players.map(p => ({ id: p.id, name: p.name, deckSize: p.deck.length }))
     });
     
+    // Clear puzzle record flag when starting new round
+    this.room.newRecordSet = false;
+    
     // Check if game should end before starting new round
     const player1 = this.room.players[0];
     const player2 = this.room.players[1];
@@ -482,36 +485,26 @@ export class GameStateManager {
 
     // Clear center cards
     this.room.centerCards = [];
-    
-    // Clear puzzle record flag after round ends
-    this.room.newRecordSet = false;
 
     // Check if we should show replay (only for correct solutions)
     if (result.reason === 'correct_solution' && result.solution && 
-        result.solution.operations && result.solution.operations.length > 0) {
-      // Enter replay state
+        result.solution.operations && result.solution.operations.length > 0 && !this.room.isSoloPractice) {
+      // Enter replay state (skip entirely in solo practice)
       this.room.state = GameState.REPLAY;
       this.replaySkipRequests.clear();
       
-      // In solo practice mode, skip replay immediately
-      if (this.room.isSoloPractice) {
-        console.log('[GameStateManager] Solo practice mode - skipping replay immediately');
-        this.replayTimeout = setTimeout(() => {
-          this.endReplay();
-        }, 100); // Minimal delay to ensure state updates propagate
-      } else {
-        // Set a timeout for replay duration (15 seconds to ensure animations complete)
-        this.replayTimeout = setTimeout(() => {
-          this.endReplay();
-        }, 15000);
-      }
+      // Set a timeout for replay duration (15 seconds to ensure animations complete)
+      this.replayTimeout = setTimeout(() => {
+        this.endReplay();
+      }, 15000);
     } else {
-      // No replay needed, start next round after a delay
+      // No replay needed (or solo practice mode), start next round after a delay
+      const delay = this.room.isSoloPractice ? 2500 : 3000; // Longer delay for solo to show victory celebration
       setTimeout(() => {
         if (this.room.state === GameState.ROUND_END) {
           this.startNewRound();
         }
-      }, 3000);
+      }, delay);
     }
   }
 

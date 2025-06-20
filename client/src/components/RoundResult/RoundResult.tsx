@@ -27,6 +27,15 @@ export const RoundResult: React.FC<RoundResultProps> = ({
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
+  console.log('[RoundResult] RENDERING:', {
+    winnerId,
+    winnerName,
+    reason,
+    hideForReplay,
+    isVisible,
+    timestamp: new Date().toISOString()
+  });
+
   useEffect(() => {
     // Animate in
     setTimeout(() => setIsVisible(true), 50);

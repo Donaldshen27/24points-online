@@ -13,6 +13,30 @@ interface PatchNote {
 
 const patchNotes: PatchNote[] = [
   {
+    date: '2025-01-21',
+    version: '1.4.3',
+    changes: [
+      { type: 'feature', description: 'Victory banner now shows new record information when players set or beat records' },
+      { type: 'fix', description: 'Removed blue popup overlay that briefly appeared during round transitions' },
+      { type: 'fix', description: 'Fixed solo practice mode to skip solution replay entirely for smoother gameplay' },
+      { type: 'fix', description: 'Victory celebration now maintains record information for its full duration' },
+      { type: 'performance', description: 'Reduced victory celebration duration to 2 seconds for faster gameplay' }
+    ]
+  },
+  {
+    date: '2025-01-20',
+    version: '1.4.2',
+    changes: [
+      { type: 'feature', description: 'Enhanced puzzle records display - now shows fastest solver and their time' },
+      { type: 'feature', description: 'Added first-solve celebration in victory banner' },
+      { type: 'feature', description: 'Improved mobile UI with cleaner layout and better touch targets' },
+      { type: 'fix', description: 'Fixed solve time tracking and display in round results' },
+      { type: 'fix', description: 'Fixed puzzle records not showing for solving state in solo practice' },
+      { type: 'fix', description: 'Improved card number visibility with darker background colors' },
+      { type: 'performance', description: 'Sped up round end banner animations for better flow' }
+    ]
+  },
+  {
     date: '2025-01-19',
     version: '1.4.1',
     changes: [

@@ -313,18 +313,23 @@ export const handleConnection = (io: Server, socket: Socket) => {
       const gameState = roomManager.getGameState(room.id);
       if (!gameState) return;
 
+      // Get the round result which includes solve time
+      const roundResult = roomManager.getLastRoundResult(room.id);
+      if (!roundResult) return;
+
       // Determine round result
       const isCorrect = data.solution.result === 24;
       const winnerId = isCorrect ? player.id : room.players.find(p => p.id !== player.id)?.id || null;
       const loserId = isCorrect ? room.players.find(p => p.id !== player.id)?.id || null : player.id;
       
-      // Emit round result with proper reason
+      // Emit round result with proper reason and solve time
       io.to(room.id).emit('round-ended', {
         winnerId,
         loserId,
         solution: data.solution,
         correct: isCorrect,
-        reason: isCorrect ? 'correct_solution' : 'incorrect_solution'
+        reason: isCorrect ? 'correct_solution' : 'incorrect_solution',
+        solveTime: roundResult.solveTime
       });
       
       // Also send round-ended to spectators
@@ -333,7 +338,8 @@ export const handleConnection = (io: Server, socket: Socket) => {
         loserId,
         solution: data.solution,
         correct: isCorrect,
-        reason: isCorrect ? 'correct_solution' : 'incorrect_solution'
+        reason: isCorrect ? 'correct_solution' : 'incorrect_solution',
+        solveTime: roundResult.solveTime
       });
 
       // Update game state for all players

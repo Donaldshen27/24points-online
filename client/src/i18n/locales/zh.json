@@ -125,7 +125,10 @@
       "appeared": "出现过 {{count}} 次",
       "record": "记录：{{username}} 用时 {{time}} 秒",
       "newRecord": "新纪录！",
-      "firstTime": "首次出现的题目！你将创造新纪录！"
+      "firstTime": "首次出现的题目！你将创造新纪录！",
+      "beatRecord": "{{playerName}} 快了 {{difference}} 秒！",
+      "noRecordYet": "暂无记录",
+      "yourTime": "{{playerName}} 用时 {{time}} 秒"
     }
   },
   "roomTypeSelector": {
@@ -159,7 +162,8 @@
       "cardsGoTo": "牌归属于：",
       "nextRound": "下一回合将在5秒后开始..."
     },
-    "continueNow": "立即继续"
+    "continueNow": "立即继续",
+    "firstSolve": "{{winner}} 首次解出，用时 {{time}} 秒！"
   },
   "gameOver": {
     "spectator": {

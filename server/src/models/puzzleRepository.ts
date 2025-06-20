@@ -203,12 +203,16 @@ export async function getPuzzleStats(cards: number[]) {
         .single();
       
       // Get top records
-      const { data: records } = await supabase
+      const { data: records, error: recordsError } = await supabase
         .from('solve_records')
         .select('*')
         .eq('puzzle_key', key)
         .order('solve_time_ms', { ascending: true })
         .limit(5);
+      
+      if (recordsError) {
+        console.error('[getPuzzleStats] Error fetching solve records:', recordsError);
+      }
       
       const solveRecords = records?.map(r => ({
         puzzleKey: r.puzzle_key,

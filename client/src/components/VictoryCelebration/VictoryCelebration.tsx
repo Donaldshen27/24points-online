@@ -4,11 +4,15 @@ import './VictoryCelebration.css';
 interface VictoryCelebrationProps {
   playerName: string;
   onComplete?: () => void;
+  isFirstSolve?: boolean;
+  solveTime?: number;
 }
 
 export const VictoryCelebration: React.FC<VictoryCelebrationProps> = ({
   playerName,
-  onComplete
+  onComplete,
+  isFirstSolve = false,
+  solveTime
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -28,6 +32,9 @@ export const VictoryCelebration: React.FC<VictoryCelebrationProps> = ({
       <div className="victory-message">
         <div className="message-content">
           <h1>{playerName} got it right!</h1>
+          {isFirstSolve && solveTime && (
+            <p className="first-solve-text">{playerName} did it first in {solveTime.toFixed(1)}s!</p>
+          )}
         </div>
       </div>
     </div>

@@ -10,12 +10,16 @@ interface PuzzleRecordsProps {
     timeSeconds: number;
   } | null;
   showNewRecord?: boolean;
+  currentSolveTime?: number; // Time in seconds for current player's solve
+  currentPlayerName?: string;
 }
 
 export const PuzzleRecords: React.FC<PuzzleRecordsProps> = ({ 
   occurrenceCount = 0, 
   bestRecord,
-  showNewRecord = false
+  showNewRecord = false,
+  currentSolveTime,
+  currentPlayerName
 }) => {
   const { t } = useTranslation();
 
@@ -43,7 +47,7 @@ export const PuzzleRecords: React.FC<PuzzleRecordsProps> = ({
               <span className="occurrence-count">
                 {t('gameScreen.puzzleRecords.appeared', { count: occurrenceCount })}
               </span>
-              {bestRecord && (
+              {bestRecord ? (
                 <>
                   <span className="separator">•</span>
                   <span className="best-record">
@@ -52,8 +56,23 @@ export const PuzzleRecords: React.FC<PuzzleRecordsProps> = ({
                       time: bestRecord.timeSeconds.toFixed(1) 
                     })}
                   </span>
+                  {currentSolveTime && currentPlayerName && currentSolveTime < bestRecord.timeSeconds && (
+                    <div className="beat-record">
+                      {t('gameScreen.puzzleRecords.beatRecord', {
+                        playerName: currentPlayerName,
+                        difference: (bestRecord.timeSeconds - currentSolveTime).toFixed(1)
+                      })}
+                    </div>
+                  )}
                 </>
-              )}
+              ) : occurrenceCount > 1 ? (
+                <>
+                  <span className="separator">•</span>
+                  <span className="no-record">
+                    {t('gameScreen.puzzleRecords.noRecordYet')}
+                  </span>
+                </>
+              ) : null}
             </>
           )}
         </div>

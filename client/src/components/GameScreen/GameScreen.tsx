@@ -59,6 +59,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const [gameOverWinnerId, setGameOverWinnerId] = useState<string | null>(null);
   const [opponentDisconnectedTime, setOpponentDisconnectedTime] = useState<number | null>(null);
   const [showNewRecord, setShowNewRecord] = useState(false);
+  const [currentSolveTime, setCurrentSolveTime] = useState<number | undefined>(undefined);
 
   // Get current player and opponent
   // For spectators, just show the first player as "current" and second as "opponent"
@@ -149,15 +150,21 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
   // Listen for solution results
   useEffect(() => {
-    const handleRoundEnded = (data: { winnerId: string; loserId: string; solution: Solution; correct: boolean; reason?: string }) => {
+    const handleRoundEnded = (data: { winnerId: string; loserId: string; solution: Solution; correct: boolean; reason?: string; solveTime?: number }) => {
       console.log('[GameScreen] Round ended:', {
         winnerId: data.winnerId,
         loserId: data.loserId,
         myPlayerId: playerId,
         amIWinner: data.winnerId === playerId,
         amILoser: data.loserId === playerId,
-        correct: data.correct
+        correct: data.correct,
+        solveTime: data.solveTime
       });
+      
+      // Store solve time for the round
+      if (data.solveTime) {
+        setCurrentSolveTime(data.solveTime);
+      }
       
       // Show victory celebration for correct solutions
       if (data.correct && data.winnerId) {
@@ -293,6 +300,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     }
   }, [gameState?.newRecordSet, gameState?.state]);
 
+  // Clear solve time when new round starts
+  useEffect(() => {
+    if (gameState?.state === GameState.PLAYING) {
+      setCurrentSolveTime(undefined);
+    }
+  }, [gameState?.state]);
+
   // For spectators, we need to wait for game state but not for player matching
   if (!gameState || (!isSpectator && (!currentPlayer || !opponent))) {
     console.log('[GameScreen] Still loading - missing data:', {
@@ -376,6 +390,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
                 occurrenceCount={gameState.currentPuzzleStats.occurrenceCount}
                 bestRecord={gameState.currentPuzzleStats.bestRecord}
                 showNewRecord={showNewRecord}
+                currentSolveTime={currentSolveTime}
+                currentPlayerName={currentPlayer?.name}
               />
             );
           })()}
@@ -400,7 +416,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       </div>
 
       {/* Round Result Modal */}
-      {roundResult && gameState.state === GameState.ROUND_END && !showingSolutionReplay && (
+      {roundResult && (gameState.state === GameState.ROUND_END || gameState.state === GameState.SOLVING) && !showingSolutionReplay && (
         <RoundResult
           winnerId={roundResult.winnerId}
           winnerName={isSpectator 
@@ -412,7 +428,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
             : (roundResult.loserId === playerId ? (currentPlayer?.name || 'Player') : (opponent?.name || 'Opponent'))}
           solution={roundResult.solution}
           reason={roundResult.reason}
-          onContinue={() => setRoundResult(null)}
+          onContinue={() => {
+            setRoundResult(null);
+            setCurrentSolveTime(undefined);
+          }}
           hideForReplay={showingSolutionReplay}
         />
       )}
@@ -453,6 +472,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
         <VictoryCelebration
           playerName={showVictoryCelebration}
           onComplete={() => setShowVictoryCelebration(null)}
+          isFirstSolve={gameState?.currentPuzzleStats && 
+            (gameState.currentPuzzleStats.occurrenceCount <= 1 || !gameState.currentPuzzleStats.bestRecord)}
+          solveTime={currentSolveTime}
         />
       )}
 

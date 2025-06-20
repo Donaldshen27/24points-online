@@ -125,7 +125,10 @@
       "appeared": "Appeared {{count}} times",
       "record": "Record: {{username}} in {{time}}s",
       "newRecord": "NEW RECORD!",
-      "firstTime": "First time puzzle! You'll set the record!"
+      "firstTime": "First time puzzle! You'll set the record!",
+      "beatRecord": "{{playerName}} beat it by {{difference}}s!",
+      "noRecordYet": "No record yet",
+      "yourTime": "{{playerName}} solved in {{time}}s"
     }
   },
   "roomTypeSelector": {
@@ -159,7 +162,8 @@
       "cardsGoTo": "Cards go to:",
       "nextRound": "Next round starts in 5 seconds..."
     },
-    "continueNow": "Continue Now"
+    "continueNow": "Continue Now",
+    "firstSolve": "{{winner}} did it first in {{time}}s!"
   },
   "gameOver": {
     "spectator": {

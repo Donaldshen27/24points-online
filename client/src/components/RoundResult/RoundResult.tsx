@@ -29,12 +29,12 @@ export const RoundResult: React.FC<RoundResultProps> = ({
 
   useEffect(() => {
     // Animate in
-    setTimeout(() => setIsVisible(true), 100);
+    setTimeout(() => setIsVisible(true), 50);
     
-    // Auto-continue after 5 seconds
+    // Auto-continue after 3.5 seconds
     const timer = setTimeout(() => {
       onContinue();
-    }, 5000);
+    }, 3500);
 
     return () => clearTimeout(timer);
   }, [onContinue]);

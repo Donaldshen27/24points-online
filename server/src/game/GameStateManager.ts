@@ -21,6 +21,7 @@ export interface RoundResult {
   cards: Card[];
   solution?: Solution;
   reason: 'correct_solution' | 'incorrect_solution' | 'no_solution';
+  solveTime?: number; // Time in seconds
 }
 
 export interface GameOverResult {
@@ -378,7 +379,8 @@ export class GameStateManager {
         loserId: otherPlayer?.id || null,
         cards: this.room.centerCards,
         solution,
-        reason: 'correct_solution'
+        reason: 'correct_solution',
+        solveTime: solveTime
       });
     } else {
       // Player loses

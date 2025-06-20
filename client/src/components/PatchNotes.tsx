@@ -17,10 +17,15 @@ const patchNotes: PatchNote[] = [
     version: '1.4.3',
     changes: [
       { type: 'feature', description: 'Victory banner now shows new record information when players set or beat records' },
+      { type: 'feature', description: 'Redesigned cards with cleaner, more elegant appearance - removed shadows and simplified design' },
       { type: 'fix', description: 'Removed blue popup overlay that briefly appeared during round transitions' },
       { type: 'fix', description: 'Fixed solo practice mode to skip solution replay entirely for smoother gameplay' },
       { type: 'fix', description: 'Victory celebration now maintains record information for its full duration' },
-      { type: 'performance', description: 'Reduced victory celebration duration to 2 seconds for faster gameplay' }
+      { type: 'fix', description: 'Removed spinning animations when cards are dealt - now using smooth fade-in' },
+      { type: 'fix', description: 'Removed P1/P2 labels from cards for cleaner look' },
+      { type: 'performance', description: 'Reduced victory celebration duration to 2 seconds for faster gameplay' },
+      { type: 'performance', description: 'Made all card animations 25-50% faster for more competitive gameplay' },
+      { type: 'performance', description: 'Reduced card size by 10% for better layout on smaller screens' }
     ]
   },
   {

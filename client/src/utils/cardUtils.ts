@@ -73,7 +73,7 @@ export class CardUtils {
   }
 
   static getCardColor(owner: 'player1' | 'player2'): string {
-    return owner === 'player1' ? '#2196F3' : '#f44336';
+    return owner === 'player1' ? '#ff6b6b' : '#4ecdc4';
   }
 
   static initializePlayerDecks(): { player1Deck: Card[], player2Deck: Card[] } {

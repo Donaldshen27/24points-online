@@ -31,6 +31,7 @@ export const CenterTable: React.FC<CenterTableProps> = ({
                 selected={selectedCards.some(c => c.id === card.id)}
                 disabled={disabled}
                 className={`center-card card-${index}`}
+                showOwner={false}
               />
             ))
           ) : (

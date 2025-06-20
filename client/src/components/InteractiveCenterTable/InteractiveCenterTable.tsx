@@ -241,10 +241,10 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
         <div className="center-cards interactive">
           {cards.length > 0 ? (
             cards.map((card, index) => (
-              <div
-                key={card.id}
-                data-card-id={card.id}
-                className={`card-wrapper ${selectedCard?.id === card.id ? 'selected' : ''} ${secondCard?.id === card.id ? 'selected-second' : ''}`}
+              <div 
+                key={card.id} 
+                data-card-id={card.id} 
+                className="card-wrapper"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleCardClick(card, e);
@@ -259,6 +259,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
                   onClick={() => {}} // Handle click in wrapper
                   keyboardShortcut={index + 1}
                   showKeyboardHint={true}
+                  showOwner={false}
                 />
                 {isMergedCard(card) && (
                   <div className="card-expression">{card.expression}</div>

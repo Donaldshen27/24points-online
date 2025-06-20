@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGameState } from '../../hooks/useGameState';
 import { InteractiveCenterTable } from '../InteractiveCenterTable/InteractiveCenterTable';
-import { PlayerHand } from '../PlayerHand/PlayerHand';
 import { GameOverEnhanced } from '../GameOver/GameOverEnhanced';
 import { CardTransfer } from '../CardTransfer/CardTransfer';
 import { SolutionReplay } from '../SolutionReplay/SolutionReplay';
@@ -39,7 +38,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     resetGame
   } = useGameState(playerId, room);
 
-  const [roundResult, setRoundResult] = useState<{
+  const [, setRoundResult] = useState<{
     winnerId: string | null;
     loserId: string | null;
     solution?: Solution;
@@ -56,8 +55,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const [opponentDisconnected, setOpponentDisconnected] = useState(false);
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [gameOverWinnerId, setGameOverWinnerId] = useState<string | null>(null);
-  const [opponentDisconnectedTime, setOpponentDisconnectedTime] = useState<number | null>(null);
-  const [showNewRecord, setShowNewRecord] = useState(false);
+  const [, setOpponentDisconnectedTime] = useState<number | null>(null);
+  const [, setShowNewRecord] = useState(false);
   const [currentSolveTime, setCurrentSolveTime] = useState<number | undefined>(undefined);
 
   // Get current player and opponent
@@ -482,7 +481,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
               (gameState.currentPuzzleStats.occurrenceCount <= 1 || !gameState.currentPuzzleStats.bestRecord)}
             solveTime={currentSolveTime}
             isNewRecord={gameState?.newRecordSet || 
-              (currentSolveTime && gameState?.currentPuzzleStats && 
+              (!!currentSolveTime && gameState?.currentPuzzleStats && 
                 (!gameState.currentPuzzleStats.bestRecord || 
                  currentSolveTime < gameState.currentPuzzleStats.bestRecord.timeSeconds))}
             previousRecord={gameState?.currentPuzzleStats?.bestRecord}

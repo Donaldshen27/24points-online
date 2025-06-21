@@ -11,6 +11,7 @@ import { InteractiveTableTest } from './components/InteractiveTableTest/Interact
 import { PuzzleRecordsView } from './components/PuzzleRecordsView/PuzzleRecordsView'
 import { Leaderboard } from './components/Leaderboard/Leaderboard'
 import { BadgesPage } from './components/Badges/BadgesPage'
+import { BadgeNotificationQueue } from './components/Badges/BadgeNotification/BadgeNotificationQueue'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
@@ -339,6 +340,14 @@ function App() {
       {showPatchNotes && (
         <PatchNotes onClose={() => setShowPatchNotes(false)} />
       )}
+      
+      {/* Badge Notification Queue - shows badge unlock notifications */}
+      <BadgeNotificationQueue 
+        onShowBadgeDetails={(badgeId) => {
+          // Navigate to badges page with specific badge highlighted
+          setAppState(AppState.BADGES);
+        }}
+      />
     </div>
   )
 }

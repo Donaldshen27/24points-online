@@ -1,0 +1,39 @@
+.badge-notification-queue {
+  position: relative;
+}
+
+.queue-indicator {
+  position: fixed;
+  top: 190px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #374151;
+  color: white;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slide-in 0.3s ease-out;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.queue-count {
+  font-weight: 600;
+  color: #F59E0B;
+}
+
+.queue-text {
+  color: #D1D5DB;
+}

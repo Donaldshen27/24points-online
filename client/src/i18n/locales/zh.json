@@ -62,6 +62,11 @@
       "requirements": "要求",
       "category": "类别",
       "tierProgression": "等级进程"
+    },
+    "notification": {
+      "unlocked": "徽章解锁！",
+      "viewDetails": "查看详情",
+      "tierUpgrade": "从{{from}}升级到{{to}}"
     }
   },
   "lobby": {

@@ -62,6 +62,11 @@
       "requirements": "Requirements",
       "category": "Category",
       "tierProgression": "Tier Progression"
+    },
+    "notification": {
+      "unlocked": "Badge Unlocked!",
+      "viewDetails": "View Details",
+      "tierUpgrade": "Upgraded from {{from}} to {{to}}"
     }
   },
   "lobby": {

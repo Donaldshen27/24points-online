@@ -211,6 +211,16 @@ function App() {
     handleLeaveRoom()
   }
 
+  // Handle navigation to ensure proper cleanup when leaving game
+  const handleNavigation = (newState: AppState) => {
+    // If currently in game or waiting room, leave the room first
+    if ((appState === AppState.IN_GAME || appState === AppState.WAITING_ROOM) && currentRoom) {
+      console.log('[App] Leaving room before navigation')
+      handleLeaveRoom()
+    }
+    setAppState(newState)
+  }
+
   return (
     <div className={`App ${appState === AppState.IN_GAME ? 'in-game' : ''}`}>
       <DynamicSEO />
@@ -218,14 +228,14 @@ function App() {
         username={authUser?.username || currentRoom?.players.find(p => p.id === playerId)?.name} 
         onSignOut={authUser ? handleSignOut : handleLeaveRoom}
         onTestModeToggle={() => {
-          setAppState(appState === AppState.TEST_MODE ? AppState.LOBBY : AppState.TEST_MODE);
+          handleNavigation(appState === AppState.TEST_MODE ? AppState.LOBBY : AppState.TEST_MODE);
           setTestComponent(null);
         }}
         isTestMode={appState === AppState.TEST_MODE}
         onAuthSuccess={handleAuthSuccess}
-        onPuzzlesClick={() => setAppState(AppState.PUZZLES)}
-        onPlayClick={() => setAppState(AppState.LOBBY)}
-        onLeaderboardClick={() => setAppState(AppState.LEADERBOARD)}
+        onPuzzlesClick={() => handleNavigation(AppState.PUZZLES)}
+        onPlayClick={() => handleNavigation(AppState.LOBBY)}
+        onLeaderboardClick={() => handleNavigation(AppState.LEADERBOARD)}
         currentView={appState}
       />
       

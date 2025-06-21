@@ -2,6 +2,8 @@ import { Server, Socket } from 'socket.io';
 import roomManager from './RoomManager';
 import { Solution, GameState } from '../types/game.types';
 import { authService } from '../auth/authService';
+import { badgeDetectionService } from '../badges/BadgeDetectionService';
+import { statisticsService } from '../badges/StatisticsService';
 
 // Helper function to broadcast game state to spectators
 function broadcastToSpectators(io: Server, roomId: string, event: string, data: any) {
@@ -413,6 +415,23 @@ export const handleConnection = (io: Server, socket: Socket) => {
               // Also send game-over to spectators
               const spectatorRoomId = `spectators-${room.id}`;
               io.to(spectatorRoomId).emit('game-over', gameOverData);
+              
+              // Check for new badges after game (for both players)
+              if (!room.isSoloPractice && gameOverResult) {
+                const players = currentState.players;
+                for (const player of players) {
+                  // Initialize stats if needed
+                  await statisticsService.initializeUserStats(player.id, player.name);
+                  
+                  // Check for new badges
+                  const newBadges = await badgeDetectionService.checkBadgesAfterGame(player.id);
+                  
+                  // Notify player of new badges
+                  if (newBadges.length > 0) {
+                    io.to(player.socketId).emit('badges-unlocked', newBadges);
+                  }
+                }
+              }
             } else {
               // Fallback to old logic if no game over result
               const player1 = currentState.players[0];
@@ -443,6 +462,23 @@ export const handleConnection = (io: Server, socket: Socket) => {
               // Also send game-over to spectators
               const spectatorRoomId = `spectators-${room.id}`;
               io.to(spectatorRoomId).emit('game-over', gameOverData);
+              
+              // Check for new badges after game (for both players)
+              if (!room.isSoloPractice && gameOverResult) {
+                const players = currentState.players;
+                for (const player of players) {
+                  // Initialize stats if needed
+                  await statisticsService.initializeUserStats(player.id, player.name);
+                  
+                  // Check for new badges
+                  const newBadges = await badgeDetectionService.checkBadgesAfterGame(player.id);
+                  
+                  // Notify player of new badges
+                  if (newBadges.length > 0) {
+                    io.to(player.socketId).emit('badges-unlocked', newBadges);
+                  }
+                }
+              }
             }
           } else {
             currentState.players.forEach(p => {
@@ -756,6 +792,42 @@ export const handleConnection = (io: Server, socket: Socket) => {
     }
   });
 
+  // Badge system handlers
+  socket.on('get-user-badges', async (data: { userId: string }, callback: (badges: any) => void) => {
+    try {
+      const badges = await badgeDetectionService.getUserBadges(data.userId);
+      callback(badges);
+    } catch (error) {
+      console.error('Error fetching user badges:', error);
+      callback({ earned: [], inProgress: [], totalPoints: 0, level: 1 });
+    }
+  });
+
+  socket.on('get-user-statistics', async (data: { userId: string }, callback: (stats: any) => void) => {
+    try {
+      const stats = await statisticsService.getUserStats(data.userId);
+      callback(stats);
+    } catch (error) {
+      console.error('Error fetching user statistics:', error);
+      callback(null);
+    }
+  });
+
+  socket.on('track-special-badge-event', async (data: { userId: string; eventType: string; eventData?: any }) => {
+    try {
+      const newBadges = await badgeDetectionService.trackSpecialEvent(
+        data.userId,
+        data.eventType,
+        data.eventData
+      );
+      
+      if (newBadges.length > 0) {
+        socket.emit('badges-unlocked', newBadges);
+      }
+    } catch (error) {
+      console.error('Error tracking special badge event:', error);
+    }
+  });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);

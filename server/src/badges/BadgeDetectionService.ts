@@ -1,0 +1,436 @@
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { 
+  BadgeDefinition, 
+  UserStatistics, 
+  BadgeRequirement,
+  SimpleBadgeRequirement,
+  ComplexBadgeRequirement,
+  CustomBadgeRequirement,
+  UserBadge,
+  BadgeProgress,
+  BadgeUnlockNotification
+} from '../../../shared/types/badges';
+import { BADGE_DEFINITIONS, getBadgeById } from './badgeDefinitions';
+import { statisticsService } from './StatisticsService';
+
+export class BadgeDetectionService {
+  private supabase: SupabaseClient;
+
+  constructor() {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.warn('Supabase credentials not found. Badge detection disabled.');
+      return;
+    }
+
+    this.supabase = createClient(supabaseUrl, supabaseKey);
+  }
+
+  /**
+   * Check for new badge unlocks after a game
+   */
+  async checkBadgesAfterGame(userId: string): Promise<BadgeUnlockNotification[]> {
+    if (!this.supabase) return [];
+
+    try {
+      // Get user's current statistics
+      const stats = await statisticsService.getUserStats(userId);
+      if (!stats) return [];
+
+      // Get user's current badges
+      const { data: earnedBadges } = await this.supabase
+        .from('user_badges')
+        .select('badge_id')
+        .eq('user_id', userId);
+
+      const earnedBadgeIds = new Set(earnedBadges?.map(b => b.badge_id) || []);
+      const newBadges: BadgeUnlockNotification[] = [];
+
+      // Check each badge definition
+      for (const badge of BADGE_DEFINITIONS) {
+        if (!badge.isActive) continue;
+        
+        // Skip if already earned (unless it's a tiered badge we can upgrade)
+        if (earnedBadgeIds.has(badge.id)) {
+          // Check if this is a tiered badge that can be upgraded
+          if (badge.tier) {
+            const higherTier = this.checkForTierUpgrade(badge, earnedBadgeIds);
+            if (higherTier) {
+              const isEarned = await this.checkBadgeRequirements(higherTier, stats, userId);
+              if (isEarned) {
+                await this.awardBadge(userId, higherTier.id);
+                newBadges.push({
+                  badge: higherTier,
+                  earnedAt: new Date(),
+                  isNewTier: true,
+                  previousTier: badge.tier
+                });
+              }
+            }
+          }
+          continue;
+        }
+
+        // Check if requirements are met
+        const isEarned = await this.checkBadgeRequirements(badge, stats, userId);
+        if (isEarned) {
+          await this.awardBadge(userId, badge.id);
+          newBadges.push({
+            badge,
+            earnedAt: new Date()
+          });
+        } else {
+          // Update progress for this badge
+          await this.updateBadgeProgress(userId, badge, stats);
+        }
+      }
+
+      return newBadges;
+    } catch (error) {
+      console.error('Error checking badges:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Check if a badge's requirements are met
+   */
+  private async checkBadgeRequirements(
+    badge: BadgeDefinition, 
+    stats: UserStatistics,
+    userId: string
+  ): Promise<boolean> {
+    return this.evaluateRequirement(badge.requirements, stats, userId);
+  }
+
+  /**
+   * Evaluate a badge requirement recursively
+   */
+  private async evaluateRequirement(
+    requirement: BadgeRequirement,
+    stats: UserStatistics,
+    userId: string
+  ): Promise<boolean> {
+    switch (requirement.type) {
+      case 'simple':
+        return this.evaluateSimpleRequirement(requirement as SimpleBadgeRequirement, stats);
+      
+      case 'and':
+        const andReq = requirement as ComplexBadgeRequirement;
+        for (const condition of andReq.conditions) {
+          if (!await this.evaluateRequirement(condition, stats, userId)) {
+            return false;
+          }
+        }
+        return true;
+      
+      case 'or':
+        const orReq = requirement as ComplexBadgeRequirement;
+        for (const condition of orReq.conditions) {
+          if (await this.evaluateRequirement(condition, stats, userId)) {
+            return true;
+          }
+        }
+        return false;
+      
+      case 'custom':
+        return this.evaluateCustomRequirement(requirement as CustomBadgeRequirement, stats, userId);
+      
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Evaluate a simple stat comparison
+   */
+  private evaluateSimpleRequirement(
+    requirement: SimpleBadgeRequirement,
+    stats: UserStatistics
+  ): boolean {
+    const statValue = stats[requirement.stat as keyof UserStatistics] as number;
+    if (statValue === undefined || statValue === null) return false;
+
+    switch (requirement.comparison) {
+      case 'eq': return statValue === requirement.value;
+      case 'gte': return statValue >= requirement.value;
+      case 'lte': return statValue <= requirement.value;
+      case 'gt': return statValue > requirement.value;
+      case 'lt': return statValue < requirement.value;
+      default: return false;
+    }
+  }
+
+  /**
+   * Evaluate custom requirements
+   */
+  private async evaluateCustomRequirement(
+    requirement: CustomBadgeRequirement,
+    stats: UserStatistics,
+    userId: string
+  ): Promise<boolean> {
+    switch (requirement.customType) {
+      case 'accuracy_rate':
+        const totalAttempts = stats.totalCorrectSolutions + stats.totalIncorrectAttempts;
+        if (totalAttempts < 50) return false; // Minimum attempts required
+        const accuracy = stats.totalCorrectSolutions / totalAttempts;
+        return accuracy >= (requirement.params?.rate || 0);
+
+      case 'puzzle_records':
+        // Query puzzle records from database
+        const { data: records } = await this.supabase
+          .from('solve_records')
+          .select('puzzle_key')
+          .eq('username', stats.username)
+          .eq('solve_time_ms', this.supabase.rpc('get_min_solve_time_for_puzzle'));
+        
+        return (records?.length || 0) >= (requirement.params?.count || 0);
+
+      case 'same_opponent_games':
+        // This would require tracking opponent history
+        // For now, return false
+        return false;
+
+      case 'sub_second_solves':
+        // Count puzzles solved in under 1 second
+        // This would require detailed solve history
+        return false;
+
+      case 'marathon_session':
+        // Check for 3+ hour continuous play session
+        // This would require session tracking
+        return false;
+
+      case 'all_operations_used':
+        // Check if all 4 operations were used in a solution
+        // This is tracked during gameplay
+        return false;
+
+      case 'minimal_operations_win':
+        // Win using only addition and subtraction
+        // This is tracked during gameplay
+        return false;
+
+      case 'multiple_languages':
+        // Check if player has used both English and Chinese
+        // This would require language usage tracking
+        return false;
+
+      case 'launch_week_player':
+        // Check if player joined during launch week
+        const launchDate = new Date('2024-01-01'); // Set actual launch date
+        const joinDate = stats.createdAt;
+        const weekLater = new Date(launchDate);
+        weekLater.setDate(weekLater.getDate() + 7);
+        return joinDate >= launchDate && joinDate <= weekLater;
+
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Check if a higher tier of a badge is available
+   */
+  private checkForTierUpgrade(
+    currentBadge: BadgeDefinition,
+    earnedBadgeIds: Set<string>
+  ): BadgeDefinition | null {
+    if (!currentBadge.tier) return null;
+
+    const tiers = ['bronze', 'silver', 'gold', 'platinum', 'diamond'];
+    const currentTierIndex = tiers.indexOf(currentBadge.tier);
+    
+    if (currentTierIndex === -1 || currentTierIndex === tiers.length - 1) {
+      return null; // No higher tier
+    }
+
+    // Find the next tier badge
+    const baseId = currentBadge.id.replace(`_${currentBadge.tier}`, '');
+    const nextTier = tiers[currentTierIndex + 1];
+    const nextBadgeId = `${baseId}_${nextTier}`;
+
+    // Check if next tier exists and isn't earned yet
+    if (!earnedBadgeIds.has(nextBadgeId)) {
+      return getBadgeById(nextBadgeId) || null;
+    }
+
+    return null;
+  }
+
+  /**
+   * Award a badge to a user
+   */
+  private async awardBadge(userId: string, badgeId: string): Promise<void> {
+    if (!this.supabase) return;
+
+    try {
+      await this.supabase
+        .from('user_badges')
+        .insert({
+          user_id: userId,
+          badge_id: badgeId,
+          earned_at: new Date().toISOString()
+        });
+
+      console.log(`Badge awarded: ${badgeId} to user ${userId}`);
+    } catch (error) {
+      console.error('Error awarding badge:', error);
+    }
+  }
+
+  /**
+   * Update progress tracking for a badge
+   */
+  private async updateBadgeProgress(
+    userId: string,
+    badge: BadgeDefinition,
+    stats: UserStatistics
+  ): Promise<void> {
+    if (!this.supabase) return;
+
+    // Only track progress for simple requirements
+    if (badge.requirements.type !== 'simple') return;
+
+    const requirement = badge.requirements as SimpleBadgeRequirement;
+    const currentValue = stats[requirement.stat as keyof UserStatistics] as number || 0;
+    const targetValue = requirement.value;
+
+    try {
+      await this.supabase
+        .from('badge_progress')
+        .upsert({
+          user_id: userId,
+          badge_id: badge.id,
+          current_value: currentValue,
+          target_value: targetValue,
+          last_updated: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,badge_id'
+        });
+    } catch (error) {
+      console.error('Error updating badge progress:', error);
+    }
+  }
+
+  /**
+   * Get user's badge collection
+   */
+  async getUserBadges(userId: string): Promise<{
+    earned: UserBadge[];
+    inProgress: BadgeProgress[];
+    totalPoints: number;
+    level: number;
+  }> {
+    if (!this.supabase) {
+      return { earned: [], inProgress: [], totalPoints: 0, level: 1 };
+    }
+
+    try {
+      // Get earned badges
+      const { data: earnedBadges } = await this.supabase
+        .from('user_badges')
+        .select('*')
+        .eq('user_id', userId);
+
+      // Get badge progress
+      const { data: badgeProgress } = await this.supabase
+        .from('badge_progress')
+        .select('*')
+        .eq('user_id', userId);
+
+      // Calculate total points
+      let totalPoints = 0;
+      const earned = earnedBadges || [];
+      
+      for (const userBadge of earned) {
+        const badge = getBadgeById(userBadge.badge_id);
+        if (badge) {
+          totalPoints += badge.points;
+        }
+      }
+
+      // Calculate level (100 points per level)
+      const level = Math.floor(totalPoints / 100) + 1;
+
+      return {
+        earned: earned as UserBadge[],
+        inProgress: badgeProgress as BadgeProgress[] || [],
+        totalPoints,
+        level
+      };
+    } catch (error) {
+      console.error('Error getting user badges:', error);
+      return { earned: [], inProgress: [], totalPoints: 0, level: 1 };
+    }
+  }
+
+  /**
+   * Check for badges that need special event tracking
+   */
+  async trackSpecialEvent(
+    userId: string,
+    eventType: string,
+    eventData?: any
+  ): Promise<BadgeUnlockNotification[]> {
+    if (!this.supabase) return [];
+
+    const newBadges: BadgeUnlockNotification[] = [];
+
+    try {
+      switch (eventType) {
+        case 'all_operations_used':
+          // Check if Mathematical Genius badge should be awarded
+          const mathBadge = BADGE_DEFINITIONS.find(b => b.id === 'mathematical_genius');
+          if (mathBadge) {
+            const { data: hasBadge } = await this.supabase
+              .from('user_badges')
+              .select('badge_id')
+              .eq('user_id', userId)
+              .eq('badge_id', mathBadge.id)
+              .single();
+
+            if (!hasBadge) {
+              await this.awardBadge(userId, mathBadge.id);
+              newBadges.push({
+                badge: mathBadge,
+                earnedAt: new Date()
+              });
+            }
+          }
+          break;
+
+        case 'minimal_operations_win':
+          // Check if Minimalist badge should be awarded
+          const minBadge = BADGE_DEFINITIONS.find(b => b.id === 'minimalist');
+          if (minBadge) {
+            const { data: hasBadge } = await this.supabase
+              .from('user_badges')
+              .select('badge_id')
+              .eq('user_id', userId)
+              .eq('badge_id', minBadge.id)
+              .single();
+
+            if (!hasBadge) {
+              await this.awardBadge(userId, minBadge.id);
+              newBadges.push({
+                badge: minBadge,
+                earnedAt: new Date()
+              });
+            }
+          }
+          break;
+      }
+
+      return newBadges;
+    } catch (error) {
+      console.error('Error tracking special event:', error);
+      return [];
+    }
+  }
+}
+
+// Singleton instance
+export const badgeDetectionService = new BadgeDetectionService();

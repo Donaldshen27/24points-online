@@ -8,6 +8,7 @@ import { ClassicGameRules } from './rules/ClassicGameRules';
 import { SuperGameRules } from './rules/SuperGameRules';
 import { ExtendedGameRules } from './rules/ExtendedGameRules';
 import { trackPuzzle, recordSolveTime, getPuzzleStats, isNewRecord } from '../models/puzzleRepository';
+import { statisticsService } from '../badges/StatisticsService';
 
 export interface GameEvent {
   type: 'round_start' | 'player_claim' | 'solution_attempt' | 'round_end' | 'game_over';
@@ -569,10 +570,53 @@ export class GameStateManager {
       }
     };
     
+    // Update statistics if not solo practice
+    if (!this.room.isSoloPractice && winner && loser) {
+      const gameStats = {
+        roundTimes: this.room.roundTimes || {},
+        firstSolves: this.room.firstSolves || {},
+        correctSolutions: this.room.correctSolutions || {},
+        incorrectAttempts: this.room.incorrectAttempts || {}
+      };
+      
+      // Update game statistics for both players
+      statisticsService.updateGameStats(
+        this.room,
+        winnerId,
+        loser.id,
+        gameStats
+      ).catch(err => console.error('Failed to update game statistics:', err));
+      
+      // Check for special achievements
+      this.checkSpecialAchievements(winnerId, loser.id, finalReason);
+    }
+    
     // Notify that game ended
     if (this.onGameOverCallback) {
       this.onGameOverCallback();
     }
+  }
+
+  /**
+   * Check for special achievements during the game
+   */
+  private checkSpecialAchievements(winnerId: string, loserId: string, reason: string): void {
+    // Check for comeback win (was down 0-5)
+    const winnerScore = this.room.scores[winnerId] || 0;
+    const loserScore = this.room.scores[loserId] || 0;
+    
+    // This is a simplified check - in a real implementation, you'd track the score history
+    // For now, we'll check if the winner had significantly fewer rounds won early
+    const winnerFirstSolves = this.room.firstSolves?.[winnerId] || 0;
+    const loserFirstSolves = this.room.firstSolves?.[loserId] || 0;
+    
+    // Check for flawless victory (10-0)
+    if (winnerScore === 10 && loserScore === 0) {
+      // This is already tracked in the statistics service
+    }
+    
+    // Track if all operations were used in any solution
+    // This would require analyzing the solution operations throughout the game
   }
 
   /**

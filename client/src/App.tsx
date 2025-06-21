@@ -10,6 +10,7 @@ import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
 import { PuzzleRecordsView } from './components/PuzzleRecordsView/PuzzleRecordsView'
 import { Leaderboard } from './components/Leaderboard/Leaderboard'
+import { BadgesPage } from './components/Badges/BadgesPage'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
@@ -27,7 +28,8 @@ const AppState = {
   IN_GAME: 'in_game',
   TEST_MODE: 'test_mode',
   PUZZLES: 'puzzles',
-  LEADERBOARD: 'leaderboard'
+  LEADERBOARD: 'leaderboard',
+  BADGES: 'badges'
 } as const;
 
 type AppState = typeof AppState[keyof typeof AppState];
@@ -229,6 +231,7 @@ function App() {
         onPuzzlesClick={() => handleNavigation(AppState.PUZZLES)}
         onPlayClick={() => handleNavigation(AppState.LOBBY)}
         onLeaderboardClick={() => handleNavigation(AppState.LEADERBOARD)}
+        onBadgesClick={() => handleNavigation(AppState.BADGES)}
         currentView={appState}
       />
       
@@ -320,6 +323,10 @@ function App() {
 
         {appState === AppState.LEADERBOARD && (
           <Leaderboard />
+        )}
+
+        {appState === AppState.BADGES && (
+          <BadgesPage userId={playerId || authUser?.id} />
         )}
       </main>
       

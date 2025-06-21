@@ -1,0 +1,5 @@
+.badges-page {
+  min-height: 100vh;
+  background: #F9FAFB;
+  padding-top: 60px; /* Account for header */
+}

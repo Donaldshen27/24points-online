@@ -23,8 +23,45 @@
       "puzzles": "Records",
       "learn": "Learn",
       "leaderboard": "Leaderboard",
+      "badges": "Badges",
       "signIn": "Sign In",
       "signUp": "Sign Up"
+    }
+  },
+  "badges": {
+    "loading": "Loading badges...",
+    "gallery": {
+      "title": "Badge Collection",
+      "noBadgesFound": "No badges found matching your criteria"
+    },
+    "level": "Level",
+    "points": "Points",
+    "filter": {
+      "searchPlaceholder": "Search badges...",
+      "showEarnedOnly": "Show earned badges only"
+    },
+    "categories": {
+      "all": "All",
+      "skill": "Skill",
+      "progression": "Progression",
+      "mode": "Game Modes",
+      "social": "Social",
+      "unique": "Unique",
+      "seasonal": "Seasonal"
+    },
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "detail": {
+      "earned": "You've earned this badge!",
+      "progress": "Progress",
+      "progressText": "{{current}} / {{target}}",
+      "requirements": "Requirements",
+      "category": "Category",
+      "tierProgression": "Tier Progression"
     }
   },
   "lobby": {

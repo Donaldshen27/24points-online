@@ -13,10 +13,11 @@ interface NavigationProps {
   onPuzzlesClick?: () => void;
   onPlayClick?: () => void;
   onLeaderboardClick?: () => void;
+  onBadgesClick?: () => void;
   currentView?: string;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess, onPuzzlesClick, onPlayClick, onLeaderboardClick, currentView }) => {
+const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess, onPuzzlesClick, onPlayClick, onLeaderboardClick, onBadgesClick, currentView }) => {
   const { t } = useTranslation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
@@ -55,6 +56,13 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
               <span className="nav-link-icon">🏆</span>
               {t('app.nav.leaderboard')}
             </button>
+            <button 
+              className={`nav-link ${currentView === 'badges' ? 'active' : ''}`}
+              onClick={onBadgesClick}
+            >
+              <span className="nav-link-icon">🎖️</span>
+              {t('app.nav.badges')}
+            </button>
           </div>
           
           {/* Mobile navigation buttons */}
@@ -79,6 +87,13 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
               title={t('app.nav.leaderboard')}
             >
               <span className="nav-link-icon">🏆</span>
+            </button>
+            <button 
+              className={`nav-link ${currentView === 'badges' ? 'active' : ''}`}
+              onClick={onBadgesClick}
+              title={t('app.nav.badges')}
+            >
+              <span className="nav-link-icon">🎖️</span>
             </button>
           </div>
         </div>

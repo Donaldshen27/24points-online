@@ -23,8 +23,45 @@
       "puzzles": "记录",
       "learn": "学习",
       "leaderboard": "排行榜",
+      "badges": "徽章",
       "signIn": "登录",
       "signUp": "注册"
+    }
+  },
+  "badges": {
+    "loading": "加载徽章中...",
+    "gallery": {
+      "title": "徽章收藏",
+      "noBadgesFound": "没有找到符合条件的徽章"
+    },
+    "level": "等级",
+    "points": "点数",
+    "filter": {
+      "searchPlaceholder": "搜索徽章...",
+      "showEarnedOnly": "仅显示已获得的徽章"
+    },
+    "categories": {
+      "all": "全部",
+      "skill": "技能",
+      "progression": "进度",
+      "mode": "游戏模式",
+      "social": "社交",
+      "unique": "独特",
+      "seasonal": "季节"
+    },
+    "rarity": {
+      "common": "普通",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传奇"
+    },
+    "detail": {
+      "earned": "您已获得此徽章！",
+      "progress": "进度",
+      "progressText": "{{current}} / {{target}}",
+      "requirements": "要求",
+      "category": "类别",
+      "tierProgression": "等级进程"
     }
   },
   "lobby": {

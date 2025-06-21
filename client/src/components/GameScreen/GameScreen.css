@@ -171,6 +171,20 @@
   color: var(--color-text-secondary);
 }
 
+.score-item.disconnected {
+  opacity: 0.6;
+}
+
+.score-item.disconnected .score-name {
+  color: var(--color-text-muted);
+}
+
+.disconnect-indicator {
+  color: var(--color-accent-warning);
+  font-size: var(--text-sm);
+  margin-right: 2px;
+}
+
 .score-value {
   font-size: var(--text-lg);
   font-weight: var(--font-bold);

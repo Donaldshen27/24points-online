@@ -14,6 +14,14 @@ interface PatchNote {
 const patchNotes: PatchNote[] = [
   {
     date: '2025-01-21',
+    version: '1.4.4',
+    changes: [
+      { type: 'fix', description: 'Fixed Extended Range mode scoring bug - now correctly awards 1 point per win instead of fractional points' },
+      { type: 'feature', description: 'Added disconnection indicator to scoreboard - shows warning icon when opponent disconnects' }
+    ]
+  },
+  {
+    date: '2025-01-21',
     version: '1.4.3',
     changes: [
       { type: 'feature', description: 'Victory banner now shows new record information when players set or beat records' },

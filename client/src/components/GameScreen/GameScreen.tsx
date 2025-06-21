@@ -55,7 +55,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const [opponentDisconnected, setOpponentDisconnected] = useState(false);
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [gameOverWinnerId, setGameOverWinnerId] = useState<string | null>(null);
-  const [, setOpponentDisconnectedTime] = useState<number | null>(null);
+  const [opponentDisconnectedTime, setOpponentDisconnectedTime] = useState<number | null>(null);
   const [, setShowNewRecord] = useState(false);
   const [currentSolveTime, setCurrentSolveTime] = useState<number | undefined>(undefined);
 
@@ -379,9 +379,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
               <span className="score-value">{gameState.scores?.[currentPlayer?.id || ''] || 0}</span>
             </div>
             <div className="score-separator">-</div>
-            <div className="score-item opponent">
+            <div className={`score-item opponent ${opponentDisconnectedTime ? 'disconnected' : ''}`}>
               <span className="score-value">{gameState.scores?.[opponent?.id || ''] || 0}</span>
-              <span className="score-name">{opponent?.name || 'Opponent'}</span>
+              <span className="score-name">
+                {opponentDisconnectedTime && <span className="disconnect-indicator">⚠ </span>}
+                {opponent?.name || 'Opponent'}
+              </span>
             </div>
           </div>
           <div className="win-condition">

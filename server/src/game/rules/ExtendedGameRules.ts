@@ -54,10 +54,8 @@ export class ExtendedGameRules extends BaseGameRules {
   }
   
   calculateScore(solution: Solution, timeElapsed: number): number {
-    // Extended scoring: bonus points for using higher cards
-    const baseScore = 1;
-    const highCardBonus = solution.cards.filter(c => c.value > 10).length * 0.5;
-    return baseScore + highCardBonus;
+    // Extended scoring: simple 1 point per correct solution
+    return 1;
   }
   
   checkWinCondition(room: GameRoom): WinResult | null {

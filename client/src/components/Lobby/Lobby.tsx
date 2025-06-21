@@ -72,6 +72,11 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
       alert(data.message);
     });
 
+    socketService.on('room-creation-error', (data: { message: string }) => {
+      setIsCreating(false);
+      alert(data.message);
+    });
+
     socketService.emit('get-rooms');
     socketService.emit('get-all-rooms');
 
@@ -83,6 +88,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
       socketService.off('room-joined');
       socketService.off('reconnected-to-game');
       socketService.off('join-room-error');
+      socketService.off('room-creation-error');
     };
   }, [onRoomJoined]);
 

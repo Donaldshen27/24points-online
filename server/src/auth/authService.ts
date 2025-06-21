@@ -6,6 +6,10 @@ import bcrypt from 'bcrypt';
 import { authConfig } from '../config/auth';
 
 export class AuthService {
+  async checkUsernameAvailability(username: string): Promise<boolean> {
+    const existingUser = await userRepository.findByUsername(username);
+    return !!existingUser;
+  }
   // Validation helpers
   private validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

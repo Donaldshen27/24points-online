@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import socketService from './services/socketService'
-import { authService, type AuthUser } from './services/authService'
+import { useAuth } from './contexts/AuthContext'
 import { Lobby } from './components/Lobby/Lobby'
 import { WaitingRoom } from './components/WaitingRoom/WaitingRoom'
 import { GameScreen } from './components/GameScreen/GameScreen'
@@ -15,6 +15,7 @@ import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
 import PatchNotes from './components/PatchNotes'
 import { puzzleRecordsCache, leaderboardCache } from './services/puzzleRecordsCache'
+import { guestService } from './services/guestService'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
 import './App.css'
@@ -40,20 +41,12 @@ function App() {
   const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | null>(null)
   const [onlineUsers, setOnlineUsers] = useState<number>(0)
   const [isSpectator, setIsSpectator] = useState<boolean>(false)
-  const [authUser, setAuthUser] = useState<AuthUser | null>(null)
   const [showPatchNotes, setShowPatchNotes] = useState<boolean>(false)
+  const { user: authUser, logout } = useAuth()
   
   // Use ref to access current appState in event handlers without causing re-renders
   const appStateRef = useRef(appState)
   appStateRef.current = appState
-
-  // Load authenticated user on mount
-  useEffect(() => {
-    const user = authService.getUser()
-    if (user) {
-      setAuthUser(user)
-    }
-  }, [])
 
   const handleRoomJoined = useCallback((room: GameRoom, playerId: string, isReconnection: boolean = false, isSpectatorJoin: boolean = false) => {
     console.log('[App] handleRoomJoined called:', { roomId: room.id, playerId, isReconnection, isSpectatorJoin })
@@ -82,15 +75,6 @@ function App() {
 
   useEffect(() => {
     console.log('[App] useEffect mounting, connecting to socket...')
-    
-    // Check if user is already authenticated
-    const checkAuth = async () => {
-      const user = await authService.getCurrentUser()
-      if (user) {
-        setAuthUser(user)
-      }
-    }
-    checkAuth()
     
     // Connect to socket
     socketService.connect()
@@ -201,13 +185,22 @@ function App() {
     setAppState(AppState.LOBBY)
   }
   
-  const handleAuthSuccess = (user: AuthUser) => {
-    setAuthUser(user)
+  const handleAuthSuccess = () => {
+    // Auth context will handle the user state update
   }
   
   const handleSignOut = async () => {
-    await authService.logout()
-    setAuthUser(null)
+    await logout()
+    
+    // Clear all caches when signing out
+    puzzleRecordsCache.clear()
+    leaderboardCache.clear()
+    guestService.clearGuestUsername()
+    
+    // Disconnect and reconnect socket to clear auth state
+    socketService.disconnect()
+    socketService.connect()
+    
     handleLeaveRoom()
   }
 

@@ -115,4 +115,29 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
+// Check username availability endpoint
+router.get('/check-username/:username', async (req: Request, res: Response) => {
+  try {
+    const { username } = req.params;
+    
+    // Validate username format
+    if (!username || !/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+      return res.json({ 
+        available: false, 
+        reason: 'invalid_format' 
+      });
+    }
+    
+    const existingUser = await authService.checkUsernameAvailability(username);
+    
+    res.json({ 
+      available: !existingUser,
+      reason: existingUser ? 'already_taken' : null
+    });
+  } catch (error) {
+    console.error('Check username error:', error);
+    res.status(500).json({ error: 'Failed to check username' });
+  }
+});
+
 export default router;

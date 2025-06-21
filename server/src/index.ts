@@ -49,6 +49,34 @@ app.use('/api/auth', authRoutes);
 app.use('/api/debug', debugRoutes);
 
 import { handleConnection } from './socket/connectionHandler';
+import { verifyAccessToken } from './auth/jwt';
+
+// Socket.io authentication middleware
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth.token;
+    
+    if (token) {
+      // Verify JWT token
+      const payload = verifyAccessToken(token);
+      // Attach user info to socket
+      (socket as any).userId = payload.userId;
+      (socket as any).username = payload.username;
+      (socket as any).email = payload.email;
+      (socket as any).role = payload.role;
+      (socket as any).isAuthenticated = true;
+    } else {
+      // Allow anonymous connections but mark as not authenticated
+      (socket as any).isAuthenticated = false;
+    }
+    
+    next();
+  } catch (error) {
+    // Allow connection even if token is invalid (for anonymous play)
+    (socket as any).isAuthenticated = false;
+    next();
+  }
+});
 
 io.on('connection', (socket) => {
   handleConnection(io, socket);

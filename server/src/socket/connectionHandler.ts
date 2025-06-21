@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import roomManager from './RoomManager';
 import { Solution, GameState } from '../types/game.types';
+import { authService } from '../auth/authService';
 
 // Helper function to broadcast game state to spectators
 function broadcastToSpectators(io: Server, roomId: string, event: string, data: any) {
@@ -19,12 +20,32 @@ export const handleConnection = (io: Server, socket: Socket) => {
   // Set io instance in RoomManager if not already set
   roomManager.setIo(io);
 
-  socket.on('create-room', (data: { playerName: string; roomType?: string; isSoloPractice?: boolean }) => {
+  socket.on('create-room', async (data: { playerName: string; roomType?: string; isSoloPractice?: boolean }) => {
     const playerId = `player-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     const roomType = data.roomType || 'classic';
     
+    // Use authenticated username if available, otherwise validate guest name
+    let playerName: string;
+    if ((socket as any).isAuthenticated && (socket as any).username) {
+      playerName = (socket as any).username;
+    } else {
+      playerName = data.playerName;
+      
+      // Check if guest is trying to use a registered username
+      if (!data.isSoloPractice) {
+        const isRegistered = await authService.checkUsernameAvailability(playerName);
+        if (isRegistered) {
+          socket.emit('room-creation-error', { 
+            message: 'This username is registered. Please sign in or choose a different name.' 
+          });
+          return;
+        }
+      }
+    }
+    
     console.log('[ConnectionHandler] Creating room:', {
-      playerName: data.playerName,
+      playerName,
+      isAuthenticated: (socket as any).isAuthenticated,
       roomType,
       isSoloPractice: data.isSoloPractice,
       playerId,
@@ -32,7 +53,7 @@ export const handleConnection = (io: Server, socket: Socket) => {
     });
     
     try {
-      const room = roomManager.createRoom(playerId, socket.id, data.playerName, roomType, data.isSoloPractice);
+      const room = roomManager.createRoom(playerId, socket.id, playerName, roomType, data.isSoloPractice);
       
       socket.join(room.id);
       socket.emit('room-created', { 
@@ -80,24 +101,43 @@ export const handleConnection = (io: Server, socket: Socket) => {
     }
   });
 
-  socket.on('join-room', (data: { roomId: string; playerName: string; isSpectator?: boolean }) => {
+  socket.on('join-room', async (data: { roomId: string; playerName: string; isSpectator?: boolean }) => {
     console.log('[Server] join-room received:', data);
+    
+    // Use authenticated username if available, otherwise validate guest name
+    let playerName: string;
+    if ((socket as any).isAuthenticated && (socket as any).username) {
+      playerName = (socket as any).username;
+    } else {
+      playerName = data.playerName;
+      
+      // Check if guest is trying to use a registered username (except for spectators)
+      if (!data.isSpectator) {
+        const isRegistered = await authService.checkUsernameAvailability(playerName);
+        if (isRegistered) {
+          socket.emit('join-room-error', { 
+            message: 'This username is registered. Please sign in or choose a different name.' 
+          });
+          return;
+        }
+      }
+    }
     
     // Check if this is a reconnection first
     const room = roomManager.getRoom(data.roomId);
-    const existingPlayer = room?.players.find(p => !p.socketId && p.name === data.playerName);
+    const existingPlayer = room?.players.find(p => !p.socketId && p.name === playerName);
     
     let playerId: string;
     if (existingPlayer) {
       // Reconnection - use existing player ID
       playerId = existingPlayer.id;
-      console.log(`[ConnectionHandler] Reconnection detected for player ${data.playerName}`);
+      console.log(`[ConnectionHandler] Reconnection detected for player ${playerName}`);
     } else {
       // New player - generate new ID
       playerId = `${data.isSpectator ? 'spectator' : 'player'}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     }
     
-    const joinedRoom = roomManager.joinRoom(data.roomId, playerId, socket.id, data.playerName, data.isSpectator);
+    const joinedRoom = roomManager.joinRoom(data.roomId, playerId, socket.id, playerName, data.isSpectator);
     
     if (!joinedRoom) {
       socket.emit('join-room-error', { message: 'Room not found or full' });

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authService } from '../../services/authService';
+import { guestService } from '../../services/guestService';
 import './SignUpForm.css';
 
 interface SignUpFormProps {
@@ -19,6 +20,16 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToSig
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showUsernameHint, setShowUsernameHint] = useState(false);
+
+  // Pre-fill username from guest service
+  useEffect(() => {
+    const guestUsername = guestService.getGuestUsername();
+    if (guestUsername) {
+      setFormData(prev => ({ ...prev, username: guestUsername }));
+      setShowUsernameHint(true);
+    }
+  }, []);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -118,6 +129,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToSig
         />
         {errors.username && (
           <span className="field-error">{errors.username}</span>
+        )}
+        {showUsernameHint && !errors.username && (
+          <span className="field-hint" style={{ color: '#4CAF50', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
+            {t('auth.signUp.usernameHint', 'Great! You can claim your guest username "{{username}}"', { username: formData.username })}
+          </span>
         )}
       </div>
 

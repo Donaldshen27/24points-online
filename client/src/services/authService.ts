@@ -4,7 +4,14 @@ interface LoginRequest {
   password: string;
 }
 
-interface AuthUser {
+export interface User {
+  id: string;
+  email: string;
+  username: string;
+  role: string;
+}
+
+export interface AuthUser {
   id: string;
   email: string;
   username: string;
@@ -28,18 +35,7 @@ class AuthService {
   private readonly API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3024';
 
   constructor() {
-    // Try to restore session from localStorage
-    this.restoreSession();
-  }
-
-  private restoreSession() {
-    const token = localStorage.getItem('accessToken');
-    const userStr = localStorage.getItem('user');
-    
-    if (token && userStr) {
-      this.accessToken = token;
-      this.user = JSON.parse(userStr);
-    }
+    // Session will be restored via the public restoreSession method
   }
 
   private saveSession(token: string, user: AuthUser) {
@@ -56,7 +52,29 @@ class AuthService {
     localStorage.removeItem('user');
   }
 
-  async login(credentials: LoginRequest): Promise<AuthUser> {
+  async restoreSession(): Promise<User | null> {
+    const token = localStorage.getItem('accessToken');
+    const userStr = localStorage.getItem('user');
+    
+    if (token && userStr) {
+      this.accessToken = token;
+      this.user = JSON.parse(userStr);
+      
+      // Verify token is still valid
+      try {
+        const currentUser = await this.getCurrentUser();
+        if (currentUser) {
+          return currentUser;
+        }
+      } catch (error) {
+        this.clearSession();
+      }
+    }
+    
+    return null;
+  }
+
+  async login(credentials: LoginRequest): Promise<{ user: User; accessToken: string }> {
     try {
       const response = await fetch(`${this.API_BASE_URL}/api/auth/login`, {
         method: 'POST',
@@ -75,14 +93,14 @@ class AuthService {
       const data: AuthResponse = await response.json();
       this.saveSession(data.accessToken, data.user);
       
-      return data.user;
+      return { user: data.user, accessToken: data.accessToken };
     } catch (error) {
       console.error('Login error:', error);
       throw error;
     }
   }
 
-  async register(data: RegisterRequest): Promise<AuthUser> {
+  async register(data: RegisterRequest): Promise<{ user: User; accessToken: string }> {
     try {
       const response = await fetch(`${this.API_BASE_URL}/api/auth/register`, {
         method: 'POST',
@@ -100,7 +118,7 @@ class AuthService {
       const result: AuthResponse = await response.json();
       this.saveSession(result.accessToken, result.user);
       
-      return result.user;
+      return { user: result.user, accessToken: result.accessToken };
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -163,5 +181,4 @@ class AuthService {
 }
 
 export const authService = new AuthService();
-export type { AuthUser, LoginRequest, RegisterRequest };
 export { AuthService };

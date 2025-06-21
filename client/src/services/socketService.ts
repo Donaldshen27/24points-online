@@ -18,6 +18,11 @@ if (import.meta.hot && (window as any).__socket) {
     reconnectionDelayMax: 5000,
     reconnectionAttempts: 5,
     transports: ['websocket', 'polling'],
+    auth: (cb) => {
+      // Get auth token from localStorage
+      const token = localStorage.getItem('accessToken');
+      cb({ token });
+    }
   });
 
   socket.on('connect', () => {

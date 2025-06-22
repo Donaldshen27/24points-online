@@ -14,6 +14,16 @@ interface PatchNote {
 const patchNotes: PatchNote[] = [
   {
     date: '2025-01-22',
+    version: '2.0.1',
+    changes: [
+      { type: 'feature', description: 'Automatic JWT token refresh - Stay logged in without interruption' },
+      { type: 'fix', description: 'Fixed JWT expiration errors causing "invalid credentials" messages' },
+      { type: 'fix', description: 'Improved authentication token handling for better stability' },
+      { type: 'performance', description: 'Increased session duration from 15 minutes to 1 hour' }
+    ]
+  },
+  {
+    date: '2025-01-22',
     version: '2.0.0',
     changes: [
       { type: 'feature', description: '🏆 NEW: Achievement & Badge System - Collect 50+ unique badges across multiple categories!' },

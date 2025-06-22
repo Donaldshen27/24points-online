@@ -226,8 +226,9 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
 
   const stats = getDetailedStats();
 
-  const formatTime = (seconds: number) => {
-    if (seconds === 0) return t('gameOver.labels.na');
+  const formatTime = (milliseconds: number) => {
+    if (milliseconds === 0) return t('gameOver.labels.na');
+    const seconds = (milliseconds / 1000).toFixed(1);
     return t('gameOver.labels.seconds', { seconds });
   };
 
@@ -364,7 +365,7 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
           <div className="achievements">
             <h3>{t('gameOver.matchAchievements')}</h3>
             <div className="achievement-list">
-              {stats.avgSolveTime < 10 && stats.avgSolveTime > 0 && (
+              {stats.avgSolveTime < 10000 && stats.avgSolveTime > 0 && (
                 <div className="achievement-badge speed">
                   <span className="badge-icon" role="img" aria-label="Lightning bolt">⚡</span>
                   <span className="badge-text">{t('gameOver.achievements.speedDemon')}</span>

@@ -81,6 +81,23 @@ export const BadgeGallery: React.FC<BadgeGalleryProps> = ({ userId }) => {
     }
   }, [userId, user]);
 
+  // Listen for new badges being unlocked
+  useEffect(() => {
+    const handleBadgesUnlocked = (badges: any[]) => {
+      console.log('[BadgeGallery] New badges unlocked, refreshing...', badges);
+      // Refresh badge data after a short delay to ensure server has processed them
+      setTimeout(() => {
+        fetchBadgeData();
+      }, 1000);
+    };
+
+    socketService.on('badges-unlocked', handleBadgesUnlocked);
+
+    return () => {
+      socketService.off('badges-unlocked', handleBadgesUnlocked);
+    };
+  }, []);
+
   const fetchBadgeData = async () => {
     setLoading(true);
     try {

@@ -272,20 +272,29 @@ export class BadgeDetectionService {
    * Award a badge to a user
    */
   private async awardBadge(userId: string, badgeId: string): Promise<void> {
-    if (!this.supabase) return;
+    if (!this.supabase) {
+      console.error('Supabase client not initialized in awardBadge');
+      return;
+    }
 
     try {
-      await this.supabase
+      const { data, error } = await this.supabase
         .from('user_badges')
         .insert({
           user_id: userId,
           badge_id: badgeId,
           earned_at: new Date().toISOString()
-        });
+        })
+        .select();
 
-      console.log(`Badge awarded: ${badgeId} to user ${userId}`);
+      if (error) {
+        console.error(`Error awarding badge ${badgeId} to user ${userId}:`, error);
+        console.error('Error details:', error.message, error.details, error.hint);
+      } else {
+        console.log(`Badge awarded successfully: ${badgeId} to user ${userId}`, data);
+      }
     } catch (error) {
-      console.error('Error awarding badge:', error);
+      console.error('Exception in awardBadge:', error);
     }
   }
 

@@ -158,6 +158,7 @@ export class StatisticsService {
       updates.fastest_solve_ms = currentStats.fastest_solve_ms
         ? Math.min(currentStats.fastest_solve_ms, fastestSolve)
         : fastestSolve;
+      console.log(`[StatisticsService] Updated fastest solve for ${playerId}: ${fastestSolve}ms (was ${currentStats.fastest_solve_ms}ms)`);
     }
 
     // Update cards won/lost
@@ -170,10 +171,16 @@ export class StatisticsService {
       updates.total_cards_lost = currentStats.total_cards_lost + cardsLost;
     }
 
-    await this.supabase
+    const { error } = await this.supabase
       .from('user_statistics')
       .update(updates)
       .eq('user_id', playerId);
+    
+    if (error) {
+      console.error(`[StatisticsService] Error updating stats for ${playerId}:`, error);
+    } else {
+      console.log(`[StatisticsService] Successfully updated stats for ${playerId}`, updates);
+    }
   }
 
   /**

@@ -26,7 +26,7 @@ router.get('/me', authenticateToken, async (req, res) => {
       .from('user_badges')
       .select('*, badge:badge_definitions(*)')
       .eq('user_id', userId)
-      .order('earned_at', { ascending: false });
+      .order('id', { ascending: false }); // Order by id instead of earned_at
 
     if (badgesError) {
       console.error('Error fetching badges:', badgesError);

@@ -295,8 +295,8 @@ export class BadgeDetectionService {
         .from('user_badges')
         .insert({
           user_id: userId,
-          badge_id: badgeId,
-          earned_at: new Date().toISOString()
+          badge_id: badgeId
+          // earned_at is handled by database default
         })
         .select();
 

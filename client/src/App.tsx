@@ -12,6 +12,7 @@ import { PuzzleRecordsView } from './components/PuzzleRecordsView/PuzzleRecordsV
 import { Leaderboard } from './components/Leaderboard/Leaderboard'
 import { BadgesPage } from './components/Badges/BadgesPage'
 import { BadgeNotificationQueue } from './components/Badges/BadgeNotification/BadgeNotificationQueue'
+import { Profile } from './components/Profile/Profile'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
@@ -30,7 +31,8 @@ const AppState = {
   TEST_MODE: 'test_mode',
   PUZZLES: 'puzzles',
   LEADERBOARD: 'leaderboard',
-  BADGES: 'badges'
+  BADGES: 'badges',
+  PROFILE: 'profile'
 } as const;
 
 type AppState = typeof AppState[keyof typeof AppState];
@@ -233,6 +235,7 @@ function App() {
         onPlayClick={() => handleNavigation(AppState.LOBBY)}
         onLeaderboardClick={() => handleNavigation(AppState.LEADERBOARD)}
         onBadgesClick={() => handleNavigation(AppState.BADGES)}
+        onProfileClick={() => handleNavigation(AppState.PROFILE)}
         currentView={appState}
       />
       
@@ -329,6 +332,10 @@ function App() {
         {appState === AppState.BADGES && (
           <BadgesPage userId={playerId || authUser?.id} />
         )}
+
+        {appState === AppState.PROFILE && (
+          <Profile userId={authUser?.id} />
+        )}
       </main>
       
       {/* SEO Content - visible to search engines but can be hidden visually */}
@@ -343,7 +350,7 @@ function App() {
       
       {/* Badge Notification Queue - shows badge unlock notifications */}
       <BadgeNotificationQueue 
-        onShowBadgeDetails={(badgeId) => {
+        onShowBadgeDetails={() => {
           // Navigate to badges page with specific badge highlighted
           setAppState(AppState.BADGES);
         }}

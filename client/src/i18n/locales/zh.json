@@ -350,5 +350,29 @@
   },
   "patchNotes": {
     "title": "更新日志"
+  },
+  "profile": {
+    "notLoggedIn": "请登录以查看您的个人资料",
+    "memberSince": "注册于 {{date}}",
+    "statistics": "统计数据",
+    "gamesPlayed": "游戏场数",
+    "gamesWon": "获胜场数",
+    "winRate": "胜率",
+    "avgSolveTime": "平均解题时间",
+    "fastestSolve": "最快解题",
+    "longestStreak": "最长连胜",
+    "recentGames": "最近游戏",
+    "noRecentGames": "暂无最近游戏记录"
+  },
+  "badges": {
+    "featuredBadges": "精选徽章",
+    "edit": "编辑",
+    "level": "等级",
+    "totalPoints": "总积分",
+    "totalBadges": "徽章总数",
+    "noFeaturedBadges": "未选择精选徽章",
+    "selectBadges": "选择徽章",
+    "selectFeaturedBadges": "选择精选徽章",
+    "selectUpTo": "最多可选择 {{count}} 个徽章展示在您的个人资料上"
   }
 }

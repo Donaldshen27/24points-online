@@ -14,10 +14,11 @@ interface NavigationProps {
   onPlayClick?: () => void;
   onLeaderboardClick?: () => void;
   onBadgesClick?: () => void;
+  onProfileClick?: () => void;
   currentView?: string;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess, onPuzzlesClick, onPlayClick, onLeaderboardClick, onBadgesClick, currentView }) => {
+const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess, onPuzzlesClick, onPlayClick, onLeaderboardClick, onBadgesClick, onProfileClick, currentView }) => {
   const { t } = useTranslation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
@@ -137,9 +138,9 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
                 </button>
                 
                 <div className="user-dropdown">
-                  <a href="/profile" className="dropdown-item">Profile</a>
-                  <a href="/settings" className="dropdown-item">Settings</a>
-                  <a href="/stats" className="dropdown-item">Statistics</a>
+                  <button onClick={onProfileClick} className="dropdown-item">Profile</button>
+                  <button className="dropdown-item" disabled>Settings</button>
+                  <button className="dropdown-item" disabled>Statistics</button>
                   <div className="dropdown-divider"></div>
                   <button onClick={onSignOut} className="dropdown-item">Sign Out</button>
                 </div>

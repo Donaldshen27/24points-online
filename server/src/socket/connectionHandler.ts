@@ -795,11 +795,11 @@ export const handleConnection = (io: Server, socket: Socket) => {
   // Badge system handlers
   socket.on('get-user-badges', async (data: { userId: string }, callback: (badges: any) => void) => {
     try {
-      const badges = await badgeDetectionService.getUserBadges(data.userId);
-      callback(badges);
+      const result = await badgeDetectionService.getUserBadges(data.userId);
+      callback(result);
     } catch (error) {
       console.error('Error fetching user badges:', error);
-      callback({ earned: [], inProgress: [], totalPoints: 0, level: 1 });
+      callback({ success: false, badges: [], inProgress: [], totalPoints: 0, level: 1 });
     }
   });
 
@@ -826,6 +826,25 @@ export const handleConnection = (io: Server, socket: Socket) => {
       }
     } catch (error) {
       console.error('Error tracking special badge event:', error);
+    }
+  });
+
+  socket.on('update-featured-badges', async (data: { userId: string; badgeIds: string[] }, callback: (response: any) => void) => {
+    try {
+      // Validate that user is updating their own badges
+      if ((socket as any).isAuthenticated && (socket as any).userId !== data.userId) {
+        callback({ success: false, error: 'Unauthorized' });
+        return;
+      }
+
+      // Update featured badges (limit to 5)
+      const featuredBadgeIds = data.badgeIds.slice(0, 5);
+      const success = await badgeDetectionService.updateFeaturedBadges(data.userId, featuredBadgeIds);
+      
+      callback({ success });
+    } catch (error) {
+      console.error('Error updating featured badges:', error);
+      callback({ success: false, error: 'Failed to update featured badges' });
     }
   });
 

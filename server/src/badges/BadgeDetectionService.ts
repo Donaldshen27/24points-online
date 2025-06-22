@@ -319,13 +319,14 @@ export class BadgeDetectionService {
    * Get user's badge collection
    */
   async getUserBadges(userId: string): Promise<{
-    earned: UserBadge[];
+    success: boolean;
+    badges: UserBadge[];
     inProgress: BadgeProgress[];
     totalPoints: number;
     level: number;
   }> {
     if (!this.supabase) {
-      return { earned: [], inProgress: [], totalPoints: 0, level: 1 };
+      return { success: false, badges: [], inProgress: [], totalPoints: 0, level: 1 };
     }
 
     try {
@@ -341,14 +342,23 @@ export class BadgeDetectionService {
         .select('*')
         .eq('user_id', userId);
 
-      // Calculate total points
+      // Enrich badge data with definitions
+      const enrichedBadges: UserBadge[] = [];
       let totalPoints = 0;
-      const earned = earnedBadges || [];
       
-      for (const userBadge of earned) {
+      for (const userBadge of (earnedBadges || [])) {
         const badge = getBadgeById(userBadge.badge_id);
         if (badge) {
-          totalPoints += badge.points;
+          totalPoints += badge.points * (userBadge.tier || 1);
+          enrichedBadges.push({
+            ...userBadge,
+            name: badge.name,
+            description: badge.description,
+            icon: badge.icon,
+            category: badge.category,
+            rarity: badge.rarity,
+            points: badge.points
+          });
         }
       }
 
@@ -356,14 +366,44 @@ export class BadgeDetectionService {
       const level = Math.floor(totalPoints / 100) + 1;
 
       return {
-        earned: earned as UserBadge[],
+        success: true,
+        badges: enrichedBadges,
         inProgress: badgeProgress as BadgeProgress[] || [],
         totalPoints,
         level
       };
     } catch (error) {
       console.error('Error getting user badges:', error);
-      return { earned: [], inProgress: [], totalPoints: 0, level: 1 };
+      return { success: false, badges: [], inProgress: [], totalPoints: 0, level: 1 };
+    }
+  }
+
+  /**
+   * Update featured badges for a user
+   */
+  async updateFeaturedBadges(userId: string, badgeIds: string[]): Promise<boolean> {
+    if (!this.supabase) return false;
+
+    try {
+      // First, reset all featured flags for this user
+      await this.supabase
+        .from('user_badges')
+        .update({ featured: false })
+        .eq('user_id', userId);
+
+      // Then set featured flag for selected badges
+      if (badgeIds.length > 0) {
+        await this.supabase
+          .from('user_badges')
+          .update({ featured: true })
+          .eq('user_id', userId)
+          .in('badge_id', badgeIds);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error updating featured badges:', error);
+      return false;
     }
   }
 

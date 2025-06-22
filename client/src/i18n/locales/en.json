@@ -350,5 +350,29 @@
   },
   "patchNotes": {
     "title": "Patch Notes"
+  },
+  "profile": {
+    "notLoggedIn": "Please sign in to view your profile",
+    "memberSince": "Member since {{date}}",
+    "statistics": "Statistics",
+    "gamesPlayed": "Games Played",
+    "gamesWon": "Games Won",
+    "winRate": "Win Rate",
+    "avgSolveTime": "Avg. Solve Time",
+    "fastestSolve": "Fastest Solve",
+    "longestStreak": "Longest Win Streak",
+    "recentGames": "Recent Games",
+    "noRecentGames": "No recent games to display"
+  },
+  "badges": {
+    "featuredBadges": "Featured Badges",
+    "edit": "Edit",
+    "level": "Level",
+    "totalPoints": "Total Points",
+    "totalBadges": "Total Badges",
+    "noFeaturedBadges": "No featured badges selected",
+    "selectBadges": "Select Badges",
+    "selectFeaturedBadges": "Select Featured Badges",
+    "selectUpTo": "Select up to {{count}} badges to feature on your profile"
   }
 }

@@ -92,6 +92,220 @@
     "authRequired": {
       "title": "需要登录",
       "message": "您需要登录才能查看和跟踪您的徽章收藏。创建一个账户开始赚取徽章！"
+    },
+    "definitions": {
+      "speed_demon_bronze": {
+        "name": "极速恶魔 铜牌",
+        "description": "在10秒内解决一个谜题"
+      },
+      "speed_demon_silver": {
+        "name": "极速恶魔 银牌",
+        "description": "在7秒内解决一个谜题"
+      },
+      "speed_demon_gold": {
+        "name": "极速恶魔 金牌",
+        "description": "在5秒内解决一个谜题"
+      },
+      "speed_demon_platinum": {
+        "name": "极速恶魔 白金",
+        "description": "在4秒内解决一个谜题"
+      },
+      "speed_demon_diamond": {
+        "name": "极速恶魔 钻石",
+        "description": "在3秒内解决一个谜题"
+      },
+      "lightning_reflexes_bronze": {
+        "name": "闪电反应 铜牌",
+        "description": "在10回合中首先解决"
+      },
+      "lightning_reflexes_silver": {
+        "name": "闪电反应 银牌",
+        "description": "在25回合中首先解决"
+      },
+      "lightning_reflexes_gold": {
+        "name": "闪电反应 金牌",
+        "description": "在50回合中首先解决"
+      },
+      "lightning_reflexes_platinum": {
+        "name": "闪电反应 白金",
+        "description": "在100回合中首先解决"
+      },
+      "lightning_reflexes_diamond": {
+        "name": "闪电反应 钻石",
+        "description": "在250回合中首先解决"
+      },
+      "flawless_victory": {
+        "name": "完美胜利",
+        "description": "以10-0获胜（对手拿到全部20张牌）"
+      },
+      "veteran_bronze": {
+        "name": "老兵 铜牌",
+        "description": "进行10场游戏"
+      },
+      "veteran_silver": {
+        "name": "老兵 银牌",
+        "description": "进行50场游戏"
+      },
+      "veteran_gold": {
+        "name": "老兵 金牌",
+        "description": "进行100场游戏"
+      },
+      "veteran_platinum": {
+        "name": "老兵 白金",
+        "description": "进行500场游戏"
+      },
+      "veteran_diamond": {
+        "name": "老兵 钻石",
+        "description": "进行1000场游戏"
+      },
+      "champion_bronze": {
+        "name": "冠军 铜牌",
+        "description": "赢得10场游戏"
+      },
+      "champion_silver": {
+        "name": "冠军 银牌",
+        "description": "赢得50场游戏"
+      },
+      "champion_gold": {
+        "name": "冠军 金牌",
+        "description": "赢得100场游戏"
+      },
+      "champion_platinum": {
+        "name": "冠军 白金",
+        "description": "赢得500场游戏"
+      },
+      "champion_diamond": {
+        "name": "冠军 钻石",
+        "description": "赢得1000场游戏"
+      },
+      "unstoppable_bronze": {
+        "name": "势不可挡 铜牌",
+        "description": "连续赢得3场游戏"
+      },
+      "unstoppable_silver": {
+        "name": "势不可挡 银牌",
+        "description": "连续赢得5场游戏"
+      },
+      "unstoppable_gold": {
+        "name": "势不可挡 金牌",
+        "description": "连续赢得10场游戏"
+      },
+      "unstoppable_platinum": {
+        "name": "势不可挡 白金",
+        "description": "连续赢得15场游戏"
+      },
+      "unstoppable_diamond": {
+        "name": "势不可挡 钻石",
+        "description": "连续赢得20场游戏"
+      },
+      "daily_devotion_bronze": {
+        "name": "每日奉献 铜牌",
+        "description": "连续7天游戏"
+      },
+      "daily_devotion_silver": {
+        "name": "每日奉献 银牌",
+        "description": "连续30天游戏"
+      },
+      "daily_devotion_gold": {
+        "name": "每日奉献 金牌",
+        "description": "连续100天游戏"
+      },
+      "daily_devotion_platinum": {
+        "name": "每日奉献 白金",
+        "description": "连续365天游戏"
+      },
+      "weekend_warrior": {
+        "name": "周末战士",
+        "description": "在周末进行50场游戏"
+      },
+      "classic_master": {
+        "name": "经典大师",
+        "description": "在经典模式中赢得100场游戏"
+      },
+      "super_mode_champion": {
+        "name": "超级模式冠军",
+        "description": "在超级模式（8张牌）中赢得50场游戏"
+      },
+      "extended_range_expert": {
+        "name": "扩展范围专家",
+        "description": "在扩展范围模式中赢得50场游戏"
+      },
+      "solo_practice_guru": {
+        "name": "单人练习大师",
+        "description": "完成500个单人练习谜题"
+      },
+      "mode_explorer": {
+        "name": "模式探索者",
+        "description": "在每个游戏模式中至少赢得一次"
+      },
+      "friendly_rival": {
+        "name": "友好对手",
+        "description": "与同一对手进行50场游戏"
+      },
+      "spectator_sport": {
+        "name": "观战运动",
+        "description": "作为观众观看100场游戏"
+      },
+      "record_breaker_bronze": {
+        "name": "破纪录者 铜牌",
+        "description": "保持1个谜题记录"
+      },
+      "record_breaker_silver": {
+        "name": "破纪录者 银牌",
+        "description": "保持10个谜题记录"
+      },
+      "record_breaker_gold": {
+        "name": "破纪录者 金牌",
+        "description": "保持50个谜题记录"
+      },
+      "record_breaker_platinum": {
+        "name": "破纪录者 白金",
+        "description": "保持100个谜题记录"
+      },
+      "comeback_king": {
+        "name": "逆转之王",
+        "description": "在0-5落后后获胜"
+      },
+      "underdog": {
+        "name": "以弱胜强",
+        "description": "击败比你多玩500场游戏的对手"
+      },
+      "night_owl": {
+        "name": "夜猫子",
+        "description": "在午夜至早上6点之间进行50场游戏"
+      },
+      "early_bird": {
+        "name": "早起鸟",
+        "description": "在早上5点至8点之间进行50场游戏"
+      },
+      "marathon_runner": {
+        "name": "马拉松跑者",
+        "description": "连续游戏3小时以上"
+      },
+      "quick_thinker": {
+        "name": "快速思考者",
+        "description": "在1秒内解决10个谜题"
+      },
+      "mathematical_genius": {
+        "name": "数学天才",
+        "description": "在一个解决方案中使用所有4种运算（+、-、×、÷）"
+      },
+      "minimalist": {
+        "name": "极简主义者",
+        "description": "仅使用加法和减法赢得一场游戏"
+      },
+      "international_player": {
+        "name": "国际玩家",
+        "description": "用英文和中文进行游戏"
+      },
+      "launch_week_pioneer": {
+        "name": "发布周先锋",
+        "description": "在发布第一周内游戏"
+      },
+      "beta_tester": {
+        "name": "测试员",
+        "description": "参与测试新功能"
+      }
     }
   },
   "lobby": {

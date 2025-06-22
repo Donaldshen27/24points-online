@@ -37,7 +37,16 @@ online24points/
 │   └── game/
 │       ├── calculator.ts     # Solution validation
 │       └── __tests__/        # Unit tests
-├── docs/                # Documentation
+├── docs/                # Documentation (organized by category)
+│   ├── architecture/    # System design & game logic
+│   ├── authentication/  # Auth system documentation
+│   ├── badges/          # Achievement system docs
+│   ├── features/        # Game features & modes
+│   ├── infrastructure/  # Deployment & backend
+│   ├── bug-fixes/       # Bug fix documentation
+│   ├── ui-ux/           # Interface & interaction
+│   └── plans/           # Future feature plans
+├── COMPLETED_WORK.md    # Log of completed features
 └── README.md
 ```
 

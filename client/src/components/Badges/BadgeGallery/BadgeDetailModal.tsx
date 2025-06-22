@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BadgeDefinition, BadgeProgress } from '../../../types/badges';
 import ProgressBar from '../BadgeProgress/ProgressBar';
+import { useBadgeTranslations } from '../../../utils/badgeTranslations';
 
 interface BadgeDetailModalProps {
   badge: BadgeDefinition;
@@ -17,6 +18,8 @@ const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
   onClose 
 }) => {
   const { t } = useTranslation();
+  const { getTranslatedBadge } = useBadgeTranslations();
+  const translatedBadge = getTranslatedBadge(badge);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
@@ -66,8 +69,8 @@ const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
           </div>
           
           <div className="badge-detail-info">
-            <h2 className="badge-detail-name">{badge.name}</h2>
-            <p className="badge-detail-description">{badge.description}</p>
+            <h2 className="badge-detail-name">{translatedBadge.name}</h2>
+            <p className="badge-detail-description">{translatedBadge.description}</p>
             
             <div className="badge-meta">
               <span 
@@ -120,7 +123,7 @@ const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
             <div className="requirements-section">
               <h3>{t('badges.detail.requirements', 'Requirements')}</h3>
               <div className="requirement-details">
-                {renderRequirements(badge)}
+                {renderRequirements(badge, translatedBadge.description)}
               </div>
             </div>
           )}
@@ -166,11 +169,11 @@ const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
 };
 
 // Helper function to render requirements
-const renderRequirements = (badge: BadgeDefinition) => {
+const renderRequirements = (_badge: BadgeDefinition, translatedDescription: string) => {
   // This is simplified - in production, you'd parse the requirements object
   return (
     <p className="requirement-text">
-      {badge.description}
+      {translatedDescription}
     </p>
   );
 };

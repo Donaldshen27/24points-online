@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BadgeUnlockNotification as BadgeUnlock } from '../../../types/badges';
 import { BADGE_RARITIES, BADGE_TIERS } from '../../../data/badgeDefinitions';
+import { useBadgeTranslations } from '../../../utils/badgeTranslations';
 import './BadgeUnlockNotification.css';
 
 interface BadgeUnlockNotificationProps {
@@ -16,6 +17,8 @@ export const BadgeUnlockNotification: React.FC<BadgeUnlockNotificationProps> = (
   onShowDetails
 }) => {
   const { t } = useTranslation();
+  const { getTranslatedBadge } = useBadgeTranslations();
+  const translatedBadge = getTranslatedBadge(notification.badge);
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -83,8 +86,8 @@ export const BadgeUnlockNotification: React.FC<BadgeUnlockNotificationProps> = (
           </div>
 
           <div className="badge-info">
-            <h3 className="badge-name">{notification.badge.name}</h3>
-            <p className="badge-description">{notification.badge.description}</p>
+            <h3 className="badge-name">{translatedBadge.name}</h3>
+            <p className="badge-description">{translatedBadge.description}</p>
             
             <div className="badge-meta">
               <span 

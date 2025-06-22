@@ -92,6 +92,220 @@
     "authRequired": {
       "title": "Sign In Required",
       "message": "You need to sign in to view and track your badge collection. Create an account to start earning badges!"
+    },
+    "definitions": {
+      "speed_demon_bronze": {
+        "name": "Speed Demon Bronze",
+        "description": "Solve a puzzle in under 10 seconds"
+      },
+      "speed_demon_silver": {
+        "name": "Speed Demon Silver",
+        "description": "Solve a puzzle in under 7 seconds"
+      },
+      "speed_demon_gold": {
+        "name": "Speed Demon Gold",
+        "description": "Solve a puzzle in under 5 seconds"
+      },
+      "speed_demon_platinum": {
+        "name": "Speed Demon Platinum",
+        "description": "Solve a puzzle in under 4 seconds"
+      },
+      "speed_demon_diamond": {
+        "name": "Speed Demon Diamond",
+        "description": "Solve a puzzle in under 3 seconds"
+      },
+      "lightning_reflexes_bronze": {
+        "name": "Lightning Reflexes Bronze",
+        "description": "Be first to solve in 10 rounds"
+      },
+      "lightning_reflexes_silver": {
+        "name": "Lightning Reflexes Silver",
+        "description": "Be first to solve in 25 rounds"
+      },
+      "lightning_reflexes_gold": {
+        "name": "Lightning Reflexes Gold",
+        "description": "Be first to solve in 50 rounds"
+      },
+      "lightning_reflexes_platinum": {
+        "name": "Lightning Reflexes Platinum",
+        "description": "Be first to solve in 100 rounds"
+      },
+      "lightning_reflexes_diamond": {
+        "name": "Lightning Reflexes Diamond",
+        "description": "Be first to solve in 250 rounds"
+      },
+      "flawless_victory": {
+        "name": "Flawless Victory",
+        "description": "Win 10-0 (opponent gets all 20 cards)"
+      },
+      "veteran_bronze": {
+        "name": "Veteran Bronze",
+        "description": "Play 10 games"
+      },
+      "veteran_silver": {
+        "name": "Veteran Silver",
+        "description": "Play 50 games"
+      },
+      "veteran_gold": {
+        "name": "Veteran Gold",
+        "description": "Play 100 games"
+      },
+      "veteran_platinum": {
+        "name": "Veteran Platinum",
+        "description": "Play 500 games"
+      },
+      "veteran_diamond": {
+        "name": "Veteran Diamond",
+        "description": "Play 1000 games"
+      },
+      "champion_bronze": {
+        "name": "Champion Bronze",
+        "description": "Win 10 games"
+      },
+      "champion_silver": {
+        "name": "Champion Silver",
+        "description": "Win 50 games"
+      },
+      "champion_gold": {
+        "name": "Champion Gold",
+        "description": "Win 100 games"
+      },
+      "champion_platinum": {
+        "name": "Champion Platinum",
+        "description": "Win 500 games"
+      },
+      "champion_diamond": {
+        "name": "Champion Diamond",
+        "description": "Win 1000 games"
+      },
+      "unstoppable_bronze": {
+        "name": "Unstoppable Bronze",
+        "description": "Win 3 games in a row"
+      },
+      "unstoppable_silver": {
+        "name": "Unstoppable Silver",
+        "description": "Win 5 games in a row"
+      },
+      "unstoppable_gold": {
+        "name": "Unstoppable Gold",
+        "description": "Win 10 games in a row"
+      },
+      "unstoppable_platinum": {
+        "name": "Unstoppable Platinum",
+        "description": "Win 15 games in a row"
+      },
+      "unstoppable_diamond": {
+        "name": "Unstoppable Diamond",
+        "description": "Win 20 games in a row"
+      },
+      "daily_devotion_bronze": {
+        "name": "Daily Devotion Bronze",
+        "description": "Play for 7 consecutive days"
+      },
+      "daily_devotion_silver": {
+        "name": "Daily Devotion Silver",
+        "description": "Play for 30 consecutive days"
+      },
+      "daily_devotion_gold": {
+        "name": "Daily Devotion Gold",
+        "description": "Play for 100 consecutive days"
+      },
+      "daily_devotion_platinum": {
+        "name": "Daily Devotion Platinum",
+        "description": "Play for 365 consecutive days"
+      },
+      "weekend_warrior": {
+        "name": "Weekend Warrior",
+        "description": "Play 50 games on weekends"
+      },
+      "classic_master": {
+        "name": "Classic Master",
+        "description": "Win 100 games in Classic mode"
+      },
+      "super_mode_champion": {
+        "name": "Super Mode Champion",
+        "description": "Win 50 games in Super Mode (8 cards)"
+      },
+      "extended_range_expert": {
+        "name": "Extended Range Expert",
+        "description": "Win 50 games in Extended Range mode"
+      },
+      "solo_practice_guru": {
+        "name": "Solo Practice Guru",
+        "description": "Complete 500 solo practice puzzles"
+      },
+      "mode_explorer": {
+        "name": "Mode Explorer",
+        "description": "Win at least once in each game mode"
+      },
+      "friendly_rival": {
+        "name": "Friendly Rival",
+        "description": "Play 50 games with the same opponent"
+      },
+      "spectator_sport": {
+        "name": "Spectator Sport",
+        "description": "Watch 100 games as a spectator"
+      },
+      "record_breaker_bronze": {
+        "name": "Record Breaker Bronze",
+        "description": "Hold 1 puzzle records"
+      },
+      "record_breaker_silver": {
+        "name": "Record Breaker Silver",
+        "description": "Hold 10 puzzle records"
+      },
+      "record_breaker_gold": {
+        "name": "Record Breaker Gold",
+        "description": "Hold 50 puzzle records"
+      },
+      "record_breaker_platinum": {
+        "name": "Record Breaker Platinum",
+        "description": "Hold 100 puzzle records"
+      },
+      "comeback_king": {
+        "name": "Comeback King",
+        "description": "Win after being down 0-5"
+      },
+      "underdog": {
+        "name": "Underdog",
+        "description": "Beat an opponent with 500+ more games played"
+      },
+      "night_owl": {
+        "name": "Night Owl",
+        "description": "Play 50 games between midnight and 6am"
+      },
+      "early_bird": {
+        "name": "Early Bird",
+        "description": "Play 50 games between 5am and 8am"
+      },
+      "marathon_runner": {
+        "name": "Marathon Runner",
+        "description": "Play for 3+ hours straight"
+      },
+      "quick_thinker": {
+        "name": "Quick Thinker",
+        "description": "Solve 10 puzzles under 1 second each"
+      },
+      "mathematical_genius": {
+        "name": "Mathematical Genius",
+        "description": "Use all 4 operations (+, -, ×, ÷) in one solution"
+      },
+      "minimalist": {
+        "name": "Minimalist",
+        "description": "Win a game using only addition and subtraction"
+      },
+      "international_player": {
+        "name": "International Player",
+        "description": "Play games in both English and Chinese"
+      },
+      "launch_week_pioneer": {
+        "name": "Launch Week Pioneer",
+        "description": "Played during the first week of launch"
+      },
+      "beta_tester": {
+        "name": "Beta Tester",
+        "description": "Participated in beta testing new features"
+      }
     }
   },
   "lobby": {

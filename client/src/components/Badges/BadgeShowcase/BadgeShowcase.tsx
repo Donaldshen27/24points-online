@@ -38,6 +38,13 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
   const [allBadges, setAllBadges] = useState<EnrichedUserBadge[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Helper to get translated badge name
+  const getTranslatedBadgeName = (badge: EnrichedUserBadge) => {
+    const badgeId = badge.badgeId || badge.badge_id || '';
+    const translationKey = `badges.definitions.${badgeId}.name`;
+    return t(translationKey, badge.name);
+  };
+
   useEffect(() => {
     loadBadgeData();
   }, [userId]);
@@ -196,7 +203,7 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
             <div key={badge.badgeId || badge.badge_id} className={`featured-badge ${badge.rarity}`}>
               <div className="badge-icon">{badge.icon}</div>
               <div className="badge-info">
-                <div className="badge-name">{badge.name}</div>
+                <div className="badge-name">{getTranslatedBadgeName(badge)}</div>
                 {badge.tier && (
                   <div className="badge-tier">Tier {badge.tier}</div>
                 )}
@@ -245,9 +252,10 @@ const BadgeSelector: React.FC<BadgeSelectorProps> = ({
   const [selected, setSelected] = useState<EnrichedUserBadge[]>(selectedBadges);
 
   const toggleBadge = (badge: EnrichedUserBadge) => {
-    console.log('[BadgeSelector] Toggle badge:', badge.badgeId, badge.name);
-    
     const badgeId = badge.badgeId || badge.badge_id || '';
+    const translatedName = t(`badges.definitions.${badgeId}.name`, badge.name);
+    console.log('[BadgeSelector] Toggle badge:', badgeId, translatedName);
+    
     if (selected.find(b => (b.badgeId || b.badge_id) === badgeId)) {
       console.log('[BadgeSelector] Deselecting badge');
       setSelected(selected.filter(b => (b.badgeId || b.badge_id) !== badgeId));
@@ -282,7 +290,7 @@ const BadgeSelector: React.FC<BadgeSelectorProps> = ({
               onClick={() => toggleBadge(badge)}
             >
               <div className="badge-icon">{badge.icon}</div>
-              <div className="badge-name">{badge.name}</div>
+              <div className="badge-name">{t(`badges.definitions.${badge.badgeId || badge.badge_id || ''}.name`, badge.name)}</div>
               {badge.tier && (
                 <div className="badge-tier">T{badge.tier}</div>
               )}

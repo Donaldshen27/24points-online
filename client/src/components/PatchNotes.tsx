@@ -13,6 +13,25 @@ interface PatchNote {
 
 const patchNotes: PatchNote[] = [
   {
+    date: '2025-01-22',
+    version: '2.0.0',
+    changes: [
+      { type: 'feature', description: '🏆 NEW: Achievement & Badge System - Collect 50+ unique badges across multiple categories!' },
+      { type: 'feature', description: 'Badge Gallery - View all available badges and track your collection progress' },
+      { type: 'feature', description: 'Profile Badge Showcase - Display your favorite badges on your profile' },
+      { type: 'feature', description: 'Real-time Badge Notifications - Get instant alerts when unlocking new achievements' },
+      { type: 'feature', description: 'User Authentication - Create an account to save your progress and achievements' },
+      { type: 'feature', description: 'Guest Username Protection - Reserve your username even as a guest player' },
+      { type: 'feature', description: 'Elegant Card Redesign - New minimalist card design with improved performance' },
+      { type: 'feature', description: 'Enhanced Victory Celebrations - Win screen now displays new records and achievements' },
+      { type: 'fix', description: 'Fixed 2-character username registration validation' },
+      { type: 'fix', description: 'Resolved TypeScript compilation errors in badge system' },
+      { type: 'fix', description: 'Improved player disconnection handling' },
+      { type: 'performance', description: 'Optimized badge system with local implementations' },
+      { type: 'performance', description: 'Enhanced WebSocket connection stability' }
+    ]
+  },
+  {
     date: '2025-01-21',
     version: '1.4.4',
     changes: [

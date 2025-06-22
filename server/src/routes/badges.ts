@@ -32,6 +32,11 @@ router.get('/me', authenticateToken, async (req, res) => {
       console.error('Error fetching badges:', badgesError);
       return res.status(500).json({ error: 'Failed to fetch badges' });
     }
+    
+    console.log('[BadgeRoute] Fetched badges for user:', userId, 'Count:', badges?.length);
+    if (badges && badges.length > 0) {
+      console.log('[BadgeRoute] Sample badge structure:', JSON.stringify(badges[0], null, 2));
+    }
 
     // Get user's statistics
     const { data: stats, error: statsError } = await supabase
@@ -54,8 +59,19 @@ router.get('/me', authenticateToken, async (req, res) => {
       console.error('Error fetching badge progress:', progressError);
     }
 
+    // Transform badges to match frontend expectations
+    const transformedBadges = (badges || []).map(b => ({
+      id: b.id,
+      userId: b.user_id,
+      badgeId: b.badge_id,
+      earnedAt: b.earned_at || new Date().toISOString(),
+      progress: b.progress || {},
+      isFeatured: b.is_featured || false,
+      badge: b.badge // Keep the joined badge definition
+    }));
+    
     res.json({
-      badges: badges || [],
+      badges: transformedBadges,
       statistics: stats || null,
       progress: progress || []
     });

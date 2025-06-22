@@ -104,6 +104,7 @@ export const BadgeGallery: React.FC<BadgeGalleryProps> = ({ userId }) => {
       // For authenticated users, use the API
       if (user && user.id === userId) {
         const response = await badgeService.getUserBadges();
+        console.log('[BadgeGallery] Fetched badges:', response);
         
         // Calculate level from total points
         const totalPoints = response.badges.reduce((sum, badge) => {

@@ -11,6 +11,7 @@ interface GameOverEnhancedProps {
   gameOverReason?: string | null;
   gameOverWinnerId?: string | null;
   isSpectator?: boolean;
+  unlockedBadges?: any[];
 }
 
 interface DetailedStats {
@@ -33,7 +34,8 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
   onLeaveGame,
   gameOverReason,
   gameOverWinnerId,
-  isSpectator = false
+  isSpectator = false,
+  unlockedBadges = []
 }) => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
@@ -388,6 +390,32 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
               )}
             </div>
           </div>
+
+          {/* Unlocked Badges */}
+          {unlockedBadges.length > 0 && (
+            <div className="unlocked-badges">
+              <h3>{t('gameOver.unlockedBadges')}</h3>
+              <div className="badge-list">
+                {unlockedBadges.map((unlock, index) => (
+                  <div key={index} className="unlocked-badge">
+                    <div className={`badge-icon tier-${unlock.badge.tier || 'none'}`}>
+                      {unlock.badge.tier === 'bronze' && '🥉'}
+                      {unlock.badge.tier === 'silver' && '🥈'}
+                      {unlock.badge.tier === 'gold' && '🥇'}
+                      {unlock.badge.tier === 'platinum' && '💎'}
+                      {unlock.badge.tier === 'diamond' && '💠'}
+                      {!unlock.badge.tier && '🏆'}
+                    </div>
+                    <div className="badge-info">
+                      <span className="badge-name">{unlock.badge.name}</span>
+                      <span className="badge-description">{unlock.badge.description}</span>
+                      <span className="badge-points">+{unlock.badge.points} pts</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}

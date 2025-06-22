@@ -34,10 +34,22 @@ export class BadgeDetectionService {
   async checkBadgesAfterGame(userId: string): Promise<BadgeUnlockNotification[]> {
     if (!this.supabase) return [];
 
+    console.log(`[BadgeDetection] Checking badges for user ${userId}`);
+
     try {
       // Get user's current statistics
       const stats = await statisticsService.getUserStats(userId);
-      if (!stats) return [];
+      if (!stats) {
+        console.log(`[BadgeDetection] No stats found for user ${userId}`);
+        return [];
+      }
+      
+      console.log(`[BadgeDetection] User stats:`, {
+        userId: stats.userId,
+        fastestSolveMs: stats.fastestSolveMs,
+        gamesPlayed: stats.gamesPlayed,
+        gamesWon: stats.gamesWon
+      });
 
       // Get user's current badges
       const { data: earnedBadges } = await this.supabase
@@ -76,6 +88,7 @@ export class BadgeDetectionService {
         // Check if requirements are met
         const isEarned = await this.checkBadgeRequirements(badge, stats, userId);
         if (isEarned) {
+          console.log(`[BadgeDetection] Badge earned: ${badge.id} for user ${userId}`);
           await this.awardBadge(userId, badge.id);
           newBadges.push({
             badge,

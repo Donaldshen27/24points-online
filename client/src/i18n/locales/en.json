@@ -244,6 +244,7 @@
     "performanceMetrics": "🎯 Performance Metrics",
     "cardStatistics": "🃏 Card Statistics",
     "matchAchievements": "🏅 Match Achievements",
+    "unlockedBadges": "🏆 Unlocked Badges",
     "messages": {
       "opponentDisconnected": "Your opponent disconnected and forfeited the game!",
       "youDisconnected": "You were disconnected and the game was forfeited.",

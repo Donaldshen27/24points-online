@@ -46,7 +46,11 @@ export class RoomManager {
         [playerId]: 0
       },
       roomType,
-      isSoloPractice
+      isSoloPractice,
+      // Initialize battle statistics
+      roundTimes: { [playerId]: [] },
+      firstSolves: { [playerId]: 0 },
+      correctSolutions: { [playerId]: 0 }
     };
 
     this.rooms.set(roomId, room);
@@ -140,6 +144,12 @@ export class RoomManager {
 
     room.players.push(player);
     room.scores[playerId] = 0;
+    
+    // Initialize battle statistics for new player
+    if (room.roundTimes) room.roundTimes[playerId] = [];
+    if (room.firstSolves) room.firstSolves[playerId] = 0;
+    if (room.correctSolutions) room.correctSolutions[playerId] = 0;
+    
     this.playerToRoom.set(socketId, roomId);
 
     // Don't change state here - wait for players to be ready

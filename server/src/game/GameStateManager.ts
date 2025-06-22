@@ -345,16 +345,16 @@ export class GameStateManager {
       const otherPlayer = this.room.players.find(p => p.id !== playerId);
       const winner = this.room.players.find(p => p.id === playerId);
       
-      // Track statistics
+      // Track statistics (store in milliseconds)
+      const solveTimeMs = solveTime * 1000;
       if (this.room.roundTimes && this.room.roundTimes[playerId]) {
-        this.room.roundTimes[playerId].push(solveTime);
+        this.room.roundTimes[playerId].push(solveTimeMs);
       }
       if (this.room.correctSolutions) {
         this.room.correctSolutions[playerId]++;
       }
       
       // Record solve time for puzzle records
-      const solveTimeMs = solveTime * 1000; // Convert to milliseconds
       const cardValues = this.room.centerCards.map(c => c.value);
       
       // Convert operations to readable string format

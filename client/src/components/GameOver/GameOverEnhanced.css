@@ -591,3 +591,97 @@
 .celebration-container::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* Unlocked Badges Section */
+.unlocked-badges {
+  margin-top: 32px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.unlocked-badges h3 {
+  font-size: 20px;
+  margin-bottom: 16px;
+  color: #ffd700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.badge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.unlocked-badge {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.unlocked-badge:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(4px);
+}
+
+.unlocked-badge .badge-icon {
+  font-size: 36px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.badge-icon.tier-bronze {
+  filter: sepia(1) saturate(2) hue-rotate(25deg);
+}
+
+.badge-icon.tier-silver {
+  filter: grayscale(0.5) brightness(1.2);
+}
+
+.badge-icon.tier-gold {
+  filter: sepia(1) saturate(2) hue-rotate(45deg) brightness(1.2);
+}
+
+.badge-icon.tier-platinum {
+  filter: brightness(1.5) contrast(1.2);
+}
+
+.badge-icon.tier-diamond {
+  filter: hue-rotate(200deg) brightness(1.3) saturate(1.5);
+}
+
+.badge-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.badge-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.badge-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.badge-points {
+  font-size: 14px;
+  color: #4caf50;
+  font-weight: 500;
+}

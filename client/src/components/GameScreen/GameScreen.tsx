@@ -58,6 +58,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
   const [opponentDisconnectedTime, setOpponentDisconnectedTime] = useState<number | null>(null);
   const [, setShowNewRecord] = useState(false);
   const [currentSolveTime, setCurrentSolveTime] = useState<number | undefined>(undefined);
+  const [unlockedBadges, setUnlockedBadges] = useState<any[]>([]);
 
   // Get current player and opponent
   // For spectators, just show the first player as "current" and second as "opponent"
@@ -262,6 +263,20 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       socketService.off('player-reconnected', handlePlayerReconnected);
     };
   }, [playerId]);
+
+  // Listen for badge unlocks
+  useEffect(() => {
+    const handleBadgesUnlocked = (badges: any[]) => {
+      console.log('[GameScreen] Badges unlocked:', badges);
+      setUnlockedBadges(badges);
+    };
+
+    socketService.on('badges-unlocked', handleBadgesUnlocked);
+
+    return () => {
+      socketService.off('badges-unlocked', handleBadgesUnlocked);
+    };
+  }, []);
 
   // Listen for game over events
   useEffect(() => {
@@ -502,6 +517,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           gameOverReason={gameOverReason}
           gameOverWinnerId={gameOverWinnerId}
           isSpectator={isSpectator}
+          unlockedBadges={unlockedBadges}
         />
       )}
 

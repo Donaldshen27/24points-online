@@ -35,12 +35,23 @@ class BadgeService {
 
   async getUserBadges(): Promise<BadgeResponse> {
     try {
+      console.log('[BadgeService] Fetching user badges...');
+      const headers = this.getAuthHeaders();
+      console.log('[BadgeService] Auth headers:', headers);
+      
       const response = await axios.get(`${API_BASE_URL}/api/badges/me`, {
-        headers: this.getAuthHeaders(),
+        headers,
       });
+      
+      console.log('[BadgeService] Badge response:', response.data);
       return response.data;
-    } catch (error) {
-      console.error('Error fetching user badges:', error);
+    } catch (error: any) {
+      console.error('[BadgeService] Error fetching user badges:', error);
+      console.error('[BadgeService] Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
       return { badges: [], statistics: null, progress: [] };
     }
   }

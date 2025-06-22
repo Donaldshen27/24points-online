@@ -277,7 +277,20 @@ export class BadgeDetectionService {
       return;
     }
 
+    console.log(`[BadgeDetection] Attempting to award badge ${badgeId} to user ${userId}`);
+
     try {
+      // First check if tables exist
+      const { data: tableCheck, error: tableError } = await this.supabase
+        .from('user_badges')
+        .select('id')
+        .limit(1);
+      
+      if (tableError && tableError.code === '42P01') {
+        console.error('[BadgeDetection] user_badges table does not exist! Run migrations first.');
+        return;
+      }
+
       const { data, error } = await this.supabase
         .from('user_badges')
         .insert({
@@ -288,13 +301,23 @@ export class BadgeDetectionService {
         .select();
 
       if (error) {
-        console.error(`Error awarding badge ${badgeId} to user ${userId}:`, error);
-        console.error('Error details:', error.message, error.details, error.hint);
+        console.error(`[BadgeDetection] Error awarding badge ${badgeId} to user ${userId}:`, error);
+        console.error('[BadgeDetection] Error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        
+        // Check if it's a duplicate key error
+        if (error.code === '23505') {
+          console.log(`[BadgeDetection] User ${userId} already has badge ${badgeId}`);
+        }
       } else {
-        console.log(`Badge awarded successfully: ${badgeId} to user ${userId}`, data);
+        console.log(`[BadgeDetection] Badge awarded successfully: ${badgeId} to user ${userId}`, data);
       }
     } catch (error) {
-      console.error('Exception in awardBadge:', error);
+      console.error('[BadgeDetection] Exception in awardBadge:', error);
     }
   }
 

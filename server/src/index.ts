@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
+app.use(cookieParser());
 app.use(express.json());
 
 app.get('/health', (req: express.Request, res: express.Response) => {
@@ -77,6 +79,11 @@ io.use(async (socket, next) => {
     next();
   } catch (error) {
     console.log('[Socket Auth] Token verification failed:', error);
+    // Check if it's a token expiration error
+    if (error instanceof Error && error.name === 'TokenExpiredError') {
+      // Send specific error for expired tokens
+      return next(new Error('jwt expired'));
+    }
     // Allow connection even if token is invalid (for anonymous play)
     (socket as any).isAuthenticated = false;
     next();

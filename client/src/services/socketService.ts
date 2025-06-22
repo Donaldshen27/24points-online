@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import type { RoomTypeInfo } from '../types/roomTypes';
+import { authService } from './authService';
 
 let socket: Socket;
 
@@ -33,8 +34,27 @@ if (import.meta.hot && (window as any).__socket) {
     console.log('[SocketService] Disconnected from server, reason:', reason);
   });
 
-  socket.on('connect_error', (error) => {
+  socket.on('connect_error', async (error) => {
     console.error('[SocketService] Connection error:', error.message);
+    
+    // Handle authentication errors specifically
+    if (error.message && error.message.includes('jwt expired')) {
+      console.log('[SocketService] JWT expired, attempting to refresh token...');
+      
+      // Try to refresh the token
+      const newToken = await authService.refreshAccessToken();
+      if (newToken) {
+        // Update the auth callback with new token
+        socket.auth = (cb) => {
+          cb({ token: newToken });
+        };
+        
+        // Reconnect with new token
+        socket.connect();
+      } else {
+        console.error('[SocketService] Failed to refresh token, user needs to login again');
+      }
+    }
   });
 
   // Store on window for HMR

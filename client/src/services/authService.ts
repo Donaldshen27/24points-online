@@ -34,6 +34,7 @@ class AuthService {
   private accessToken: string | null = null;
   private user: AuthUser | null = null;
   private readonly API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3024';
+  private refreshPromise: Promise<string | null> | null = null;
 
   constructor() {
     // Session will be restored via the public restoreSession method
@@ -61,13 +62,14 @@ class AuthService {
       this.accessToken = token;
       this.user = JSON.parse(userStr);
       
-      // Verify token is still valid
+      // Try to verify token is still valid, with auto-refresh
       try {
-        const currentUser = await this.getCurrentUser();
+        const currentUser = await this.getCurrentUserWithRefresh();
         if (currentUser) {
           return currentUser;
         }
       } catch (error) {
+        console.error('Failed to restore session:', error);
         this.clearSession();
       }
     }
@@ -178,6 +180,89 @@ class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.accessToken && !!this.user;
+  }
+
+  async refreshAccessToken(): Promise<string | null> {
+    // Avoid multiple concurrent refresh requests
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshPromise = (async () => {
+      try {
+        const response = await fetch(`${this.API_BASE_URL}/api/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include', // For cookies (refresh token)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to refresh token');
+        }
+
+        const data: AuthResponse = await response.json();
+        this.saveSession(data.accessToken, data.user);
+        
+        return data.accessToken;
+      } catch (error) {
+        console.error('Token refresh error:', error);
+        this.clearSession();
+        return null;
+      } finally {
+        this.refreshPromise = null;
+      }
+    })();
+
+    return this.refreshPromise;
+  }
+
+  private async fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
+    // First attempt with current token
+    const makeRequest = async (token: string | null) => {
+      return fetch(url, {
+        ...options,
+        headers: {
+          ...options.headers,
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        credentials: 'include',
+      });
+    };
+
+    let response = await makeRequest(this.accessToken);
+
+    // If we get a 401, try to refresh the token
+    if (response.status === 401 && this.accessToken) {
+      const newToken = await this.refreshAccessToken();
+      if (newToken) {
+        // Retry with new token
+        response = await makeRequest(newToken);
+      }
+    }
+
+    return response;
+  }
+
+  // Update getCurrentUser to use fetchWithAuth
+  async getCurrentUserWithRefresh(): Promise<AuthUser | null> {
+    if (!this.accessToken) {
+      return null;
+    }
+
+    try {
+      const response = await this.fetchWithAuth(`${this.API_BASE_URL}/api/auth/me`);
+
+      if (!response.ok) {
+        this.clearSession();
+        return null;
+      }
+
+      const data = await response.json();
+      return data.user;
+    } catch (error) {
+      console.error('Get current user error:', error);
+      this.clearSession();
+      return null;
+    }
   }
 }
 

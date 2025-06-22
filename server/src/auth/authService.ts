@@ -277,6 +277,64 @@ export class AuthService {
       userAgent
     });
   }
+
+  async refreshTokens(refreshToken: string): Promise<LoginResponse> {
+    try {
+      // Verify the refresh token
+      const { verifyRefreshToken } = await import('./jwt');
+      const payload = verifyRefreshToken(refreshToken);
+      
+      // Check if session exists and is valid
+      const session = await sessionRepository.findByToken(refreshToken);
+      if (!session || session.expiresAt < new Date()) {
+        throw new Error('Invalid or expired refresh token');
+      }
+      
+      // Get user
+      const user = await userRepository.findById(payload.userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      
+      // Generate new tokens
+      const newAccessToken = generateAccessToken({
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+        role: user.role
+      });
+      
+      const newSessionId = uuidv4();
+      const newRefreshToken = generateRefreshToken({
+        userId: user.id,
+        sessionId: newSessionId
+      });
+      
+      // Create new session (replacing the old one)
+      await sessionRepository.deleteByUserId(user.id);
+      await sessionRepository.create({
+        userId: user.id,
+        token: newRefreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        ipAddress: '',
+        userAgent: ''
+      });
+      
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          role: user.role
+        }
+      };
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      throw new Error('Failed to refresh token');
+    }
+  }
 }
 
 export const authService = new AuthService();

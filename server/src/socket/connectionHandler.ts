@@ -35,6 +35,13 @@ export const handleConnection = (io: Server, socket: Socket) => {
     
     // Use authenticated username if available, otherwise validate guest name
     let playerName: string;
+    console.log('[ConnectionHandler] Auth check:', {
+      isAuthenticated: (socket as any).isAuthenticated,
+      username: (socket as any).username,
+      userId: (socket as any).userId,
+      providedName: data.playerName
+    });
+    
     if ((socket as any).isAuthenticated && (socket as any).username) {
       playerName = (socket as any).username;
     } else {
@@ -115,6 +122,14 @@ export const handleConnection = (io: Server, socket: Socket) => {
     
     // Use authenticated username if available, otherwise validate guest name
     let playerName: string;
+    console.log('[ConnectionHandler] Join room auth check:', {
+      isAuthenticated: (socket as any).isAuthenticated,
+      username: (socket as any).username,
+      userId: (socket as any).userId,
+      providedName: data.playerName,
+      isSpectator: data.isSpectator
+    });
+    
     if ((socket as any).isAuthenticated && (socket as any).username) {
       playerName = (socket as any).username;
     } else {

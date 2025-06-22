@@ -57,10 +57,12 @@ import { verifyAccessToken } from './auth/jwt';
 io.use(async (socket, next) => {
   try {
     const token = socket.handshake.auth.token;
+    console.log('[Socket Auth] Token received:', token ? 'Yes' : 'No');
     
     if (token) {
       // Verify JWT token
       const payload = verifyAccessToken(token);
+      console.log('[Socket Auth] Token verified:', payload.username);
       // Attach user info to socket
       (socket as any).userId = payload.userId;
       (socket as any).username = payload.username;
@@ -74,6 +76,7 @@ io.use(async (socket, next) => {
     
     next();
   } catch (error) {
+    console.log('[Socket Auth] Token verification failed:', error);
     // Allow connection even if token is invalid (for anonymous play)
     (socket as any).isAuthenticated = false;
     next();

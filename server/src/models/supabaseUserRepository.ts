@@ -1,7 +1,7 @@
 import { supabase } from '../db/supabase';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import { User, Session, AuthAuditLog } from '../../shared/types/auth';
+import { User, Session, AuthAuditLog } from '../types/authTypes';
 
 export class SupabaseUserRepository {
   private static instance: SupabaseUserRepository;
@@ -13,7 +13,7 @@ export class SupabaseUserRepository {
   private memoryAuditLogs: AuthAuditLog[] = [];
 
   private constructor() {
-    this.useSupabase = !!process.env.SUPABASE_URL && !!process.env.SUPABASE_ANON_KEY;
+    this.useSupabase = !!process.env.SUPABASE_URL && !!process.env.SUPABASE_ANON_KEY && !!supabase;
     
     if (!this.useSupabase) {
       console.warn('Supabase not configured. Using in-memory storage for authentication.');
@@ -34,20 +34,49 @@ export class SupabaseUserRepository {
         id: 'test-user-id',
         email: 'test@example.com',
         username: 'testuser',
-        displayName: 'Test User',
-        isVerified: true,
-        isActive: true,
+        passwordHash: bcrypt.hashSync('password123', 10),
+        role: 'viewer',
         createdAt: new Date(),
         updatedAt: new Date(),
+        lastLogin: null,
+        isActive: true
       };
       this.memoryUsers.set(testUser.id, testUser);
     }
   }
 
+  // Helper method to convert Supabase user data to User type
+  private supabaseUserToUser(data: any): User {
+    return {
+      id: data.id,
+      email: data.email,
+      username: data.username,
+      passwordHash: '', // Never expose password hash
+      role: 'viewer' as const, // Default role
+      createdAt: new Date(data.created_at),
+      updatedAt: new Date(data.updated_at),
+      lastLogin: data.last_login_at ? new Date(data.last_login_at) : null,
+      isActive: data.is_active
+    };
+  }
+
+  // Helper method to convert Session data
+  private supabaseSessionToSession(data: any, token: string): Session {
+    return {
+      id: data.id,
+      userId: data.user_id,
+      token: token,
+      expiresAt: new Date(data.expires_at),
+      ipAddress: data.ip_address || '',
+      userAgent: data.user_agent || '',
+      createdAt: new Date(data.created_at)
+    };
+  }
+
   async createUser(email: string, username: string, password: string, displayName?: string): Promise<User> {
     const passwordHash = await bcrypt.hash(password, 10);
     
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       const { data, error } = await supabase
         .from('users')
         .insert({
@@ -70,18 +99,7 @@ export class SupabaseUserRepository {
         throw error;
       }
 
-      return {
-        id: data.id,
-        email: data.email,
-        username: data.username,
-        displayName: data.display_name,
-        avatarUrl: data.avatar_url,
-        isVerified: data.is_verified,
-        isActive: data.is_active,
-        createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at),
-        lastLoginAt: data.last_login_at ? new Date(data.last_login_at) : undefined,
-      };
+      return this.supabaseUserToUser(data);
     } else {
       // In-memory implementation
       const existingByEmail = Array.from(this.memoryUsers.values()).find(u => u.email === email);
@@ -94,11 +112,12 @@ export class SupabaseUserRepository {
         id: crypto.randomUUID(),
         email,
         username,
-        displayName: displayName || username,
-        isVerified: false,
-        isActive: true,
+        passwordHash,
+        role: 'viewer',
         createdAt: new Date(),
         updatedAt: new Date(),
+        lastLogin: null,
+        isActive: true
       };
 
       this.memoryUsers.set(user.id, user);
@@ -107,7 +126,7 @@ export class SupabaseUserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -115,26 +134,14 @@ export class SupabaseUserRepository {
         .single();
 
       if (error || !data) return null;
-
-      return {
-        id: data.id,
-        email: data.email,
-        username: data.username,
-        displayName: data.display_name,
-        avatarUrl: data.avatar_url,
-        isVerified: data.is_verified,
-        isActive: data.is_active,
-        createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at),
-        lastLoginAt: data.last_login_at ? new Date(data.last_login_at) : undefined,
-      };
+      return this.supabaseUserToUser(data);
     } else {
       return Array.from(this.memoryUsers.values()).find(u => u.email === email) || null;
     }
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -142,26 +149,14 @@ export class SupabaseUserRepository {
         .single();
 
       if (error || !data) return null;
-
-      return {
-        id: data.id,
-        email: data.email,
-        username: data.username,
-        displayName: data.display_name,
-        avatarUrl: data.avatar_url,
-        isVerified: data.is_verified,
-        isActive: data.is_active,
-        createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at),
-        lastLoginAt: data.last_login_at ? new Date(data.last_login_at) : undefined,
-      };
+      return this.supabaseUserToUser(data);
     } else {
       return Array.from(this.memoryUsers.values()).find(u => u.username === username) || null;
     }
   }
 
   async findById(id: string): Promise<User | null> {
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -169,26 +164,14 @@ export class SupabaseUserRepository {
         .single();
 
       if (error || !data) return null;
-
-      return {
-        id: data.id,
-        email: data.email,
-        username: data.username,
-        displayName: data.display_name,
-        avatarUrl: data.avatar_url,
-        isVerified: data.is_verified,
-        isActive: data.is_active,
-        createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at),
-        lastLoginAt: data.last_login_at ? new Date(data.last_login_at) : undefined,
-      };
+      return this.supabaseUserToUser(data);
     } else {
       return this.memoryUsers.get(id) || null;
     }
   }
 
   async verifyPassword(email: string, password: string): Promise<boolean> {
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       const { data, error } = await supabase
         .from('users')
         .select('password_hash')
@@ -206,7 +189,7 @@ export class SupabaseUserRepository {
   }
 
   async updateLastLogin(userId: string): Promise<void> {
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       await supabase
         .from('users')
         .update({ last_login_at: new Date().toISOString() })
@@ -214,7 +197,7 @@ export class SupabaseUserRepository {
     } else {
       const user = this.memoryUsers.get(userId);
       if (user) {
-        user.lastLoginAt = new Date();
+        user.lastLogin = new Date();
         user.updatedAt = new Date();
       }
     }
@@ -223,7 +206,7 @@ export class SupabaseUserRepository {
   async createSession(userId: string, refreshToken: string, expiresAt: Date, ipAddress?: string, userAgent?: string): Promise<Session> {
     const refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
     
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       const { data, error } = await supabase
         .from('user_sessions')
         .insert({
@@ -237,27 +220,16 @@ export class SupabaseUserRepository {
         .single();
 
       if (error) throw error;
-
-      return {
-        id: data.id,
-        userId: data.user_id,
-        refreshTokenHash: data.refresh_token_hash,
-        expiresAt: new Date(data.expires_at),
-        createdAt: new Date(data.created_at),
-        lastActivityAt: new Date(data.last_activity_at),
-        ipAddress: data.ip_address,
-        userAgent: data.user_agent,
-      };
+      return this.supabaseSessionToSession(data, refreshToken);
     } else {
       const session: Session = {
         id: crypto.randomUUID(),
         userId,
-        refreshTokenHash,
+        token: refreshToken,
         expiresAt,
-        createdAt: new Date(),
-        lastActivityAt: new Date(),
-        ipAddress,
-        userAgent,
+        ipAddress: ipAddress || '',
+        userAgent: userAgent || '',
+        createdAt: new Date()
       };
 
       this.memorySessions.set(session.id, session);
@@ -268,7 +240,7 @@ export class SupabaseUserRepository {
   async findSessionByRefreshToken(refreshToken: string): Promise<Session | null> {
     const refreshTokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
     
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       const { data, error } = await supabase
         .from('user_sessions')
         .select('*')
@@ -276,24 +248,14 @@ export class SupabaseUserRepository {
         .single();
 
       if (error || !data) return null;
-
-      return {
-        id: data.id,
-        userId: data.user_id,
-        refreshTokenHash: data.refresh_token_hash,
-        expiresAt: new Date(data.expires_at),
-        createdAt: new Date(data.created_at),
-        lastActivityAt: new Date(data.last_activity_at),
-        ipAddress: data.ip_address,
-        userAgent: data.user_agent,
-      };
+      return this.supabaseSessionToSession(data, refreshToken);
     } else {
-      return Array.from(this.memorySessions.values()).find(s => s.refreshTokenHash === refreshTokenHash) || null;
+      return Array.from(this.memorySessions.values()).find(s => s.token === refreshToken) || null;
     }
   }
 
   async deleteSession(sessionId: string): Promise<void> {
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       await supabase
         .from('user_sessions')
         .delete()
@@ -304,7 +266,7 @@ export class SupabaseUserRepository {
   }
 
   async deleteUserSessions(userId: string): Promise<void> {
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       await supabase
         .from('user_sessions')
         .delete()
@@ -327,7 +289,7 @@ export class SupabaseUserRepository {
     errorMessage?: string,
     metadata?: Record<string, any>
   ): Promise<void> {
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       await supabase
         .from('auth_audit_logs')
         .insert({
@@ -340,22 +302,28 @@ export class SupabaseUserRepository {
           metadata,
         });
     } else {
+      const actionMap = {
+        'login': success ? 'login' : 'failed_login',
+        'logout': 'logout',
+        'register': 'register',
+        'password_reset': 'password_change',
+        'token_refresh': 'login'
+      } as const;
+
       this.memoryAuditLogs.push({
         id: crypto.randomUUID(),
-        userId,
-        eventType,
-        success,
-        ipAddress,
-        userAgent,
-        errorMessage,
+        userId: userId || 'anonymous',
+        action: actionMap[eventType] as any,
+        ipAddress: ipAddress || '',
+        userAgent: userAgent || '',
         metadata,
-        createdAt: new Date(),
+        createdAt: new Date()
       });
     }
   }
 
   async cleanupExpiredSessions(): Promise<void> {
-    if (this.useSupabase) {
+    if (this.useSupabase && supabase) {
       // The database function handles this automatically
       await supabase.rpc('cleanup_expired_sessions');
     } else {

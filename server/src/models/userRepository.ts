@@ -45,7 +45,7 @@ export const userRepository = {
         role: 'viewer' as const, // Default role
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
-        lastLogin: user.lastLoginAt || null,
+        lastLogin: user.lastLogin || null,
         isActive: user.isActive
       };
     }
@@ -72,7 +72,7 @@ export const userRepository = {
         role: 'viewer' as const,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
-        lastLogin: user.lastLoginAt || null,
+        lastLogin: user.lastLogin || null,
         isActive: user.isActive
       };
     }
@@ -93,7 +93,7 @@ export const userRepository = {
         role: 'viewer' as const,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
-        lastLogin: user.lastLoginAt || null,
+        lastLogin: user.lastLogin || null,
         isActive: user.isActive
       };
     }

@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { Badge, BadgeDefinition, UserStatistics, BadgeProgress } from '../../../shared/types/badges';
+import type { BadgeDefinition, UserStatistics, BadgeProgress, UserBadge } from '../types/badges';
 
 const API_BASE_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
 
 interface BadgeResponse {
-  badges: Badge[];
+  badges: UserBadge[];
   statistics: UserStatistics | null;
   progress: BadgeProgress[];
 }

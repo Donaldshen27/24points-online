@@ -11,6 +11,7 @@ export interface Player {
   deck: Card[];
   isReady: boolean;
   points?: number; // For point-based scoring in Extended Range mode
+  isAI?: boolean; // For solo practice mode
 }
 
 export interface GameRoom {
@@ -27,7 +28,6 @@ export interface GameRoom {
   roundTimes?: { [playerId: string]: number[] };
   firstSolves?: { [playerId: string]: number };
   correctSolutions?: { [playerId: string]: number };
-  incorrectAttempts?: { [playerId: string]: number };
   // Room type support
   roomType?: string;
   // Solo practice mode

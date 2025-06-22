@@ -409,6 +409,23 @@ export const handleConnection = (io: Server, socket: Socket) => {
           // Send full game state to spectators
           const spectatorRoomId = `spectators-${room.id}`;
           io.to(spectatorRoomId).emit('game-state-updated', currentState);
+          
+          // Check for badges after each round in solo practice
+          if (room.isSoloPractice && isCorrect) {
+            const humanPlayer = room.players.find(p => !p.isAI);
+            if (humanPlayer) {
+              // Initialize stats if needed
+              await statisticsService.initializeUserStats(humanPlayer.id, humanPlayer.name);
+              
+              // Check for new badges
+              const newBadges = await badgeDetectionService.checkBadgesAfterGame(humanPlayer.id);
+              
+              // Notify player of new badges
+              if (newBadges.length > 0) {
+                io.to(humanPlayer.socketId).emit('badges-unlocked', newBadges);
+              }
+            }
+          }
 
           if (currentState.state === 'game_over') {
             // Get the game over result from the game manager
@@ -428,10 +445,16 @@ export const handleConnection = (io: Server, socket: Socket) => {
               const spectatorRoomId = `spectators-${room.id}`;
               io.to(spectatorRoomId).emit('game-over', gameOverData);
               
-              // Check for new badges after game (for both players)
-              if (!room.isSoloPractice && gameOverResult) {
+              // Check for new badges after game
+              if (gameOverResult) {
                 const players = currentState.players;
-                for (const player of players) {
+                
+                // In solo practice, only check badges for the human player
+                const playersToCheck = room.isSoloPractice 
+                  ? players.filter(p => !p.isAI)
+                  : players;
+                
+                for (const player of playersToCheck) {
                   // Initialize stats if needed
                   await statisticsService.initializeUserStats(player.id, player.name);
                   
@@ -475,10 +498,16 @@ export const handleConnection = (io: Server, socket: Socket) => {
               const spectatorRoomId = `spectators-${room.id}`;
               io.to(spectatorRoomId).emit('game-over', gameOverData);
               
-              // Check for new badges after game (for both players)
-              if (!room.isSoloPractice && gameOverResult) {
+              // Check for new badges after game
+              if (gameOverResult) {
                 const players = currentState.players;
-                for (const player of players) {
+                
+                // In solo practice, only check badges for the human player
+                const playersToCheck = room.isSoloPractice 
+                  ? players.filter(p => !p.isAI)
+                  : players;
+                
+                for (const player of playersToCheck) {
                   // Initialize stats if needed
                   await statisticsService.initializeUserStats(player.id, player.name);
                   

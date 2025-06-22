@@ -13,7 +13,9 @@ function createTieredBadge(
     id: `${baseId}_${tier}`,
     category,
     name: `${baseName} ${tier.charAt(0).toUpperCase() + tier.slice(1)}`,
-    description: baseDescription.replace('{value}', value.toString()),
+    description: baseDescription.replace('{value}', 
+      statKey === 'fastestSolveMs' ? (value / 1000).toString() : value.toString()
+    ),
     tier,
     rarity,
     points,
@@ -21,11 +23,12 @@ function createTieredBadge(
       type: 'simple' as const,
       stat: statKey as any,
       value,
-      comparison: 'gte' as const
+      comparison: statKey === 'fastestSolveMs' ? 'lte' as const : 'gte' as const
     },
     isActive: true
   }));
 }
+
 
 // Client-side badge definitions (subset for display)
 export const CLIENT_BADGE_DEFINITIONS: BadgeDefinition[] = [
@@ -42,24 +45,8 @@ export const CLIENT_BADGE_DEFINITIONS: BadgeDefinition[] = [
       { tier: 'bronze', value: 10000, rarity: 'common', points: 10 },
       { tier: 'silver', value: 7000, rarity: 'common', points: 20 },
       { tier: 'gold', value: 5000, rarity: 'rare', points: 40 },
-      { tier: 'platinum', value: 3000, rarity: 'epic', points: 80 },
-      { tier: 'diamond', value: 2000, rarity: 'legendary', points: 150 }
-    ]
-  ),
-
-  // Accuracy Master badges
-  ...createTieredBadge(
-    'accuracy_master',
-    'skill',
-    'Accuracy Master',
-    'Maintain {value}% accuracy rate (min 50 attempts)',
-    'accuracyRate',
-    [
-      { tier: 'bronze', value: 70, rarity: 'common', points: 15 },
-      { tier: 'silver', value: 80, rarity: 'common', points: 30 },
-      { tier: 'gold', value: 90, rarity: 'rare', points: 50 },
-      { tier: 'platinum', value: 95, rarity: 'epic', points: 100 },
-      { tier: 'diamond', value: 99, rarity: 'legendary', points: 200 }
+      { tier: 'platinum', value: 4000, rarity: 'epic', points: 80 },
+      { tier: 'diamond', value: 3000, rarity: 'legendary', points: 150 }
     ]
   ),
 
@@ -80,22 +67,6 @@ export const CLIENT_BADGE_DEFINITIONS: BadgeDefinition[] = [
   ),
 
   // Individual skill badges
-  {
-    id: 'perfect_game',
-    category: 'skill',
-    name: 'Perfect Game',
-    description: 'Win a game without any incorrect attempts',
-    rarity: 'rare',
-    points: 50,
-    requirements: {
-      type: 'simple',
-      stat: 'perfectGames' as any,
-      value: 1,
-      comparison: 'gte'
-    },
-    isActive: true
-  },
-
   {
     id: 'flawless_victory',
     category: 'skill',

@@ -134,7 +134,8 @@ export class RoomManager {
       socketId,
       name: playerName,
       deck: [],
-      isReady: false
+      isReady: false,
+      isAI: playerName === 'Practice Bot' // Mark AI players
     };
 
     room.players.push(player);

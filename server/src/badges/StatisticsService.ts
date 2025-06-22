@@ -67,7 +67,6 @@ export class StatisticsService {
       roundTimes: { [playerId: string]: number[] };
       firstSolves: { [playerId: string]: number };
       correctSolutions: { [playerId: string]: number };
-      incorrectAttempts: { [playerId: string]: number };
     }
   ): Promise<void> {
     if (!this.supabase) return;
@@ -117,7 +116,6 @@ export class StatisticsService {
       : null;
 
     // Calculate special achievements
-    const perfectGame = isWinner && (gameStats.incorrectAttempts[playerId] || 0) === 0;
     const flawlessVictory = isWinner && 
       gameRoom.players.find(p => p.id !== playerId)?.deck.length === 20;
 
@@ -135,7 +133,6 @@ export class StatisticsService {
       total_rounds_played: currentStats.total_rounds_played + gameRoom.currentRound,
       total_first_solves: currentStats.total_first_solves + (gameStats.firstSolves[playerId] || 0),
       total_correct_solutions: currentStats.total_correct_solutions + (gameStats.correctSolutions[playerId] || 0),
-      total_incorrect_attempts: currentStats.total_incorrect_attempts + (gameStats.incorrectAttempts[playerId] || 0),
       total_solve_time_ms: currentStats.total_solve_time_ms + playerRoundTimes.reduce((a, b) => a + b, 0),
       updated_at: new Date().toISOString()
     };
@@ -149,9 +146,6 @@ export class StatisticsService {
       );
       updates[modeWinField] = (currentStats[modeWinField] || 0) + 1;
       
-      if (perfectGame) {
-        updates.perfect_games = (currentStats.perfect_games || 0) + 1;
-      }
       if (flawlessVictory) {
         updates.flawless_victories = (currentStats.flawless_victories || 0) + 1;
       }
@@ -252,38 +246,6 @@ export class StatisticsService {
     await this.incrementStat(player2Id, 'unique_opponents');
   }
 
-  /**
-   * Update statistics for solo practice mode
-   */
-  async updateSoloPracticeStats(playerId: string, solved: boolean, solveTimeMs: number): Promise<void> {
-    if (!this.supabase) return;
-
-    try {
-      const updates: any = {
-        solo_puzzles_completed: this.supabase.rpc('increment', { x: 1 })
-      };
-
-      if (solved && solveTimeMs) {
-        const { data: stats } = await this.supabase
-          .from('user_statistics')
-          .select('fastest_solve_ms')
-          .eq('user_id', playerId)
-          .single();
-
-        if (stats && (!stats.fastest_solve_ms || solveTimeMs < stats.fastest_solve_ms)) {
-          updates.fastest_solve_ms = solveTimeMs;
-        }
-      }
-
-      await this.supabase
-        .from('user_statistics')
-        .update(updates)
-        .eq('user_id', playerId);
-
-    } catch (error) {
-      console.error('Failed to update solo practice stats:', error);
-    }
-  }
 
   /**
    * Update spectator statistics
@@ -314,6 +276,59 @@ export class StatisticsService {
       }
     } catch (error) {
       console.error('Failed to track special achievement:', error);
+    }
+  }
+
+  /**
+   * Update solo practice statistics
+   */
+  async updateSoloPracticeStats(
+    playerId: string,
+    solveTimeMs: number,
+    isCorrect: boolean
+  ): Promise<void> {
+    if (!this.supabase) return;
+
+    try {
+      // Get current stats
+      const { data: currentStats } = await this.supabase
+        .from('user_statistics')
+        .select('*')
+        .eq('user_id', playerId)
+        .single();
+
+      if (!currentStats) {
+        console.error('No stats found for player:', playerId);
+        return;
+      }
+
+      // Build update object
+      const updates: any = {
+        solo_puzzles_completed: currentStats.solo_puzzles_completed + (isCorrect ? 1 : 0),
+        total_rounds_played: currentStats.total_rounds_played + 1,
+        total_solve_time_ms: currentStats.total_solve_time_ms + solveTimeMs,
+        updated_at: new Date().toISOString()
+      };
+
+      // Update fastest solve if this is a new record
+      if (isCorrect && solveTimeMs < (currentStats.fastest_solve_ms || Infinity)) {
+        updates.fastest_solve_ms = solveTimeMs;
+      }
+
+      // Update stats
+      const { error } = await this.supabase
+        .from('user_statistics')
+        .update(updates)
+        .eq('user_id', playerId);
+
+      if (error) {
+        console.error('Failed to update solo practice stats:', error);
+      }
+
+      // Update time-based stats
+      await this.updateTimeBasedStats([playerId]);
+    } catch (error) {
+      console.error('Failed to update solo practice stats:', error);
     }
   }
 

@@ -172,11 +172,6 @@ export class BadgeDetectionService {
     userId: string
   ): Promise<boolean> {
     switch (requirement.customType) {
-      case 'accuracy_rate':
-        const totalAttempts = stats.totalCorrectSolutions + stats.totalIncorrectAttempts;
-        if (totalAttempts < 50) return false; // Minimum attempts required
-        const accuracy = stats.totalCorrectSolutions / totalAttempts;
-        return accuracy >= (requirement.params?.rate || 0);
 
       case 'puzzle_records':
         // Query puzzle records from database
@@ -220,7 +215,7 @@ export class BadgeDetectionService {
 
       case 'launch_week_player':
         // Check if player joined during launch week
-        const launchDate = new Date('2024-01-01'); // Set actual launch date
+        const launchDate = new Date('2025-01-01'); // TODO: Update with actual launch date
         const joinDate = stats.createdAt;
         const weekLater = new Date(launchDate);
         weekLater.setDate(weekLater.getDate() + 7);
@@ -387,14 +382,14 @@ export class BadgeDetectionService {
       // First, reset all featured flags for this user
       await this.supabase
         .from('user_badges')
-        .update({ featured: false })
+        .update({ is_featured: false })
         .eq('user_id', userId);
 
       // Then set featured flag for selected badges
       if (badgeIds.length > 0) {
         await this.supabase
           .from('user_badges')
-          .update({ featured: true })
+          .update({ is_featured: true })
           .eq('user_id', userId)
           .in('badge_id', badgeIds);
       }

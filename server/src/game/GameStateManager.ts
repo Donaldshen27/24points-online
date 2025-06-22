@@ -150,10 +150,6 @@ export class GameStateManager {
       [player1.id]: 0,
       [player2.id]: 0
     };
-    this.room.incorrectAttempts = {
-      [player1.id]: 0,
-      [player2.id]: 0
-    };
   }
 
   /**
@@ -378,6 +374,15 @@ export class GameStateManager {
       // Store if this was a new record
       this.room.newRecordSet = wasNewRecord;
       
+      // Update solo practice stats if applicable
+      if (this.room.isSoloPractice) {
+        statisticsService.updateSoloPracticeStats(
+          playerId,
+          solveTimeMs,
+          true // isCorrect
+        ).catch(err => console.error('Failed to update solo practice stats:', err));
+      }
+      
       this.endRound({
         winnerId: playerId,
         loserId: otherPlayer?.id || null,
@@ -390,9 +395,14 @@ export class GameStateManager {
       // Player loses
       const otherPlayer = this.room.players.find(p => p.id !== playerId);
       
-      // Track incorrect attempts
-      if (this.room.incorrectAttempts) {
-        this.room.incorrectAttempts[playerId]++;
+      // Update solo practice stats for incorrect attempt
+      if (this.room.isSoloPractice) {
+        const solveTimeMs = solveTime * 1000;
+        statisticsService.updateSoloPracticeStats(
+          playerId,
+          solveTimeMs,
+          false // isCorrect
+        ).catch(err => console.error('Failed to update solo practice stats:', err));
       }
       
       this.endRound({
@@ -575,8 +585,7 @@ export class GameStateManager {
       const gameStats = {
         roundTimes: this.room.roundTimes || {},
         firstSolves: this.room.firstSolves || {},
-        correctSolutions: this.room.correctSolutions || {},
-        incorrectAttempts: this.room.incorrectAttempts || {}
+        correctSolutions: this.room.correctSolutions || {}
       };
       
       // Update game statistics for both players

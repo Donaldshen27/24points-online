@@ -10,8 +10,6 @@ interface LevelIndicatorProps {
   animated?: boolean;
 }
 
-const POINTS_PER_LEVEL = 100;
-
 export const LevelIndicator: React.FC<LevelIndicatorProps> = ({
   currentPoints,
   currentLevel,
@@ -21,14 +19,16 @@ export const LevelIndicator: React.FC<LevelIndicatorProps> = ({
 }) => {
   const { t } = useTranslation();
   
-  // Calculate progress to next level
-  const currentLevelPoints = (currentLevel - 1) * POINTS_PER_LEVEL;
-  const nextLevelPoints = currentLevel * POINTS_PER_LEVEL;
-  const progressPoints = currentPoints - currentLevelPoints;
-  const progressPercentage = (progressPoints / POINTS_PER_LEVEL) * 100;
+  // Calculate level points using the same formula as badgeService
+  // Formula: Points needed for level n = n * (n + 1) * 50
+  const currentLevelPoints = currentLevel * (currentLevel + 1) * 50;
+  const nextLevelPoints = (currentLevel + 1) * (currentLevel + 2) * 50;
+  const pointsInCurrentLevel = currentPoints - currentLevelPoints;
+  const pointsNeededForNextLevel = nextLevelPoints - currentLevelPoints;
+  const progressPercentage = Math.max(0, Math.min(100, (pointsInCurrentLevel / pointsNeededForNextLevel) * 100));
   
-  // Calculate points needed for next level
-  const pointsToNextLevel = nextLevelPoints - currentPoints;
+  // Calculate points needed for next level (ensure it's never negative)
+  const pointsToNextLevel = Math.max(0, nextLevelPoints - currentPoints);
   
   // Determine level tier for styling
   const getLevelTier = (level: number): string => {

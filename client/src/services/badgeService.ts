@@ -114,7 +114,7 @@ class BadgeService {
     const progress = (pointsInCurrentLevel / pointsNeededForNextLevel) * 100;
     
     return {
-      level,
+      level: Math.max(1, level), // Ensure minimum level 1
       currentLevelPoints,
       nextLevelPoints,
       progress: Math.min(100, Math.max(0, progress))

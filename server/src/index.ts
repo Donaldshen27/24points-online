@@ -45,8 +45,10 @@ app.get('/health', (req: express.Request, res: express.Response) => {
 // API Routes
 import authRoutes from './routes/auth';
 import debugRoutes from './routes/debug';
+import badgeRoutes from './routes/badges';
 app.use('/api/auth', authRoutes);
 app.use('/api/debug', debugRoutes);
+app.use('/api/badges', badgeRoutes);
 
 import { handleConnection } from './socket/connectionHandler';
 import { verifyAccessToken } from './auth/jwt';

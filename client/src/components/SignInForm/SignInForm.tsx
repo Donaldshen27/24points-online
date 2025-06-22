@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { authService } from '../../services/authService';
+import { useAuth } from '../../contexts/AuthContext';
 import './SignInForm.css';
 
 interface SignInFormProps {
@@ -10,6 +10,7 @@ interface SignInFormProps {
 
 export const SignInForm: React.FC<SignInFormProps> = ({ onSuccess, onSwitchToSignUp }) => {
   const { t } = useTranslation();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -58,19 +59,15 @@ export const SignInForm: React.FC<SignInFormProps> = ({ onSuccess, onSwitchToSig
     setErrors({});
 
     try {
-      const user = await authService.login({ 
-        email: formData.email, 
-        password: formData.password 
-      });
+      await login(formData.email, formData.password);
       
       if (formData.rememberMe) {
-        // The auth service already handles token persistence
         localStorage.setItem('rememberMe', 'true');
       } else {
         localStorage.removeItem('rememberMe');
       }
       
-      onSuccess(user);
+      onSuccess(true);
     } catch (error: any) {
       console.error('Login error:', error);
       if (error.response?.status === 401) {

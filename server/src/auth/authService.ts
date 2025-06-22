@@ -4,6 +4,7 @@ import { generateAccessToken, generateRefreshToken } from './jwt';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { authConfig } from '../config/auth';
+import { SupabaseUserRepository } from '../models/supabaseUserRepository';
 
 export class AuthService {
   async checkUsernameAvailability(username: string): Promise<boolean> {
@@ -39,8 +40,8 @@ export class AuthService {
   }
 
   private validateUsername(username: string): boolean {
-    // Username must be 3-20 characters, alphanumeric with underscores
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    // Username must be 1-20 characters, alphanumeric with underscores and hyphens
+    const usernameRegex = /^[a-zA-Z0-9_-]{1,20}$/;
     return usernameRegex.test(username);
   }
 
@@ -63,7 +64,7 @@ export class AuthService {
 
     // Validate username format
     if (!this.validateUsername(username)) {
-      throw new Error('Username must be 3-20 characters and contain only letters, numbers, and underscores');
+      throw new Error('Username must be 1-20 characters and contain only letters, numbers, hyphens, and underscores');
     }
 
     // Validate password strength
@@ -103,14 +104,12 @@ export class AuthService {
       throw new Error('Username already taken');
     }
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, authConfig.bcrypt.saltRounds);
-
     // Create user
+    // When using Supabase, password hashing is handled in the repository
     const user = await userRepository.create({
       email,
       username,
-      passwordHash,
+      passwordHash: password, // Pass plain password, repository will hash it
       role: 'viewer', // Default role for new users
       lastLogin: null,
       isActive: true
@@ -197,7 +196,17 @@ export class AuthService {
     }
 
     // Verify password
-    const isPasswordValid = await userRepository.comparePassword(password, user.passwordHash);
+    // When using Supabase, we need to check password differently
+    let isPasswordValid = false;
+    
+    if (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
+      // Use Supabase password verification
+      const supabaseRepo = SupabaseUserRepository.getInstance();
+      isPasswordValid = await supabaseRepo.verifyPassword(email, password);
+    } else {
+      // Use local bcrypt comparison
+      isPasswordValid = await userRepository.comparePassword(password, user.passwordHash);
+    }
     
     if (!isPasswordValid) {
       await auditRepository.log({

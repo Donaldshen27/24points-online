@@ -14,7 +14,7 @@ import { BADGE_DEFINITIONS, getBadgeById } from './badgeDefinitions';
 import { statisticsService } from './StatisticsService';
 
 export class BadgeDetectionService {
-  private supabase: SupabaseClient;
+  private supabase!: SupabaseClient;
 
   constructor() {
     const supabaseUrl = process.env.SUPABASE_URL;
@@ -354,11 +354,10 @@ export class BadgeDetectionService {
             ...userBadge,
             name: badge.name,
             description: badge.description,
-            icon: badge.icon,
             category: badge.category,
             rarity: badge.rarity,
             points: badge.points
-          });
+          } as any);
         }
       }
 

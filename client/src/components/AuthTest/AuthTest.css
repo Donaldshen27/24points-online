@@ -1,0 +1,166 @@
+.auth-test-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #1a1a1a;
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+.auth-test-container h1 {
+  text-align: center;
+  color: #4CAF50;
+  margin-bottom: 30px;
+  font-size: 2.5em;
+}
+
+.auth-test-section {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #444;
+}
+
+.auth-test-section h2 {
+  color: #4CAF50;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+}
+
+.auth-state {
+  font-family: monospace;
+  background: #1a1a1a;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #444;
+}
+
+.auth-state p {
+  margin: 5px 0;
+}
+
+.auth-state strong {
+  color: #4CAF50;
+}
+
+.test-credentials {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.test-credentials input {
+  background: #1a1a1a;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.test-credentials input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.test-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.test-actions button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.test-actions button:hover:not(:disabled) {
+  background: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.test-actions button:disabled {
+  background: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.test-actions .clear-btn {
+  background: #f44336;
+}
+
+.test-actions .clear-btn:hover:not(:disabled) {
+  background: #e53935;
+}
+
+.test-results {
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.test-result {
+  padding: 5px 0;
+  border-bottom: 1px solid #333;
+  word-break: break-all;
+}
+
+.test-result:last-child {
+  border-bottom: none;
+}
+
+.test-result:hover {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+/* Scrollbar styling */
+.test-results::-webkit-scrollbar {
+  width: 8px;
+}
+
+.test-results::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.test-results::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+.test-results::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .auth-test-container {
+    padding: 10px;
+  }
+  
+  .test-credentials {
+    grid-template-columns: 1fr;
+  }
+  
+  .test-actions {
+    flex-direction: column;
+  }
+  
+  .test-actions button {
+    width: 100%;
+  }
+}

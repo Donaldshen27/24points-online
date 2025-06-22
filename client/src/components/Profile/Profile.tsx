@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { BadgeShowcase } from '../Badges/BadgeShowcase';
+import { LevelIndicator } from '../Badges/BadgeProgress';
+import socketService from '../../services/socketService';
 import './Profile.css';
 
 interface ProfileProps {
@@ -18,10 +20,21 @@ interface PlayerStats {
   currentWinStreak: number;
 }
 
+interface BadgeData {
+  totalPoints: number;
+  level: number;
+  badgeCount: number;
+}
+
 export const Profile: React.FC<ProfileProps> = ({ userId }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [stats, setStats] = useState<PlayerStats | null>(null);
+  const [badgeData, setBadgeData] = useState<BadgeData>({
+    totalPoints: 0,
+    level: 1,
+    badgeCount: 0
+  });
   const [loading, setLoading] = useState(true);
 
   const profileUserId = userId || user?.id;
@@ -29,22 +42,46 @@ export const Profile: React.FC<ProfileProps> = ({ userId }) => {
 
   useEffect(() => {
     if (profileUserId) {
-      loadPlayerStats();
+      loadPlayerData();
     }
   }, [profileUserId]);
 
-  const loadPlayerStats = async () => {
-    // TODO: Load stats from server
-    // For now, using placeholder data
-    setStats({
-      gamesPlayed: 0,
-      gamesWon: 0,
-      winRate: 0,
-      averageSolveTime: 0,
-      fastestSolve: 0,
-      longestWinStreak: 0,
-      currentWinStreak: 0
+  const loadPlayerData = async () => {
+    setLoading(true);
+    
+    // Load badge data
+    socketService.emit('get-user-badges', { userId: profileUserId }, (response: any) => {
+      if (response.success) {
+        setBadgeData({
+          totalPoints: response.totalPoints || 0,
+          level: response.level || 1,
+          badgeCount: response.badges?.length || 0
+        });
+      }
     });
+    
+    // Load stats from server
+    socketService.emit('get-user-statistics', { userId: profileUserId }, (statsData: any) => {
+      if (statsData) {
+        const winRate = statsData.gamesPlayed > 0 
+          ? Math.round((statsData.gamesWon / statsData.gamesPlayed) * 100) 
+          : 0;
+        const avgSolveTime = statsData.totalSolveTimeMs && statsData.totalCorrectSolutions > 0
+          ? Math.round(statsData.totalSolveTimeMs / statsData.totalCorrectSolutions / 1000)
+          : 0;
+          
+        setStats({
+          gamesPlayed: statsData.gamesPlayed || 0,
+          gamesWon: statsData.gamesWon || 0,
+          winRate,
+          averageSolveTime: avgSolveTime,
+          fastestSolve: statsData.fastestSolveMs ? Math.round(statsData.fastestSolveMs / 1000) : 0,
+          longestWinStreak: statsData.longestWinStreak || 0,
+          currentWinStreak: statsData.currentWinStreak || 0
+        });
+      }
+    });
+    
     setLoading(false);
   };
 
@@ -77,6 +114,14 @@ export const Profile: React.FC<ProfileProps> = ({ userId }) => {
           <p className="profile-joined">{t('profile.memberSince', { date: new Date().toLocaleDateString() })}</p>
         </div>
       </div>
+
+      <LevelIndicator
+        currentPoints={badgeData.totalPoints}
+        currentLevel={badgeData.level}
+        size="large"
+        showDetails={true}
+        animated={true}
+      />
 
       <BadgeShowcase 
         userId={profileUserId} 

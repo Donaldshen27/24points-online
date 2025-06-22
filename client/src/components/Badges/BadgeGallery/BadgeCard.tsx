@@ -1,5 +1,6 @@
 import React from 'react';
-import { BadgeDefinition, BadgeProgress } from '../../../types/badges';
+import { useTranslation } from 'react-i18next';
+import type { BadgeDefinition, BadgeProgress } from '../../../types/badges';
 import ProgressBar from '../BadgeProgress/ProgressBar';
 
 interface BadgeCardProps {
@@ -10,6 +11,8 @@ interface BadgeCardProps {
 }
 
 const BadgeCard: React.FC<BadgeCardProps> = ({ badge, status, progress, onClick }) => {
+  const { t } = useTranslation();
+  
   const getRarityClass = (rarity: string) => {
     return `badge-rarity-${rarity}`;
   };
@@ -40,7 +43,7 @@ const BadgeCard: React.FC<BadgeCardProps> = ({ badge, status, progress, onClick 
       <div className="badge-footer">
         <div className="badge-points">
           <span className="points-value">{badge.points}</span>
-          <span className="points-label">pts</span>
+          <span className="points-label">{t('badges.points', 'Points')}</span>
         </div>
         
         {status === 'in-progress' && progress && (

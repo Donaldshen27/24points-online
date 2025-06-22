@@ -1,6 +1,6 @@
 import React from 'react';
 import socketService from '../../../services/socketService';
-import { BadgeUnlockNotification } from '../../../types/badges';
+import type { BadgeUnlockNotification } from '../../../types/badges';
 import { CLIENT_BADGE_DEFINITIONS } from '../../../data/badgeDefinitions';
 
 export const BadgeNotificationTest: React.FC = () => {

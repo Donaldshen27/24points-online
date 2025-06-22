@@ -22,6 +22,29 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
   const { t } = useTranslation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const dropdownTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMouseEnterDropdown = () => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+    }
+    setShowUserDropdown(true);
+  };
+
+  const handleMouseLeaveDropdown = () => {
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setShowUserDropdown(false);
+    }, 300); // 300ms delay before closing
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (dropdownTimeoutRef.current) {
+        clearTimeout(dropdownTimeoutRef.current);
+      }
+    };
+  }, []);
   return (
     <nav className="navigation">
       <div className="nav-container">
@@ -126,7 +149,11 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
                 </div>
               </div>
               
-              <div className="nav-user">
+              <div 
+                className="nav-user"
+                onMouseEnter={handleMouseEnterDropdown}
+                onMouseLeave={handleMouseLeaveDropdown}
+              >
                 <button className="user-menu-trigger">
                   <div className="user-avatar">
                     {username.charAt(0).toUpperCase()}
@@ -137,7 +164,7 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
                   </svg>
                 </button>
                 
-                <div className="user-dropdown">
+                <div className={`user-dropdown ${showUserDropdown ? 'show' : ''}`}>
                   <button onClick={onProfileClick} className="dropdown-item">Profile</button>
                   <button className="dropdown-item" disabled>Settings</button>
                   <button className="dropdown-item" disabled>Statistics</button>

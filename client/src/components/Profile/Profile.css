@@ -8,7 +8,7 @@
 .profile-loading {
   text-align: center;
   padding: 60px;
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary);
   font-size: 1.1rem;
 }
 
@@ -18,7 +18,7 @@
   gap: 30px;
   margin-bottom: 40px;
   padding: 30px;
-  background: var(--card-bg, #f8f9fa);
+  background: var(--color-surface-1);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -27,14 +27,14 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: var(--primary-color, #4CAF50);
+  background: var(--color-accent-primary);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 3rem;
   font-weight: bold;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 12px rgba(129, 199, 132, 0.3);
 }
 
 .profile-info {
@@ -44,12 +44,12 @@
 .profile-username {
   margin: 0 0 10px 0;
   font-size: 2rem;
-  color: var(--text-primary, #333);
+  color: var(--color-text-primary);
 }
 
 .profile-joined {
   margin: 0;
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary);
   font-size: 1rem;
 }
 
@@ -59,7 +59,7 @@
 
 .profile-stats h2 {
   margin-bottom: 20px;
-  color: var(--text-primary, #333);
+  color: var(--color-text-primary);
 }
 
 .stats-grid {
@@ -69,7 +69,7 @@
 }
 
 .stat-card {
-  background: var(--card-bg, #f8f9fa);
+  background: var(--color-surface-1);
   border-radius: 8px;
   padding: 20px;
   text-align: center;
@@ -84,14 +84,14 @@
 
 .stat-label {
   font-size: 0.9rem;
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary);
   margin-bottom: 10px;
 }
 
 .stat-value {
   font-size: 2rem;
   font-weight: bold;
-  color: var(--primary-color, #4CAF50);
+  color: var(--color-accent-primary);
 }
 
 .profile-recent-games {
@@ -100,15 +100,15 @@
 
 .profile-recent-games h2 {
   margin-bottom: 20px;
-  color: var(--text-primary, #333);
+  color: var(--color-text-primary);
 }
 
 .no-games {
   text-align: center;
   padding: 40px;
-  background: var(--card-bg, #f8f9fa);
+  background: var(--color-surface-1);
   border-radius: 8px;
-  color: var(--text-secondary, #666);
+  color: var(--color-text-secondary);
 }
 
 /* Responsive */

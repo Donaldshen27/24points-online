@@ -1,4 +1,4 @@
-import { BadgeDefinition, BadgeCategory, BadgeTier, BadgeRarity } from '../types/badges';
+import type { BadgeDefinition, BadgeCategory, BadgeTier, BadgeRarity } from '../types/badges';
 
 // Helper function to create tiered badges
 function createTieredBadge(

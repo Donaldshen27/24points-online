@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { BadgeDefinition, BadgeProgress } from '../../../types/badges';
+import type { BadgeDefinition, BadgeProgress } from '../../../types/badges';
 import ProgressBar from '../BadgeProgress/ProgressBar';
 
 interface BadgeDetailModalProps {
@@ -74,10 +74,18 @@ const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
                 className="badge-rarity"
                 style={{ color: getRarityColor(badge.rarity) }}
               >
-                {t(`badges.rarity.${badge.rarity}`)}
+                {t(`badges.rarity.${badge.rarity}`, (() => {
+                  switch(badge.rarity) {
+                    case 'common': return 'Common';
+                    case 'rare': return 'Rare';
+                    case 'epic': return 'Epic';
+                    case 'legendary': return 'Legendary';
+                    default: return 'Unknown';
+                  }
+                })())}
               </span>
               <span className="badge-points">
-                {badge.points} {t('badges.points')}
+                {badge.points} {t('badges.points', 'Points')}
               </span>
             </div>
           </div>
@@ -87,20 +95,20 @@ const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
           {status === 'earned' && (
             <div className="earned-info">
               <div className="earned-icon">🎉</div>
-              <p className="earned-text">{t('badges.detail.earned')}</p>
+              <p className="earned-text">{t('badges.detail.earned', "You've earned this badge!")}</p>
             </div>
           )}
 
           {status === 'in-progress' && progress && (
             <div className="progress-section">
-              <h3>{t('badges.detail.progress')}</h3>
+              <h3>{t('badges.detail.progress', 'Progress')}</h3>
               <ProgressBar 
                 current={progress.currentValue}
                 target={progress.targetValue}
                 showLabel
               />
               <p className="progress-text">
-                {t('badges.detail.progressText', {
+                {t('badges.detail.progressText', `${progress.currentValue} / ${progress.targetValue}`, {
                   current: progress.currentValue,
                   target: progress.targetValue
                 })}
@@ -110,7 +118,7 @@ const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
 
           {status === 'locked' && (
             <div className="requirements-section">
-              <h3>{t('badges.detail.requirements')}</h3>
+              <h3>{t('badges.detail.requirements', 'Requirements')}</h3>
               <div className="requirement-details">
                 {renderRequirements(badge)}
               </div>
@@ -118,13 +126,23 @@ const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
           )}
 
           <div className="badge-category-info">
-            <h3>{t('badges.detail.category')}</h3>
-            <p>{t(`badges.categories.${badge.category}`)}</p>
+            <h3>{t('badges.detail.category', 'Category')}</h3>
+            <p>{t(`badges.categories.${badge.category}`, (() => {
+              switch(badge.category) {
+                case 'skill': return 'Skill';
+                case 'progression': return 'Progression';
+                case 'mode': return 'Game Modes';
+                case 'social': return 'Social';
+                case 'unique': return 'Unique';
+                case 'seasonal': return 'Seasonal';
+                default: return 'Unknown';
+              }
+            })())}</p>
           </div>
 
           {badge.tier && (
             <div className="tier-progression">
-              <h3>{t('badges.detail.tierProgression')}</h3>
+              <h3>{t('badges.detail.tierProgression', 'Tier Progression')}</h3>
               <div className="tier-list">
                 {['bronze', 'silver', 'gold', 'platinum', 'diamond'].map(tier => (
                   <div 

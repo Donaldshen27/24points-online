@@ -28,6 +28,17 @@
       "signUp": "Sign Up"
     }
   },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
   "badges": {
     "loading": "Loading badges...",
     "gallery": {
@@ -67,6 +78,20 @@
       "unlocked": "Badge Unlocked!",
       "viewDetails": "View Details",
       "tierUpgrade": "Upgraded from {{from}} to {{to}}"
+    },
+    "pointsToNextLevel": "{{points}} points to next level",
+    "milestoneAchieved": "Level {{level}} Milestone!",
+    "levelUp": {
+      "title": "LEVEL UP!",
+      "message": "Congratulations! You've reached Level {{level}}!",
+      "unlockRareBadges": "Rare badges unlocked!",
+      "profileCustomization": "Profile customization unlocked!",
+      "unlockEpicBadges": "Epic badges unlocked!",
+      "unlockLegendaryBadges": "Legendary badges unlocked!"
+    },
+    "authRequired": {
+      "title": "Sign In Required",
+      "message": "You need to sign in to view and track your badge collection. Create an account to start earning badges!"
     }
   },
   "lobby": {
@@ -339,11 +364,22 @@
   },
   "leaderboard": {
     "recordHoldings": "Record Holdings",
+    "badges": "Badge Rankings",
     "eloRank": "Elo Rank (Coming Soon)",
     "totalPuzzles": "Total unique puzzles: {{count}}",
     "noRecordsYet": "No records yet. Be the first to set a record!",
+    "noBadgesYet": "No badges earned yet. Play games to unlock badges!",
+    "badgeLeaderboard": "Top players by badge points",
     "you": "You",
     "records": "records",
+    "badgesEarned": "badges",
+    "points": "points",
+    "sortBy": "Sort by",
+    "sortByPoints": "Total Points",
+    "sortByCount": "Badge Count",
+    "sortByLegendary": "Legendary Badges",
+    "sortByEpic": "Epic Badges",
+    "sortByRare": "Rare Badges",
     "loading": "Loading...",
     "comingSoon": "Coming Soon",
     "eloDescription": "Elo ranking system will track your competitive performance"

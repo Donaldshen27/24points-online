@@ -1,0 +1,212 @@
+/* Badge Theme Fixes - Dark Theme Compatibility */
+
+/* Override any remaining light theme colors in badge components */
+.badge-gallery-container {
+  background: var(--color-bg-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.badge-card {
+  background: var(--color-surface-1) !important;
+  border-color: var(--color-border-default) !important;
+}
+
+.badge-card:hover {
+  background: var(--color-surface-2) !important;
+  border-color: var(--color-border-emphasis) !important;
+}
+
+.category-tabs {
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-border-default) !important;
+}
+
+.category-tab {
+  background: transparent !important;
+  color: var(--color-text-secondary) !important;
+}
+
+.category-tab:hover {
+  background: var(--color-surface-1) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.category-tab.active {
+  background: var(--color-accent-primary) !important;
+  color: var(--color-bg-primary) !important;
+}
+
+.badge-detail-modal {
+  background: var(--color-surface-1) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.badge-stats {
+  background: var(--color-surface-2) !important;
+}
+
+.search-bar input {
+  background: var(--color-surface-1) !important;
+  border-color: var(--color-border-default) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.search-bar input::placeholder {
+  color: var(--color-text-muted) !important;
+}
+
+/* Fix any progress bars */
+.progress-bar {
+  background: var(--color-surface-2) !important;
+}
+
+.progress-bar-fill {
+  background: var(--color-accent-primary) !important;
+}
+
+/* Ensure proper text contrast */
+.badge-name,
+.badge-description,
+.badge-requirement {
+  color: var(--color-text-primary) !important;
+}
+
+.badge-meta {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Fix tier indicators for dark theme */
+.badge-tier-indicator.platinum {
+  background: #E5E4E2 !important;
+  color: var(--color-bg-primary) !important;
+}
+
+.badge-tier-indicator.diamond {
+  background: #B9F2FF !important;
+  color: var(--color-bg-primary) !important;
+}
+
+/* Badge Detail Modal Dark Theme Fixes */
+.badge-detail-modal {
+  background: var(--color-surface-1) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.badge-detail-name {
+  color: var(--color-text-primary) !important;
+}
+
+.badge-detail-description {
+  color: var(--color-text-secondary) !important;
+}
+
+.badge-detail-content h3 {
+  color: var(--color-text-primary) !important;
+}
+
+.badge-detail-content p {
+  color: var(--color-text-secondary) !important;
+}
+
+.earned-text {
+  color: #10B981 !important; /* Keep green for success */
+}
+
+.progress-section {
+  background: var(--color-surface-2) !important;
+  border: 1px solid var(--color-border-default) !important;
+}
+
+.requirements-section {
+  background: var(--color-surface-2) !important;
+  border: 1px solid var(--color-border-default) !important;
+}
+
+.earned-info {
+  background: var(--color-surface-2) !important;
+  border: 1px solid var(--color-accent-success) !important;
+}
+
+/* Modal close button */
+.modal-close {
+  color: var(--color-text-secondary) !important;
+  background: var(--color-surface-2) !important;
+}
+
+.modal-close:hover {
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface-3) !important;
+}
+
+/* Profile Page Dark Theme Fixes */
+.profile-header {
+  background: var(--color-surface-1) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.stat-card {
+  background: var(--color-surface-1) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.profile-username {
+  color: var(--color-text-primary) !important;
+}
+
+.profile-joined {
+  color: var(--color-text-secondary) !important;
+}
+
+.stat-label {
+  color: var(--color-text-secondary) !important;
+}
+
+.no-games {
+  background: var(--color-surface-1) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+/* Badge Showcase Dark Theme Fixes */
+.badge-showcase {
+  background: var(--color-surface-1) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.featured-badge {
+  background: var(--color-surface-2) !important;
+}
+
+.featured-badge.rare {
+  background: linear-gradient(135deg, rgba(66, 165, 245, 0.2) 0%, var(--color-surface-2) 100%) !important;
+}
+
+.featured-badge.epic {
+  background: linear-gradient(135deg, rgba(171, 71, 188, 0.2) 0%, var(--color-surface-2) 100%) !important;
+}
+
+.featured-badge.legendary {
+  background: linear-gradient(135deg, rgba(255, 167, 38, 0.2) 0%, var(--color-surface-2) 100%) !important;
+}
+
+.badge-selector-modal {
+  background: var(--color-surface-1) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.selectable-badge {
+  background: var(--color-surface-2) !important;
+}
+
+.selectable-badge:hover {
+  background: var(--color-surface-3) !important;
+}
+
+/* Fix white text that should be dark in dark theme */
+.badge-showcase .add-badge-button,
+.badge-showcase .change-badge-button {
+  color: var(--color-bg-primary) !important;
+}
+
+.badge-tier-indicator {
+  color: var(--color-bg-primary) !important;
+}

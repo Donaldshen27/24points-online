@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
+import { BadgeShowcase } from '../Badges/BadgeShowcase';
 import type { GameRoom } from '../../types/game.types';
 import './WaitingRoom.css';
 
@@ -101,6 +102,9 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
           <div className={`ready-status ${currentPlayer?.isReady ? 'ready' : 'not-ready'}`}>
             {currentPlayer?.isReady ? t('waitingRoom.status.ready') : t('waitingRoom.status.notReady')}
           </div>
+          {currentPlayer && (
+            <BadgeShowcase userId={currentPlayer.id} compact={true} />
+          )}
         </div>
 
         <div className="vs">
@@ -115,6 +119,7 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({
               <div className={`ready-status ${otherPlayer.isReady ? 'ready' : 'not-ready'}`}>
                 {otherPlayer.isReady ? t('waitingRoom.status.ready') : t('waitingRoom.status.notReady')}
               </div>
+              <BadgeShowcase userId={otherPlayer.id} compact={true} />
             </>
           ) : (
             <>

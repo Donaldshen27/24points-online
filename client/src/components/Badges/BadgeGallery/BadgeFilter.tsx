@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { BadgeCategory } from '../../../types/badges';
+import type { BadgeCategory } from '../../../types/badges';
 
 interface BadgeFilterProps {
   selectedCategory: BadgeCategory | 'all';
@@ -39,7 +39,7 @@ const BadgeFilter: React.FC<BadgeFilterProps> = ({
         <input
           type="text"
           className="badge-search-input"
-          placeholder={t('badges.filter.searchPlaceholder')}
+          placeholder={t('badges.filter.searchPlaceholder', 'Search badges...')}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
         />
@@ -61,7 +61,18 @@ const BadgeFilter: React.FC<BadgeFilterProps> = ({
             >
               <span className="category-icon">{category.icon}</span>
               <span className="category-name">
-                {t(`badges.categories.${category.id}`)}
+                {t(`badges.categories.${category.id}`, (() => {
+                  switch(category.id) {
+                    case 'all': return 'All';
+                    case 'skill': return 'Skill';
+                    case 'progression': return 'Progression';
+                    case 'mode': return 'Game Modes';
+                    case 'social': return 'Social';
+                    case 'unique': return 'Unique';
+                    case 'seasonal': return 'Seasonal';
+                    default: return 'Unknown';
+                  }
+                })())}
               </span>
               <div className="category-stats">
                 <span className="earned-count">{stats.earned}</span>
@@ -86,7 +97,7 @@ const BadgeFilter: React.FC<BadgeFilterProps> = ({
             checked={showEarnedOnly}
             onChange={(e) => onEarnedOnlyChange(e.target.checked)}
           />
-          <span>{t('badges.filter.showEarnedOnly')}</span>
+          <span>{t('badges.filter.showEarnedOnly', 'Show earned badges only')}</span>
         </label>
       </div>
     </div>

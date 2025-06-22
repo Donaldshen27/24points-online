@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BadgeUnlockNotification as BadgeUnlock } from '../../../types/badges';
+import type { BadgeUnlockNotification as BadgeUnlock } from '../../../types/badges';
 import { BADGE_RARITIES, BADGE_TIERS } from '../../../data/badgeDefinitions';
 import './BadgeUnlockNotification.css';
 
@@ -43,7 +43,7 @@ export const BadgeUnlockNotification: React.FC<BadgeUnlockNotificationProps> = (
     return BADGE_RARITIES[notification.badge.rarity]?.color || '#9CA3AF';
   };
 
-  const getTierColor = () => {
+  const getTierColor = (): string | null => {
     if (notification.badge.tier) {
       return BADGE_TIERS[notification.badge.tier]?.color || '#000';
     }
@@ -54,7 +54,7 @@ export const BadgeUnlockNotification: React.FC<BadgeUnlockNotificationProps> = (
     <div className={`badge-unlock-notification ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''} ${notification.badge.rarity}`}>
       <div className="badge-unlock-content">
         <div className="badge-unlock-header">
-          <div className="unlock-title">{t('badges.notification.unlocked')}</div>
+          <div className="unlock-title">{t('badges.notification.unlocked', 'Badge Unlocked!')}</div>
           <button className="close-btn" onClick={handleClose}>✕</button>
         </div>
 
@@ -68,7 +68,7 @@ export const BadgeUnlockNotification: React.FC<BadgeUnlockNotificationProps> = (
               {notification.badge.tier && (
                 <div 
                   className="tier-indicator"
-                  style={{ backgroundColor: getTierColor() }}
+                  style={{ backgroundColor: getTierColor() || undefined }}
                 >
                   {notification.badge.tier.charAt(0).toUpperCase()}
                 </div>
@@ -91,17 +91,25 @@ export const BadgeUnlockNotification: React.FC<BadgeUnlockNotificationProps> = (
                 className="badge-rarity"
                 style={{ color: getRarityColor() }}
               >
-                {t(`badges.rarity.${notification.badge.rarity}`)}
+                {t(`badges.rarity.${notification.badge.rarity}`, (() => {
+                  switch(notification.badge.rarity) {
+                    case 'common': return 'Common';
+                    case 'rare': return 'Rare';
+                    case 'epic': return 'Epic';
+                    case 'legendary': return 'Legendary';
+                    default: return 'Unknown';
+                  }
+                })())}
               </span>
               <span className="badge-points">
-                +{notification.badge.points} {t('badges.points')}
+                +{notification.badge.points} {t('badges.points', 'Points')}
               </span>
             </div>
 
             {notification.isNewTier && notification.previousTier && (
               <div className="tier-upgrade">
                 <span className="upgrade-text">
-                  {t('badges.notification.tierUpgrade', {
+                  {t('badges.notification.tierUpgrade', `Upgraded from ${notification.previousTier} to ${notification.badge.tier}`, {
                     from: notification.previousTier,
                     to: notification.badge.tier
                   })}
@@ -113,7 +121,7 @@ export const BadgeUnlockNotification: React.FC<BadgeUnlockNotificationProps> = (
 
         {onShowDetails && (
           <button className="show-details-btn" onClick={onShowDetails}>
-            {t('badges.notification.viewDetails')}
+            {t('badges.notification.viewDetails', 'View Details')}
           </button>
         )}
       </div>

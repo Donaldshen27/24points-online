@@ -1,0 +1,256 @@
+.level-indicator {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Size variants */
+.level-indicator--small {
+  padding: 0.75rem;
+  border-radius: 8px;
+}
+
+.level-indicator--small .level-header {
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.level-indicator--small .level-badge {
+  width: 40px;
+  height: 40px;
+}
+
+.level-indicator--small .level-number {
+  font-size: 1.2rem;
+}
+
+.level-indicator--small .level-label {
+  display: none;
+}
+
+.level-indicator--medium {
+  padding: 1.5rem;
+}
+
+.level-indicator--large {
+  padding: 2rem;
+}
+
+/* Level tier styling */
+.level-indicator--common {
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.level-indicator--uncommon {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.level-indicator--rare {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.level-indicator--epic {
+  border-color: rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.level-indicator--legendary {
+  border-color: rgba(255, 215, 0, 0.3);
+  background: rgba(255, 215, 0, 0.05);
+  animation: legendary-glow 3s ease-in-out infinite;
+}
+
+@keyframes legendary-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.4); }
+}
+
+/* Level header */
+.level-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.level-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.level-indicator--legendary .level-badge {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+}
+
+.level-indicator--epic .level-badge {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+}
+
+.level-indicator--rare .level-badge {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+}
+
+.level-number {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  line-height: 1;
+}
+
+.level-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.level-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.current-points {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.points-separator {
+  color: #64748b;
+}
+
+.next-level-points {
+  color: #94a3b8;
+}
+
+/* Progress bar */
+.level-progress {
+  margin-top: 1rem;
+}
+
+.progress-bar {
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.level-indicator--small .progress-bar {
+  height: 16px;
+  border-radius: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.5s ease;
+}
+
+.progress-fill.animated {
+  animation: progress-pulse 2s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.level-indicator--legendary .progress-fill {
+  background: linear-gradient(90deg, #ffd700, #ffed4e);
+}
+
+.level-indicator--epic .progress-fill {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+}
+
+.level-indicator--rare .progress-fill {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.progress-text {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.progress-info {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.points-to-next {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+/* Milestones */
+.level-milestones {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.milestone-achieved {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-block;
+  animation: milestone-bounce 0.5s ease;
+}
+
+@keyframes milestone-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Hover effects */
+.level-indicator:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .level-indicator--medium {
+    padding: 1rem;
+  }
+  
+  .level-indicator--large {
+    padding: 1.5rem;
+  }
+  
+  .level-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .level-details {
+    font-size: 0.85rem;
+  }
+}

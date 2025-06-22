@@ -28,6 +28,17 @@
       "signUp": "注册"
     }
   },
+  "common": {
+    "cancel": "取消",
+    "save": "保存",
+    "close": "关闭",
+    "confirm": "确认",
+    "delete": "删除",
+    "edit": "编辑",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功"
+  },
   "badges": {
     "loading": "加载徽章中...",
     "gallery": {
@@ -67,6 +78,20 @@
       "unlocked": "徽章解锁！",
       "viewDetails": "查看详情",
       "tierUpgrade": "从{{from}}升级到{{to}}"
+    },
+    "pointsToNextLevel": "距离下一级还需{{points}}积分",
+    "milestoneAchieved": "达到{{level}}级里程碑！",
+    "levelUp": {
+      "title": "升级了！",
+      "message": "恭喜！您已达到{{level}}级！",
+      "unlockRareBadges": "解锁稀有徽章！",
+      "profileCustomization": "解锁个人资料自定义！",
+      "unlockEpicBadges": "解锁史诗徽章！",
+      "unlockLegendaryBadges": "解锁传奇徽章！"
+    },
+    "authRequired": {
+      "title": "需要登录",
+      "message": "您需要登录才能查看和跟踪您的徽章收藏。创建一个账户开始赚取徽章！"
     }
   },
   "lobby": {
@@ -339,11 +364,22 @@
   },
   "leaderboard": {
     "recordHoldings": "记录保持者",
+    "badges": "徽章排名",
     "eloRank": "Elo排名（即将推出）",
     "totalPuzzles": "总题目数：{{count}}",
     "noRecordsYet": "还没有记录。成为第一个创造记录的人！",
+    "noBadgesYet": "还没有获得徽章。开始游戏解锁徽章！",
+    "badgeLeaderboard": "按徽章积分排名的顶级玩家",
     "you": "你",
     "records": "个记录",
+    "badgesEarned": "个徽章",
+    "points": "积分",
+    "sortBy": "排序方式",
+    "sortByPoints": "总积分",
+    "sortByCount": "徽章数量",
+    "sortByLegendary": "传奇徽章",
+    "sortByEpic": "史诗徽章",
+    "sortByRare": "稀有徽章",
     "loading": "加载中...",
     "comingSoon": "即将推出",
     "eloDescription": "Elo排名系统将跟踪您的竞技表现"

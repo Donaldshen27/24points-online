@@ -9,7 +9,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
+  register: (username: string, email: string, password: string, confirmPassword: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -59,13 +59,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(loggedInUser);
   };
 
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (username: string, email: string, password: string, confirmPassword: string) => {
     // Clear caches when registering a new account
     puzzleRecordsCache.clear();
     leaderboardCache.clear();
     guestService.clearGuestUsername();
     
-    const { user: registeredUser } = await authService.register({ username, email, password });
+    const { user: registeredUser } = await authService.register({ username, email, password, confirmPassword });
     setUser(registeredUser);
   };
 

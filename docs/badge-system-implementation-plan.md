@@ -57,24 +57,36 @@ This document outlines the implementation plan for the comprehensive badge syste
    - Auto-dismiss after 5 seconds with manual close option
    - View details button to navigate to badge gallery
 
+8. **Pre-Game Badge Display** (Task 24points-badges-8) ✅
+   - Integrated compact BadgeShowcase into WaitingRoom component
+   - Shows both players' featured badges side-by-side
+   - Displays player levels and total badge points
+   - Visual emphasis for legendary/rare badges with animations
+   - Legendary badges have glowing effect, epic badges have gradients
+   - Tier indicators with subtle pulse animation
+   - Mobile-responsive design with smaller badge sizes
+   - Creates psychological impact before matches
+
 ## Remaining Frontend Tasks 📋
 
-### 8. Pre-Game Badge Display (Task 24points-badges-8)
-- Show opponent's featured badges
-- Display player levels
-- Psychological impact through achievement display
+### 9. Leaderboard Integration (Task 24points-badges-9) ✅
+- Added badge count column showing total badges earned
+- Show rare badge indicators (👑 legendary, 💎 epic, ⭐ rare)
+- Created new "Badge Rankings" view with sorting options
+- Sort by total badge points, badge count, or rarity types
+- Level indicators (Lv.X) based on badge points
+- Badge statistics fetched from database for all leaderboard users
+- Mobile-responsive design with adjusted layouts
 
-### 9. Leaderboard Integration (Task 24points-badges-9)
-- Add badge count column
-- Show rare badge indicators
-- Sort by total badge points
-- Badge-based leaderboard view
-
-### 10. Points & Leveling UI (Task 24points-badges-10)
-- Display current level and progress
-- Show points to next level
-- Level-up animations
-- Unlock rewards at milestones
+### 10. Points & Leveling UI (Task 24points-badges-10) ✅
+- Created LevelIndicator component with visual progress bars
+- Displays current level, points, and progress to next level
+- Added to Profile and Badge Gallery pages
+- Level tiers with color coding (common, uncommon, rare, epic, legendary)
+- Created LevelUpNotification component with animations
+- Milestone rewards at levels 5, 10, 25, 50
+- Particle effects and celebration animations
+- Mobile-responsive design
 
 ### 11. Internationalization (Task 24points-badges-11)
 - Translate all badge names and descriptions
@@ -201,7 +213,7 @@ socket.emit('update-featured-badges', { userId, badgeIds }, (response) => {}); /
 
 ## Progress Summary
 
-### Completed Components (7/12 tasks)
+### Completed Components (10/12 tasks)
 - ✅ Database Schema and Migrations
 - ✅ Badge Definitions (50+ badges)
 - ✅ Statistics Tracking Service
@@ -209,11 +221,14 @@ socket.emit('update-featured-badges', { userId, badgeIds }, (response) => {}); /
 - ✅ Badge Gallery Frontend
 - ✅ Profile Badge Showcase
 - ✅ Badge Unlock Notifications
+- ✅ Pre-Game Badge Display
+- ✅ Leaderboard Integration
+- ✅ Points & Leveling UI
 
 ### Current Status
 - **Backend**: 100% complete (4/4 tasks)
-- **Frontend**: 50% complete (3/6 main UI tasks)
-- **Overall**: 58% complete (7/12 total tasks)
+- **Frontend**: 83% complete (5/6 main UI tasks + leveling)
+- **Overall**: 83% complete (10/12 total tasks)
 
 ## Updated Timeline Estimate
 
@@ -221,16 +236,16 @@ socket.emit('update-featured-badges', { userId, badgeIds }, (response) => {}); /
 - Backend Infrastructure: ✅ Complete
 - Badge Gallery: ✅ Complete
 - Profile Badge Showcase: ✅ Complete
+- Pre-Game Badge Display: ✅ Complete
 - Notification System: ✅ Complete
+- Leaderboard Integration: ✅ Complete
+- Points & Leveling UI: ✅ Complete
 
 ### Remaining Work
-- Pre-Game Badge Display: 0.5 days
-- Leaderboard Integration: 1 day
-- Points & Leveling UI: 0.5 days
 - Badge Translations: 1 day
 - Daily/Weekly Challenges: 2 days
 - Testing & Polish: 2 days
-- **Remaining Total: 6-7 days**
+- **Remaining Total: 4-5 days**
 
 ## Implementation Notes
 
@@ -239,14 +254,22 @@ socket.emit('update-featured-badges', { userId, badgeIds }, (response) => {}); /
 - Notifications appear with animations and queue management
 - Gallery displays all badges with filtering and search
 - Profile page shows featured badges with edit functionality
+- Pre-game display creates psychological impact in waiting room
 - Socket.io integration provides real-time updates
 - Basic i18n support for English and Chinese
 - Featured badge persistence in database
+- Visual emphasis for legendary/rare badges with animations
+- Leaderboard shows badge statistics with multiple sorting options
+- Level indicators and rarity icons in player lists
+- Badge rankings view with points-based leaderboard
+- Visual level progression with XP bars and milestone rewards
+- Level-up animations with particle effects and tier-based styling
+- Profile and gallery pages show current level and progress
 
 ### Next Priority Items
-1. Pre-Game Display - Create psychological impact before matches
-2. Leaderboard Integration - Add competitive element
-3. Points & Leveling UI - Show progression visually
+1. Badge Translations - Complete i18n for all badge content
+2. Daily/Weekly Challenges - Time-based objectives system
+3. Testing & Polish - Ensure all features work smoothly
 
 ### Technical Debt & Improvements
 - Add badge icon/image support (currently using emoji placeholders)

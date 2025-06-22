@@ -86,7 +86,7 @@
 
 .points-label {
   font-size: 0.875rem;
-  color: #6B7280;
+  color: var(--color-text-secondary);
 }
 
 /* Filter Section */
@@ -135,7 +135,7 @@
   flex-direction: column;
   align-items: center;
   padding: 0.75rem 1.25rem;
-  background: white;
+  background: var(--color-surface-1);
   border: 2px solid #E5E7EB;
   border-radius: 12px;
   cursor: pointer;
@@ -152,7 +152,7 @@
 
 .category-button.active {
   border-color: #3B82F6;
-  background: #EFF6FF;
+  background: var(--color-surface-2);
 }
 
 .category-icon {
@@ -168,11 +168,11 @@
 
 .category-stats {
   font-size: 0.75rem;
-  color: #6B7280;
+  color: var(--color-text-secondary);
 }
 
 .earned-count {
-  color: #10B981;
+  color: var(--color-accent-success);
   font-weight: 600;
 }
 
@@ -186,7 +186,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: #E5E7EB;
+  background: var(--color-surface-3);
 }
 
 .category-progress .progress-fill {
@@ -224,7 +224,7 @@
 .badge-card {
   position: relative;
   padding: 1.5rem;
-  background: white;
+  background: var(--color-surface-1);
   border: 2px solid #E5E7EB;
   border-radius: 16px;
   cursor: pointer;
@@ -249,7 +249,7 @@
 
 .badge-card.locked {
   opacity: 0.7;
-  background: #F9FAFB;
+  background: var(--color-bg-secondary);
 }
 
 /* Badge Rarity Border Colors */
@@ -281,7 +281,7 @@
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  background: white;
+  background: var(--color-surface-1);
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -317,7 +317,7 @@
 
 .badge-description {
   font-size: 0.875rem;
-  color: #6B7280;
+  color: var(--color-text-secondary);
   margin-bottom: 1rem;
   line-height: 1.4;
 }
@@ -344,7 +344,7 @@
 
 .badge-points .points-label {
   font-size: 0.75rem;
-  color: #6B7280;
+  color: var(--color-text-secondary);
 }
 
 /* Progress Bar */
@@ -358,7 +358,7 @@
 
 .progress-track {
   height: 8px;
-  background: #E5E7EB;
+  background: var(--color-surface-3);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -375,7 +375,7 @@
   gap: 0.25rem;
   margin-top: 0.25rem;
   font-size: 0.75rem;
-  color: #6B7280;
+  color: var(--color-text-secondary);
 }
 
 .progress-label .current {
@@ -388,7 +388,7 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
-  color: #6B7280;
+  color: var(--color-text-secondary);
 }
 
 /* Badge Detail Modal */
@@ -407,7 +407,7 @@
 }
 
 .badge-detail-modal {
-  background: white;
+  background: var(--color-surface-1);
   border-radius: 20px;
   max-width: 500px;
   width: 100%;
@@ -424,7 +424,7 @@
   width: 32px;
   height: 32px;
   border: none;
-  background: #F3F4F6;
+  background: var(--color-surface-2);
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -435,7 +435,7 @@
 }
 
 .modal-close:hover {
-  background: #E5E7EB;
+  background: var(--color-surface-3);
 }
 
 /* Badge Detail Header */
@@ -459,7 +459,7 @@
   align-items: center;
   justify-content: center;
   font-size: 3rem;
-  background: white;
+  background: var(--color-surface-1);
   border-radius: 50%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -494,10 +494,11 @@
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
+  color: var(--color-text-primary);
 }
 
 .badge-detail-description {
-  color: #6B7280;
+  color: var(--color-text-secondary);
   margin-bottom: 1rem;
   line-height: 1.5;
 }
@@ -527,14 +528,14 @@
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #374151;
+  color: var(--color-text-primary);
 }
 
 /* Earned Info */
 .earned-info {
   text-align: center;
   padding: 2rem;
-  background: #F0FDF4;
+  background: var(--color-surface-2);
   border-radius: 12px;
 }
 
@@ -546,12 +547,12 @@
 .earned-text {
   font-size: 1.125rem;
   font-weight: 500;
-  color: #10B981;
+  color: var(--color-accent-success);
 }
 
 /* Progress Section */
 .progress-section {
-  background: #FFFBEB;
+  background: var(--color-surface-2);
   padding: 1.5rem;
   border-radius: 12px;
 }
@@ -559,18 +560,18 @@
 .progress-text {
   margin-top: 0.5rem;
   font-size: 0.875rem;
-  color: #92400E;
+  color: var(--color-text-secondary);
 }
 
 /* Requirements Section */
 .requirements-section {
-  background: #F3F4F6;
+  background: var(--color-surface-2);
   padding: 1.5rem;
   border-radius: 12px;
 }
 
 .requirement-text {
-  color: #4B5563;
+  color: var(--color-text-secondary);
   line-height: 1.5;
 }
 
@@ -579,7 +580,7 @@
   display: flex;
   justify-content: space-between;
   padding: 1rem;
-  background: #F9FAFB;
+  background: var(--color-bg-secondary);
   border-radius: 12px;
 }
 

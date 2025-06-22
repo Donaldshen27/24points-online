@@ -8,6 +8,12 @@ interface LeaderboardEntry {
   username: string;
   recordCount: number;
   rank: number;
+  badgeCount?: number;
+  badgePoints?: number;
+  level?: number;
+  legendaryBadges?: number;
+  epicBadges?: number;
+  rareBadges?: number;
 }
 
 interface LeaderboardData {
@@ -15,7 +21,8 @@ interface LeaderboardData {
   totalPuzzles: number;
 }
 
-type ViewMode = 'records' | 'elo';
+type ViewMode = 'records' | 'elo' | 'badges';
+type BadgeSortMode = 'points' | 'count' | 'legendary' | 'epic' | 'rare';
 
 export const Leaderboard: React.FC = () => {
   const { t } = useTranslation();
@@ -23,6 +30,7 @@ export const Leaderboard: React.FC = () => {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUsername, setCurrentUsername] = useState<string>('');
+  const [badgeSortMode, setBadgeSortMode] = useState<BadgeSortMode>('points');
 
   useEffect(() => {
     // Get current username from localStorage or auth
@@ -83,6 +91,25 @@ export const Leaderboard: React.FC = () => {
     }
   };
 
+  const sortBadgeEntries = (entries: LeaderboardEntry[]) => {
+    const filtered = entries.filter(entry => entry.badgeCount && entry.badgeCount > 0);
+    
+    switch (badgeSortMode) {
+      case 'points':
+        return filtered.sort((a, b) => (b.badgePoints || 0) - (a.badgePoints || 0));
+      case 'count':
+        return filtered.sort((a, b) => (b.badgeCount || 0) - (a.badgeCount || 0));
+      case 'legendary':
+        return filtered.sort((a, b) => (b.legendaryBadges || 0) - (a.legendaryBadges || 0));
+      case 'epic':
+        return filtered.sort((a, b) => (b.epicBadges || 0) - (a.epicBadges || 0));
+      case 'rare':
+        return filtered.sort((a, b) => (b.rareBadges || 0) - (a.rareBadges || 0));
+      default:
+        return filtered;
+    }
+  };
+
   if (loading) {
     return (
       <div className="leaderboard-container">
@@ -102,6 +129,12 @@ export const Leaderboard: React.FC = () => {
           onClick={() => setViewMode('records')}
         >
           {t('leaderboard.recordHoldings')}
+        </button>
+        <button
+          className={`toggle-btn ${viewMode === 'badges' ? 'active' : ''}`}
+          onClick={() => setViewMode('badges')}
+        >
+          {t('leaderboard.badges')}
         </button>
         <button
           className={`toggle-btn ${viewMode === 'elo' ? 'active' : ''} disabled`}
@@ -139,6 +172,18 @@ export const Leaderboard: React.FC = () => {
                     {entry.username === currentUsername && (
                       <span className="you-badge">{t('leaderboard.you')}</span>
                     )}
+                    {entry.level && entry.level > 1 && (
+                      <span className="level-badge">Lv.{entry.level}</span>
+                    )}
+                    {entry.legendaryBadges && entry.legendaryBadges > 0 && (
+                      <span className="rarity-indicator legendary">👑</span>
+                    )}
+                    {!entry.legendaryBadges && entry.epicBadges && entry.epicBadges > 0 && (
+                      <span className="rarity-indicator epic">💎</span>
+                    )}
+                    {!entry.legendaryBadges && !entry.epicBadges && entry.rareBadges && entry.rareBadges > 0 && (
+                      <span className="rarity-indicator rare">⭐</span>
+                    )}
                   </div>
                   <div className="records-column">
                     <span className="record-count">{entry.recordCount}</span>
@@ -157,6 +202,80 @@ export const Leaderboard: React.FC = () => {
                   </div>
                 </div>
               ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {viewMode === 'badges' && leaderboardData && (
+        <div className="leaderboard-content">
+          <div className="leaderboard-header">
+            <p className="total-puzzles">
+              {t('leaderboard.badgeLeaderboard')}
+            </p>
+            <div className="badge-sort-controls">
+              <label>{t('leaderboard.sortBy')}:</label>
+              <select 
+                value={badgeSortMode} 
+                onChange={(e) => setBadgeSortMode(e.target.value as BadgeSortMode)}
+                className="sort-select"
+              >
+                <option value="points">{t('leaderboard.sortByPoints')}</option>
+                <option value="count">{t('leaderboard.sortByCount')}</option>
+                <option value="legendary">{t('leaderboard.sortByLegendary')}</option>
+                <option value="epic">{t('leaderboard.sortByEpic')}</option>
+                <option value="rare">{t('leaderboard.sortByRare')}</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="leaderboard-list">
+            {leaderboardData.recordHoldings.length === 0 ? (
+              <div className="empty-state">
+                {t('leaderboard.noBadgesYet')}
+              </div>
+            ) : (
+              sortBadgeEntries(leaderboardData.recordHoldings)
+                .map((entry, index) => (
+                  <div
+                    key={entry.username}
+                    className={`leaderboard-entry ${entry.username === currentUsername ? 'current-user' : ''}`}
+                  >
+                    <div className="rank-column">
+                      {getRankIcon(index + 1)}
+                    </div>
+                    <div className="username-column">
+                      <span className="username">{entry.username}</span>
+                      {entry.username === currentUsername && (
+                        <span className="you-badge">{t('leaderboard.you')}</span>
+                      )}
+                      {entry.level && (
+                        <span className="level-badge">Lv.{entry.level}</span>
+                      )}
+                    </div>
+                    <div className="badge-stats-column">
+                      <div className="badge-count">
+                        <span className="badge-count-number">{entry.badgeCount || 0}</span>
+                        <span className="badge-count-label">{t('leaderboard.badgesEarned')}</span>
+                      </div>
+                      <div className="badge-rarity-breakdown">
+                        {entry.legendaryBadges && entry.legendaryBadges > 0 && (
+                          <span className="rarity-count legendary">👑 {entry.legendaryBadges}</span>
+                        )}
+                        {entry.epicBadges && entry.epicBadges > 0 && (
+                          <span className="rarity-count epic">💎 {entry.epicBadges}</span>
+                        )}
+                        {entry.rareBadges && entry.rareBadges > 0 && (
+                          <span className="rarity-count rare">⭐ {entry.rareBadges}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="points-column">
+                      <span className="points-value">{entry.badgePoints || 0}</span>
+                      <span className="points-label">{t('leaderboard.points')}</span>
+                    </div>
+                  </div>
+                ))
             )}
           </div>
         </div>

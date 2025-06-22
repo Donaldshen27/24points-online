@@ -28,7 +28,7 @@
 .edit-button {
   padding: 6px 16px;
   background: var(--primary-color, #4CAF50);
-  color: white;
+  color: var(--color-text-primary);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -86,7 +86,7 @@
   align-items: center;
   gap: 15px;
   padding: 15px;
-  background: white;
+  background: var(--color-surface-1);
   border-radius: 8px;
   border: 2px solid transparent;
   transition: all 0.2s;
@@ -98,17 +98,17 @@
 
 .featured-badge.rare {
   border-color: #42a5f5;
-  background: linear-gradient(135deg, rgba(66, 165, 245, 0.1) 0%, white 100%);
+  background: linear-gradient(135deg, rgba(66, 165, 245, 0.1) 0%, var(--color-surface-1) 100%);
 }
 
 .featured-badge.epic {
   border-color: #ab47bc;
-  background: linear-gradient(135deg, rgba(171, 71, 188, 0.1) 0%, white 100%);
+  background: linear-gradient(135deg, rgba(171, 71, 188, 0.1) 0%, var(--color-surface-1) 100%);
 }
 
 .featured-badge.legendary {
   border-color: #ffa726;
-  background: linear-gradient(135deg, rgba(255, 167, 38, 0.1) 0%, white 100%);
+  background: linear-gradient(135deg, rgba(255, 167, 38, 0.1) 0%, var(--color-surface-1) 100%);
   box-shadow: 0 0 20px rgba(255, 167, 38, 0.3);
 }
 
@@ -142,7 +142,7 @@
   margin-top: 15px;
   padding: 8px 20px;
   background: var(--primary-color, #4CAF50);
-  color: white;
+  color: var(--color-text-primary);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -194,7 +194,7 @@
   border-radius: 8px;
   position: relative;
   border: 2px solid;
-  background: white;
+  background: var(--color-surface-1);
 }
 
 .showcase-badge.common {
@@ -207,11 +207,22 @@
 
 .showcase-badge.epic {
   border-color: #ab47bc;
+  background: linear-gradient(135deg, rgba(171, 71, 188, 0.1) 0%, var(--color-surface-1) 100%);
 }
 
 .showcase-badge.legendary {
   border-color: #ffa726;
   box-shadow: 0 0 10px rgba(255, 167, 38, 0.4);
+  animation: legendary-glow 2s ease-in-out infinite;
+}
+
+@keyframes legendary-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 167, 38, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 167, 38, 0.6), 0 0 30px rgba(255, 167, 38, 0.3);
+  }
 }
 
 .badge-emoji {
@@ -223,7 +234,7 @@
   bottom: -5px;
   right: -5px;
   background: var(--primary-color, #4CAF50);
-  color: white;
+  color: var(--color-text-primary);
   width: 18px;
   height: 18px;
   border-radius: 50%;
@@ -264,7 +275,7 @@
 
 .modal-content {
   position: relative;
-  background: white;
+  background: var(--color-surface-1);
   border-radius: 12px;
   padding: 30px;
   max-width: 800px;
@@ -298,7 +309,7 @@
   transition: all 0.2s;
   text-align: center;
   position: relative;
-  background: white;
+  background: var(--color-surface-1);
 }
 
 .selectable-badge:hover {
@@ -335,7 +346,7 @@
   width: 24px;
   height: 24px;
   background: var(--primary-color, #4CAF50);
-  color: white;
+  color: var(--color-text-primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -370,7 +381,7 @@
 
 .save-button {
   background: var(--primary-color, #4CAF50);
-  color: white;
+  color: var(--color-text-primary);
 }
 
 .save-button:hover {

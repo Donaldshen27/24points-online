@@ -23,7 +23,14 @@ export const handleConnection = (io: Server, socket: Socket) => {
   roomManager.setIo(io);
 
   socket.on('create-room', async (data: { playerName: string; roomType?: string; isSoloPractice?: boolean }) => {
-    const playerId = `player-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    // For authenticated users, use their actual user ID for badge tracking
+    let playerId: string;
+    if ((socket as any).isAuthenticated && (socket as any).userId) {
+      playerId = (socket as any).userId;
+    } else {
+      // Guest player - generate temporary ID
+      playerId = `player-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    }
     const roomType = data.roomType || 'classic';
     
     // Use authenticated username if available, otherwise validate guest name
@@ -135,8 +142,13 @@ export const handleConnection = (io: Server, socket: Socket) => {
       playerId = existingPlayer.id;
       console.log(`[ConnectionHandler] Reconnection detected for player ${playerName}`);
     } else {
-      // New player - generate new ID
-      playerId = `${data.isSpectator ? 'spectator' : 'player'}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      // For authenticated users, use their actual user ID for badge tracking
+      if ((socket as any).isAuthenticated && (socket as any).userId) {
+        playerId = (socket as any).userId;
+      } else {
+        // Guest player - generate temporary ID
+        playerId = `${data.isSpectator ? 'spectator' : 'player'}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      }
     }
     
     const joinedRoom = roomManager.joinRoom(data.roomId, playerId, socket.id, playerName, data.isSpectator);
@@ -385,7 +397,7 @@ export const handleConnection = (io: Server, socket: Socket) => {
       });
 
       // Update game state for all players
-      setTimeout(() => {
+      setTimeout(async () => {
         const currentState = roomManager.getGameState(room.id);
         if (currentState) {
           // Always emit the updated game state first
@@ -706,7 +718,17 @@ export const handleConnection = (io: Server, socket: Socket) => {
       const { getAllPuzzles, solveRecords } = require('../models/puzzleRepository');
       const { supabase, isDatabaseConfigured } = require('../db/supabase');
       
-      let recordHoldings: { username: string; recordCount: number; rank: number }[] = [];
+      let recordHoldings: { 
+        username: string; 
+        recordCount: number; 
+        rank: number;
+        badgeCount?: number;
+        badgePoints?: number;
+        level?: number;
+        legendaryBadges?: number;
+        epicBadges?: number;
+        rareBadges?: number;
+      }[] = [];
       let totalPuzzles = 0;
       
       if (isDatabaseConfigured() && supabase) {
@@ -780,6 +802,86 @@ export const handleConnection = (io: Server, socket: Socket) => {
           .map(([username, count]) => ({ username, recordCount: count, rank: 0 }))
           .sort((a, b) => b.recordCount - a.recordCount)
           .map((entry, index) => ({ ...entry, rank: index + 1 }));
+      }
+      
+      // Fetch badge statistics for leaderboard users if database is configured
+      if (isDatabaseConfigured() && supabase && recordHoldings.length > 0) {
+        try {
+          // Get all usernames from the leaderboard
+          const usernames = recordHoldings.slice(0, 100).map(entry => entry.username);
+          
+          // Fetch badge data for all users
+          const { data: badgeData, error: badgeError } = await supabase
+            .from('user_badges')
+            .select('*')
+            .in('user_id', usernames);
+          
+          if (!badgeError && badgeData) {
+            // Count badges by user and rarity
+            const badgeStats = new Map<string, {
+              badgeCount: number;
+              badgePoints: number;
+              legendaryBadges: number;
+              epicBadges: number;
+              rareBadges: number;
+            }>();
+            
+            // Initialize stats for all users
+            usernames.forEach(username => {
+              badgeStats.set(username, {
+                badgeCount: 0,
+                badgePoints: 0,
+                legendaryBadges: 0,
+                epicBadges: 0,
+                rareBadges: 0
+              });
+            });
+            
+            // Process badge data
+            for (const userBadge of badgeData) {
+              const stats = badgeStats.get(userBadge.user_id);
+              if (stats) {
+                stats.badgeCount++;
+                
+                // Get badge definition to calculate points and rarity
+                const { getBadgeById } = require('../badges/badgeDefinitions');
+                const badge = getBadgeById(userBadge.badge_id);
+                if (badge) {
+                  stats.badgePoints += badge.points * (userBadge.tier || 1);
+                  
+                  // Count by rarity
+                  switch (badge.rarity) {
+                    case 'legendary':
+                      stats.legendaryBadges++;
+                      break;
+                    case 'epic':
+                      stats.epicBadges++;
+                      break;
+                    case 'rare':
+                      stats.rareBadges++;
+                      break;
+                  }
+                }
+              }
+            }
+            
+            // Merge badge stats with record holdings
+            recordHoldings = recordHoldings.map(entry => {
+              const stats = badgeStats.get(entry.username);
+              if (stats) {
+                return {
+                  ...entry,
+                  ...stats,
+                  level: Math.floor(stats.badgePoints / 100) + 1
+                };
+              }
+              return entry;
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching badge statistics for leaderboard:', error);
+          // Continue without badge data
+        }
       }
       
       callback({

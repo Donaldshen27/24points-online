@@ -2,8 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
 import socketService from '../../../services/socketService';
-import type { UserBadge } from '../../../../../shared/types/badges';
+import type { UserBadge, BadgeRarity, BadgeTier } from '../../../../../shared/types/badges';
 import './BadgeShowcase.css';
+
+// Extended UserBadge type with badge details from server
+interface EnrichedUserBadge extends UserBadge {
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  rarity: BadgeRarity;
+  points: number;
+  tier?: BadgeTier;
+  featured?: boolean;
+}
 
 interface BadgeShowcaseProps {
   userId: string;
@@ -18,11 +30,11 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
 }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [featuredBadges, setFeaturedBadges] = useState<UserBadge[]>([]);
+  const [featuredBadges, setFeaturedBadges] = useState<EnrichedUserBadge[]>([]);
   const [totalPoints, setTotalPoints] = useState(0);
   const [playerLevel, setPlayerLevel] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
-  const [allBadges, setAllBadges] = useState<UserBadge[]>([]);
+  const [allBadges, setAllBadges] = useState<EnrichedUserBadge[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,13 +50,13 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
         setAllBadges(response.badges);
         
         // Filter featured badges
-        const featured = response.badges.filter(badge => badge.featured);
+        const featured = response.badges.filter((badge: EnrichedUserBadge) => badge.featured);
         setFeaturedBadges(featured.slice(0, 5)); // Max 5 featured badges
         
         // Calculate total points and level
-        const points = response.badges.reduce((sum, badge) => {
+        const points = response.badges.reduce((sum: number, badge: EnrichedUserBadge) => {
           const rarityPoints = getRarityPoints(badge.rarity);
-          const tierMultiplier = badge.tier || 1;
+          const tierMultiplier = getTierMultiplier(badge.tier);
           return sum + (rarityPoints * tierMultiplier);
         }, 0);
         
@@ -65,6 +77,18 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
     return rarityPointMap[rarity] || 10;
   };
 
+  const getTierMultiplier = (tier?: BadgeTier): number => {
+    if (!tier) return 1;
+    const tierMap: Record<BadgeTier, number> = {
+      bronze: 1,
+      silver: 2,
+      gold: 3,
+      platinum: 4,
+      diamond: 5
+    };
+    return tierMap[tier] || 1;
+  };
+
   const calculateLevel = (points: number): number => {
     // Simple level calculation: 100 points per level
     return Math.floor(points / 100) + 1;
@@ -76,11 +100,11 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
     }
   };
 
-  const handleSaveFeatured = (selectedBadges: UserBadge[]) => {
+  const handleSaveFeatured = (selectedBadges: EnrichedUserBadge[]) => {
     // Update featured status
     socketService.emit('update-featured-badges', {
       userId,
-      badgeIds: selectedBadges.map(b => b.badge_id)
+      badgeIds: selectedBadges.map(b => b.badgeId)
     }, (response: any) => {
       if (response.success) {
         setFeaturedBadges(selectedBadges);
@@ -99,20 +123,20 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
       <div className="badge-showcase compact">
         <div className="showcase-header">
           <span className="level-indicator">Lv.{playerLevel}</span>
-          <span className="points-indicator">{totalPoints} pts</span>
+          <span className="points-indicator">{totalPoints} {t('badges.points', 'Points')}</span>
         </div>
         <div className="featured-badges-row">
           {featuredBadges.length > 0 ? (
             featuredBadges.map(badge => (
-              <div key={badge.badge_id} className={`showcase-badge ${badge.rarity}`}>
+              <div key={badge.badgeId} className={`showcase-badge ${badge.rarity}`}>
                 <span className="badge-emoji">{badge.icon}</span>
-                {badge.tier && badge.tier > 1 && (
+                {badge.tier && (
                   <span className="tier-indicator">{badge.tier}</span>
                 )}
               </div>
             ))
           ) : (
-            <span className="no-badges">{t('badges.noFeaturedBadges')}</span>
+            <span className="no-badges">{t('badges.noFeaturedBadges', 'No featured badges selected')}</span>
           )}
         </div>
       </div>
@@ -122,25 +146,25 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
   return (
     <div className="badge-showcase">
       <div className="showcase-header">
-        <h3>{t('badges.featuredBadges')}</h3>
+        <h3>{t('badges.featuredBadges', 'Featured Badges')}</h3>
         {isOwnProfile && user?.id === userId && (
           <button className="edit-button" onClick={handleEditClick}>
-            {t('badges.edit')}
+            {t('badges.edit', 'Edit')}
           </button>
         )}
       </div>
 
       <div className="player-stats">
         <div className="stat-item">
-          <span className="stat-label">{t('badges.level')}</span>
+          <span className="stat-label">{t('badges.level', 'Level')}</span>
           <span className="stat-value level">Lv.{playerLevel}</span>
         </div>
         <div className="stat-item">
-          <span className="stat-label">{t('badges.totalPoints')}</span>
+          <span className="stat-label">{t('badges.totalPoints', 'Total Points')}</span>
           <span className="stat-value points">{totalPoints}</span>
         </div>
         <div className="stat-item">
-          <span className="stat-label">{t('badges.totalBadges')}</span>
+          <span className="stat-label">{t('badges.totalBadges', 'Total Badges')}</span>
           <span className="stat-value">{allBadges.length}</span>
         </div>
       </div>
@@ -148,11 +172,11 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
       <div className="featured-badges-grid">
         {featuredBadges.length > 0 ? (
           featuredBadges.map(badge => (
-            <div key={badge.badge_id} className={`featured-badge ${badge.rarity}`}>
+            <div key={badge.badgeId} className={`featured-badge ${badge.rarity}`}>
               <div className="badge-icon">{badge.icon}</div>
               <div className="badge-info">
                 <div className="badge-name">{badge.name}</div>
-                {badge.tier && badge.tier > 1 && (
+                {badge.tier && (
                   <div className="badge-tier">Tier {badge.tier}</div>
                 )}
               </div>
@@ -160,10 +184,10 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
           ))
         ) : (
           <div className="empty-showcase">
-            <p>{t('badges.noFeaturedBadges')}</p>
+            <p>{t('badges.noFeaturedBadges', 'No featured badges selected')}</p>
             {isOwnProfile && user?.id === userId && (
               <button className="select-badges-button" onClick={handleEditClick}>
-                {t('badges.selectBadges')}
+                {t('badges.selectBadges', 'Select Badges')}
               </button>
             )}
           </div>
@@ -184,9 +208,9 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
 
 // Badge Selector Component (in same file for now)
 interface BadgeSelectorProps {
-  allBadges: UserBadge[];
-  selectedBadges: UserBadge[];
-  onSave: (badges: UserBadge[]) => void;
+  allBadges: EnrichedUserBadge[];
+  selectedBadges: EnrichedUserBadge[];
+  onSave: (badges: EnrichedUserBadge[]) => void;
   onCancel: () => void;
 }
 
@@ -197,11 +221,11 @@ const BadgeSelector: React.FC<BadgeSelectorProps> = ({
   onCancel
 }) => {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<UserBadge[]>(selectedBadges);
+  const [selected, setSelected] = useState<EnrichedUserBadge[]>(selectedBadges);
 
-  const toggleBadge = (badge: UserBadge) => {
-    if (selected.find(b => b.badge_id === badge.badge_id)) {
-      setSelected(selected.filter(b => b.badge_id !== badge.badge_id));
+  const toggleBadge = (badge: EnrichedUserBadge) => {
+    if (selected.find(b => b.badgeId === badge.badgeId)) {
+      setSelected(selected.filter(b => b.badgeId !== badge.badgeId));
     } else if (selected.length < 5) {
       setSelected([...selected, badge]);
     }
@@ -215,27 +239,27 @@ const BadgeSelector: React.FC<BadgeSelectorProps> = ({
     <div className="badge-selector-modal">
       <div className="modal-backdrop" onClick={onCancel}></div>
       <div className="modal-content">
-        <h3>{t('badges.selectFeaturedBadges')}</h3>
+        <h3>{t('badges.selectFeaturedBadges', 'Select Featured Badges')}</h3>
         <p className="selector-hint">
-          {t('badges.selectUpTo', { count: 5 })} ({selected.length}/5)
+          {t('badges.selectUpTo', 'Select up to 5 badges to feature on your profile', { count: 5 })} ({selected.length}/5)
         </p>
 
         <div className="badge-grid">
           {allBadges.map(badge => (
             <div
-              key={badge.badge_id}
+              key={badge.badgeId}
               className={`selectable-badge ${badge.rarity} ${
-                selected.find(b => b.badge_id === badge.badge_id) ? 'selected' : ''
+                selected.find(b => b.badgeId === badge.badgeId) ? 'selected' : ''
               }`}
               onClick={() => toggleBadge(badge)}
             >
               <div className="badge-icon">{badge.icon}</div>
               <div className="badge-name">{badge.name}</div>
-              {badge.tier && badge.tier > 1 && (
+              {badge.tier && (
                 <div className="badge-tier">T{badge.tier}</div>
               )}
               <div className="selection-indicator">
-                {selected.find(b => b.badge_id === badge.badge_id) && '✓'}
+                {selected.find(b => b.badgeId === badge.badgeId) && '✓'}
               </div>
             </div>
           ))}

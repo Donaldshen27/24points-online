@@ -8,6 +8,7 @@ import { GameScreen } from './components/GameScreen/GameScreen'
 import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
+import { AuthTest } from './components/AuthTest/AuthTest'
 import { PuzzleRecordsView } from './components/PuzzleRecordsView/PuzzleRecordsView'
 import { Leaderboard } from './components/Leaderboard/Leaderboard'
 import { BadgesPage } from './components/Badges/BadgesPage'
@@ -17,6 +18,7 @@ import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
 import PatchNotes from './components/PatchNotes'
+import { AuthModal } from './components/AuthModal/AuthModal'
 import { puzzleRecordsCache, leaderboardCache } from './services/puzzleRecordsCache'
 import { guestService } from './services/guestService'
 import type { GameRoom } from './types/game.types'
@@ -43,10 +45,12 @@ function App() {
   const [appState, setAppState] = useState<AppState>(AppState.CONNECTING)
   const [currentRoom, setCurrentRoom] = useState<GameRoom | null>(null)
   const [playerId, setPlayerId] = useState<string>('')
-  const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | null>(null)
+  const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | 'auth' | null>(null)
   const [onlineUsers, setOnlineUsers] = useState<number>(0)
   const [isSpectator, setIsSpectator] = useState<boolean>(false)
   const [showPatchNotes, setShowPatchNotes] = useState<boolean>(false)
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false)
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const { user: authUser, logout } = useAuth()
   
   // Use ref to access current appState in event handlers without causing re-renders
@@ -303,6 +307,9 @@ function App() {
                   <button onClick={() => setTestComponent('interactive')}>
                     {t('app.testMenu.interactiveTable')}
                   </button>
+                  <button onClick={() => setTestComponent('auth')}>
+                    Authentication Test
+                  </button>
                 </div>
               </div>
             )}
@@ -310,6 +317,7 @@ function App() {
             {testComponent === 'deck' && <DeckTest />}
             {testComponent === 'calculator' && <CalculatorTest />}
             {testComponent === 'interactive' && <InteractiveTableTest />}
+            {testComponent === 'auth' && <AuthTest />}
             
             {testComponent && (
               <div className="test-back">
@@ -330,7 +338,23 @@ function App() {
         )}
 
         {appState === AppState.BADGES && (
-          <BadgesPage userId={playerId || authUser?.id} />
+          authUser ? (
+            <BadgesPage userId={authUser.id} />
+          ) : (
+            <div className="auth-required-message">
+              <h2>{t('badges.authRequired.title', 'Sign In Required')}</h2>
+              <p>{t('badges.authRequired.message', 'You need to sign in to view and track your badge collection. Create an account to start earning badges!')}</p>
+              <button 
+                className="sign-in-button"
+                onClick={() => {
+                  setShowAuthModal(true);
+                  setAuthMode('signin');
+                }}
+              >
+                {t('auth.tabs.signIn')}
+              </button>
+            </div>
+          )
         )}
 
         {appState === AppState.PROFILE && (
@@ -346,6 +370,24 @@ function App() {
       {/* Patch Notes Modal */}
       {showPatchNotes && (
         <PatchNotes onClose={() => setShowPatchNotes(false)} />
+      )}
+      
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal
+          isOpen={true}
+          defaultTab={authMode}
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={() => {
+            setShowAuthModal(false)
+            // Refresh page state after successful auth
+            if (appState === AppState.BADGES) {
+              // Force re-render of badges page
+              setAppState(AppState.LOBBY)
+              setTimeout(() => setAppState(AppState.BADGES), 0)
+            }
+          }}
+        />
       )}
       
       {/* Badge Notification Queue - shows badge unlock notifications */}

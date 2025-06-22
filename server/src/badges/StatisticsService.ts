@@ -3,7 +3,7 @@ import { UserStatistics } from '../../../shared/types/badges';
 import { GameRoom, Player } from '../types/game.types';
 
 export class StatisticsService {
-  private supabase: SupabaseClient;
+  private supabase!: SupabaseClient;
 
   constructor() {
     const supabaseUrl = process.env.SUPABASE_URL;
@@ -24,6 +24,9 @@ export class StatisticsService {
     if (!this.supabase) return;
 
     try {
+      // Check if this is a guest user (non-UUID format)
+      const isGuest = !this.isValidUUID(userId);
+      
       const { data, error } = await this.supabase
         .from('user_statistics')
         .upsert({
@@ -33,7 +36,8 @@ export class StatisticsService {
           games_won: 0,
           games_lost: 0,
           current_win_streak: 0,
-          longest_win_streak: 0
+          longest_win_streak: 0,
+          is_guest: isGuest
         }, {
           onConflict: 'user_id',
           ignoreDuplicates: true
@@ -45,6 +49,11 @@ export class StatisticsService {
     } catch (error) {
       console.error('Failed to initialize user stats:', error);
     }
+  }
+
+  private isValidUUID(uuid: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
   }
 
   /**

@@ -1,0 +1,325 @@
+.level-up-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.level-up-overlay.visible {
+  opacity: 1;
+}
+
+.level-up-overlay.closing {
+  opacity: 0;
+}
+
+.level-up-notification {
+  background: linear-gradient(135deg, #1a1b26 0%, #24273a 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  transform: scale(0.8);
+  animation: notification-entrance 0.5s ease forwards;
+}
+
+@keyframes notification-entrance {
+  to {
+    transform: scale(1);
+  }
+}
+
+.level-up-notification--uncommon {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: linear-gradient(135deg, #1a1b26 0%, #064e3b 100%);
+}
+
+.level-up-notification--rare {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, #1a1b26 0%, #1e3a8a 100%);
+}
+
+.level-up-notification--epic {
+  border-color: rgba(139, 92, 246, 0.5);
+  background: linear-gradient(135deg, #1a1b26 0%, #4c1d95 100%);
+}
+
+.level-up-notification--legendary {
+  border-color: rgba(255, 215, 0, 0.5);
+  background: linear-gradient(135deg, #1a1b26 0%, #713f12 100%);
+  animation: notification-entrance 0.5s ease forwards, legendary-pulse 2s ease-in-out infinite;
+}
+
+@keyframes legendary-pulse {
+  0%, 100% { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.3); }
+  50% { box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 50px rgba(255, 215, 0, 0.5); }
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-button:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.level-up-content {
+  position: relative;
+  z-index: 1;
+}
+
+.celebration-effects {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  font-size: 1.5rem;
+  animation: particle-float 3s ease-in-out infinite;
+}
+
+.particle-1 {
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.particle-2 {
+  top: 20%;
+  right: 15%;
+  animation-delay: 0.5s;
+}
+
+.particle-3 {
+  bottom: 30%;
+  left: 20%;
+  animation-delay: 1s;
+}
+
+.particle-4 {
+  bottom: 20%;
+  right: 10%;
+  animation-delay: 1.5s;
+}
+
+.particle-5 {
+  top: 50%;
+  left: 5%;
+  animation-delay: 2s;
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+.level-up-title {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+}
+
+.level-transition {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.old-level,
+.new-level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.old-level {
+  opacity: 0.6;
+}
+
+.new-level {
+  transform: scale(1.2);
+  border: 2px solid;
+}
+
+.new-level--uncommon {
+  border-color: #22c55e;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.new-level--rare {
+  border-color: #3b82f6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.new-level--epic {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.new-level--legendary {
+  border-color: #ffd700;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  animation: legendary-glow 2s ease-in-out infinite;
+}
+
+@keyframes legendary-glow {
+  0%, 100% { transform: scale(1.2); }
+  50% { transform: scale(1.25); }
+}
+
+.level-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.level-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  line-height: 1;
+}
+
+.arrow {
+  font-size: 2rem;
+  color: #3b82f6;
+  animation: arrow-pulse 1s ease-in-out infinite;
+}
+
+@keyframes arrow-pulse {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+}
+
+.milestone-message {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 1rem;
+  animation: milestone-bounce 0.5s ease;
+}
+
+@keyframes milestone-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.level-up-message {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1.5rem;
+}
+
+.level-reward {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  animation: reward-slide-in 0.5s ease 0.3s both;
+}
+
+@keyframes reward-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reward-icon {
+  font-size: 1.5rem;
+}
+
+.reward-text {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .level-up-notification {
+    padding: 2rem;
+  }
+
+  .level-up-title {
+    font-size: 2rem;
+  }
+
+  .level-transition {
+    gap: 1rem;
+  }
+
+  .old-level,
+  .new-level {
+    padding: 0.75rem 1rem;
+  }
+
+  .level-number {
+    font-size: 2rem;
+  }
+
+  .particle {
+    font-size: 1.2rem;
+  }
+}

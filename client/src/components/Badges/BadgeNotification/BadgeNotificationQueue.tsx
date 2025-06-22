@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import socketService from '../../../services/socketService';
-import { BadgeUnlockNotification as BadgeUnlock } from '../../../types/badges';
+import type { BadgeUnlockNotification as BadgeUnlock } from '../../../types/badges';
 import { BadgeUnlockNotification } from './BadgeUnlockNotification';
 import './BadgeNotificationQueue.css';
 

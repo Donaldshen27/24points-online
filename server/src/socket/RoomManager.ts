@@ -4,6 +4,8 @@ import { DeckManager } from '../game/DeckManager';
 import { GameStateManager, GameEvent, RoundResult } from '../game/GameStateManager';
 import { getRoomTypeConfig } from '../config/roomTypes';
 import { RoomCreationOptions } from '../types/roomTypes';
+import { badgeDetectionService } from '../badges/BadgeDetectionService';
+import { statisticsService } from '../badges/StatisticsService';
 
 export class RoomManager {
   private rooms: Map<string, GameRoom> = new Map();
@@ -540,6 +542,42 @@ export class RoomManager {
       
       this.io.to(roomId).emit('game-over', gameOverData);
       this.io!.to(spectatorRoomId).emit('game-over', gameOverData);
+      
+      // Check for badges after game ends
+      const room = this.rooms.get(roomId);
+      if (room) {
+        this.checkBadgesAfterGame(room, gameState, gameOverResult);
+      }
+    }
+  }
+  
+  private async checkBadgesAfterGame(room: GameRoom, gameState: any, gameOverResult: any) {
+    console.log('[RoomManager] Checking badges after game for room:', room.id);
+    
+    const players = gameState.players;
+    
+    // In solo practice, only check badges for the human player
+    const playersToCheck = room.isSoloPractice 
+      ? players.filter((p: any) => !p.isAI)
+      : players;
+    
+    for (const player of playersToCheck) {
+      try {
+        // Initialize stats if needed
+        await statisticsService.initializeUserStats(player.id, player.name);
+        
+        // Check for new badges
+        console.log(`[RoomManager] Checking badges for player ${player.name} (${player.id})`);
+        const newBadges = await badgeDetectionService.checkBadgesAfterGame(player.id);
+        
+        // Notify player of new badges
+        if (newBadges.length > 0) {
+          console.log(`[RoomManager] Player ${player.name} unlocked ${newBadges.length} badges!`);
+          this.io!.to(player.socketId).emit('badges-unlocked', newBadges);
+        }
+      } catch (error) {
+        console.error(`[RoomManager] Error checking badges for player ${player.id}:`, error);
+      }
     }
   }
 

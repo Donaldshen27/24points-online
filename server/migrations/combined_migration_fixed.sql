@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS users (
   email_verified_at TIMESTAMPTZ,
   
   CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'),
-  CONSTRAINT username_format CHECK (username ~* '^[a-zA-Z0-9_-]{3,50}$')
+  CONSTRAINT username_format CHECK (username ~* '^[a-zA-Z0-9_-]{2,50}$')
 );
 
 -- User sessions table

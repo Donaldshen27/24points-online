@@ -120,8 +120,8 @@ router.get('/check-username/:username', async (req: Request, res: Response) => {
   try {
     const { username } = req.params;
     
-    // Validate username format
-    if (!username || !/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+    // Validate username format - allow 2-20 characters
+    if (!username || !/^[a-zA-Z0-9_-]{2,20}$/.test(username)) {
       return res.json({ 
         available: false, 
         reason: 'invalid_format' 

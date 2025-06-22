@@ -133,7 +133,6 @@ export const BadgeGallery: React.FC<BadgeGalleryProps> = ({ userId }) => {
             },
             totalPoints: totalPoints,
             level: levelInfo.level
-          });
         });
         setLoading(false);
       } else {

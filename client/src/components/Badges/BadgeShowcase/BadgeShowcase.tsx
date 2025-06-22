@@ -15,6 +15,7 @@ interface EnrichedUserBadge extends UserBadge {
   points: number;
   tier?: BadgeTier;
   featured?: boolean;
+  badge_id?: string; // Sometimes returned as badge_id from server
 }
 
 interface BadgeShowcaseProps {
@@ -43,14 +44,19 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
 
   const loadBadgeData = () => {
     setLoading(true);
+    console.log('[BadgeShowcase] Loading badge data for user:', userId);
     
     // Get user's badges
     socketService.emit('get-user-badges', { userId }, (response: any) => {
+      console.log('[BadgeShowcase] Badge data response:', response);
+      
       if (response.success && response.badges) {
+        console.log('[BadgeShowcase] Badges loaded:', response.badges.length);
         setAllBadges(response.badges);
         
         // Filter featured badges
         const featured = response.badges.filter((badge: EnrichedUserBadge) => badge.featured);
+        console.log('[BadgeShowcase] Featured badges:', featured.length);
         setFeaturedBadges(featured.slice(0, 5)); // Max 5 featured badges
         
         // Calculate total points and level
@@ -62,6 +68,10 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
         
         setTotalPoints(points);
         setPlayerLevel(calculateLevel(points));
+      } else {
+        console.error('[BadgeShowcase] Failed to load badges:', response);
+        setAllBadges([]);
+        setFeaturedBadges([]);
       }
       setLoading(false);
     });
@@ -95,21 +105,32 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
   };
 
   const handleEditClick = () => {
+    console.log('[BadgeShowcase] Edit clicked - isOwnProfile:', isOwnProfile, 'user.id:', user?.id, 'userId:', userId);
     if (isOwnProfile && user?.id === userId) {
+      console.log('[BadgeShowcase] Opening badge selector');
       setIsEditing(true);
+    } else {
+      console.warn('[BadgeShowcase] Cannot edit - not own profile');
     }
   };
 
   const handleSaveFeatured = (selectedBadges: EnrichedUserBadge[]) => {
+    console.log('[BadgeShowcase] Saving featured badges:', selectedBadges.map(b => b.badgeId));
+    
     // Update featured status
     socketService.emit('update-featured-badges', {
       userId,
-      badgeIds: selectedBadges.map(b => b.badgeId)
+      badgeIds: selectedBadges.map(b => b.badgeId || b.badge_id || '')
     }, (response: any) => {
+      console.log('[BadgeShowcase] Update response:', response);
+      
       if (response.success) {
         setFeaturedBadges(selectedBadges);
         setIsEditing(false);
         loadBadgeData(); // Reload to ensure sync
+      } else {
+        console.error('[BadgeShowcase] Failed to update featured badges:', response.error);
+        alert('Failed to update featured badges: ' + (response.error || 'Unknown error'));
       }
     });
   };
@@ -128,7 +149,7 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
         <div className="featured-badges-row">
           {featuredBadges.length > 0 ? (
             featuredBadges.map(badge => (
-              <div key={badge.badgeId} className={`showcase-badge ${badge.rarity}`}>
+              <div key={badge.badgeId || badge.badge_id} className={`showcase-badge ${badge.rarity}`}>
                 <span className="badge-emoji">{badge.icon}</span>
                 {badge.tier && (
                   <span className="tier-indicator">{badge.tier}</span>
@@ -172,7 +193,7 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
       <div className="featured-badges-grid">
         {featuredBadges.length > 0 ? (
           featuredBadges.map(badge => (
-            <div key={badge.badgeId} className={`featured-badge ${badge.rarity}`}>
+            <div key={badge.badgeId || badge.badge_id} className={`featured-badge ${badge.rarity}`}>
               <div className="badge-icon">{badge.icon}</div>
               <div className="badge-info">
                 <div className="badge-name">{badge.name}</div>
@@ -224,10 +245,17 @@ const BadgeSelector: React.FC<BadgeSelectorProps> = ({
   const [selected, setSelected] = useState<EnrichedUserBadge[]>(selectedBadges);
 
   const toggleBadge = (badge: EnrichedUserBadge) => {
-    if (selected.find(b => b.badgeId === badge.badgeId)) {
-      setSelected(selected.filter(b => b.badgeId !== badge.badgeId));
+    console.log('[BadgeSelector] Toggle badge:', badge.badgeId, badge.name);
+    
+    const badgeId = badge.badgeId || badge.badge_id || '';
+    if (selected.find(b => (b.badgeId || b.badge_id) === badgeId)) {
+      console.log('[BadgeSelector] Deselecting badge');
+      setSelected(selected.filter(b => (b.badgeId || b.badge_id) !== badgeId));
     } else if (selected.length < 5) {
+      console.log('[BadgeSelector] Selecting badge (current count:', selected.length, ')');
       setSelected([...selected, badge]);
+    } else {
+      console.warn('[BadgeSelector] Cannot select more than 5 badges');
     }
   };
 
@@ -247,9 +275,9 @@ const BadgeSelector: React.FC<BadgeSelectorProps> = ({
         <div className="badge-grid">
           {allBadges.map(badge => (
             <div
-              key={badge.badgeId}
+              key={badge.badgeId || badge.badge_id}
               className={`selectable-badge ${badge.rarity} ${
-                selected.find(b => b.badgeId === badge.badgeId) ? 'selected' : ''
+                selected.find(b => (b.badgeId || b.badge_id) === (badge.badgeId || badge.badge_id)) ? 'selected' : ''
               }`}
               onClick={() => toggleBadge(badge)}
             >
@@ -259,7 +287,7 @@ const BadgeSelector: React.FC<BadgeSelectorProps> = ({
                 <div className="badge-tier">T{badge.tier}</div>
               )}
               <div className="selection-indicator">
-                {selected.find(b => b.badgeId === badge.badgeId) && '✓'}
+                {selected.find(b => (b.badgeId || b.badge_id) === (badge.badgeId || badge.badge_id)) && '✓'}
               </div>
             </div>
           ))}

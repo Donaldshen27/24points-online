@@ -396,7 +396,9 @@ export class BadgeDetectionService {
             description: badge.description,
             category: badge.category,
             rarity: badge.rarity,
-            points: badge.points
+            points: badge.points,
+            icon: badge.icon || '🏆',
+            featured: userBadge.is_featured || false
           } as any);
         }
       }

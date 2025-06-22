@@ -12,6 +12,7 @@ export interface BadgeDefinition {
   tier?: BadgeTier;
   rarity: BadgeRarity;
   points: number;
+  icon?: string;
   iconUrl?: string;
   requirements: BadgeRequirement;
   isActive: boolean;

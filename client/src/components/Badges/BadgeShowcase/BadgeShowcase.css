@@ -282,6 +282,7 @@
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
 }
 
 .modal-content h3 {
@@ -310,6 +311,8 @@
   text-align: center;
   position: relative;
   background: var(--color-surface-1);
+  pointer-events: auto;
+  user-select: none;
 }
 
 .selectable-badge:hover {

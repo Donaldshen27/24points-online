@@ -40,6 +40,7 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showRatingAnimation, setShowRatingAnimation] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // For spectators, determine the winner and show their stats
@@ -221,7 +222,11 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
     // Animate in
     setTimeout(() => setIsVisible(true), 100);
     setTimeout(() => setShowStats(true), 800);
-  }, []);
+    // Show rating animation after stats
+    if (gameState.isRanked && gameState.rankedData?.ratingChanges) {
+      setTimeout(() => setShowRatingAnimation(true), 1200);
+    }
+  }, [gameState.isRanked, gameState.rankedData]);
 
 
   const stats = getDetailedStats();
@@ -272,6 +277,71 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
                   : t('gameOver.messages.defeatMessage'))}
           </p>
         </div>
+
+        {/* Ranked Rating Changes - Show prominently at the top */}
+        {gameState.isRanked && gameState.rankedData && gameState.rankedData.ratingChanges && (
+          <div className={`ranked-rating-section ${showRatingAnimation ? 'animate' : ''}`}>
+            <div className="rating-change-container">
+              {/* Player Rating Change */}
+              <div className={`rating-change-card ${isWinner ? 'winner' : 'loser'}`}>
+                <div className="player-rating-info">
+                  <span className="player-label">{currentPlayer?.name || t('gameOver.labels.you')}</span>
+                  <div className="rating-display">
+                    <span className="old-rating">
+                      {currentPlayer?.id === gameState.players[0].id 
+                        ? gameState.rankedData.player1Rating 
+                        : gameState.rankedData.player2Rating}
+                    </span>
+                    <span className="rating-arrow">→</span>
+                    <span className="new-rating">
+                      {(currentPlayer?.id === gameState.players[0].id 
+                        ? gameState.rankedData.player1Rating 
+                        : gameState.rankedData.player2Rating) + 
+                        (gameState.rankedData.ratingChanges[currentPlayer?.id || playerId] || 0)}
+                    </span>
+                  </div>
+                  <div className={`rating-delta ${isWinner ? 'positive' : 'negative'}`}>
+                    <span className="delta-sign">{isWinner ? '+' : ''}</span>
+                    <span className="delta-value">
+                      {Math.abs(gameState.rankedData.ratingChanges[currentPlayer?.id || playerId] || 0)}
+                    </span>
+                    <span className="delta-label">ELO</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Opponent Rating Change */}
+              {opponent && !isSpectator && (
+                <div className={`rating-change-card ${!isWinner ? 'winner' : 'loser'}`}>
+                  <div className="player-rating-info">
+                    <span className="player-label">{opponent.name}</span>
+                    <div className="rating-display">
+                      <span className="old-rating">
+                        {opponent.id === gameState.players[0].id 
+                          ? gameState.rankedData.player1Rating 
+                          : gameState.rankedData.player2Rating}
+                      </span>
+                      <span className="rating-arrow">→</span>
+                      <span className="new-rating">
+                        {(opponent.id === gameState.players[0].id 
+                          ? gameState.rankedData.player1Rating 
+                          : gameState.rankedData.player2Rating) + 
+                          (gameState.rankedData.ratingChanges[opponent.id] || 0)}
+                      </span>
+                    </div>
+                    <div className={`rating-delta ${!isWinner ? 'positive' : 'negative'}`}>
+                      <span className="delta-sign">{!isWinner ? '+' : ''}</span>
+                      <span className="delta-value">
+                        {Math.abs(gameState.rankedData.ratingChanges[opponent.id] || 0)}
+                      </span>
+                      <span className="delta-label">ELO</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Battle Report */}
         <div className={`battle-report ${showStats ? 'show' : ''}`}>

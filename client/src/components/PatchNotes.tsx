@@ -13,6 +13,19 @@ interface PatchNote {
 
 const patchNotes: PatchNote[] = [
   {
+    date: '2025-06-23',
+    version: '3.1.0',
+    changes: [
+      { type: 'feature', description: '🎮 Unified Scoring System - All game modes now use the 4-point tug-of-war mechanics!' },
+      { type: 'feature', description: '🪢 NEW: Tug-of-War Animation - Visual scoreboard showing the point battle in real-time' },
+      { type: 'feature', description: 'Consistent scoring across all modes: Classic, Super, and Extended now play to 4 points' },
+      { type: 'feature', description: 'Strategic tug-of-war gameplay: Pull opponent to 0 before gaining points' },
+      { type: 'fix', description: 'Fixed score display showing round wins instead of actual points' },
+      { type: 'fix', description: 'Corrected impossible score combinations (like 2:1) from appearing' },
+      { type: 'performance', description: 'Simplified scoring logic for better performance and consistency' }
+    ]
+  },
+  {
     date: '2025-06-22',
     version: '3.0.0',
     changes: [

@@ -33,11 +33,15 @@ interface RegisterRequest {
 class AuthService {
   private accessToken: string | null = null;
   private user: AuthUser | null = null;
-  private readonly API_BASE_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
+  private readonly API_BASE_URL: string;
   private refreshPromise: Promise<string | null> | null = null;
 
   constructor() {
     // Session will be restored via the public restoreSession method
+    // Ensure API_BASE_URL doesn't have a trailing slash
+    const baseUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
+    this.API_BASE_URL = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    console.log('[AuthService] API_BASE_URL:', this.API_BASE_URL);
   }
 
   private saveSession(token: string, user: AuthUser) {

@@ -10,7 +10,9 @@ if (import.meta.hot && (window as any).__socket) {
   socket = (window as any).__socket;
 } else {
   // Initialize socket connection
-  const serverUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
+  let serverUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
+  // Ensure serverUrl doesn't have a trailing slash
+  serverUrl = serverUrl.endsWith('/') ? serverUrl.slice(0, -1) : serverUrl;
   console.log('[SocketService] Creating new socket connection to:', serverUrl);
   
   socket = io(serverUrl, {

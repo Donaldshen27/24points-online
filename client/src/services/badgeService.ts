@@ -1,7 +1,9 @@
 import axios from 'axios';
 import type { BadgeDefinition, UserStatistics, BadgeProgress, UserBadge } from '../types/badges';
 
-const API_BASE_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
+// Ensure API_BASE_URL doesn't have a trailing slash
+const baseUrl = import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
+const API_BASE_URL = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
 
 interface BadgeResponse {
   badges: UserBadge[];

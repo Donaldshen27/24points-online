@@ -17,6 +17,14 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
     // Create a room with appropriate settings
     const room = roomManager.createRoom(match.roomId, 'classic', match.queueType === 'ranked');
     
+    // Verify room was created
+    const createdRoom = roomManager.getRoom(match.roomId);
+    console.log(`[RankedHandler] Room verification after creation:`, { 
+      roomId: match.roomId, 
+      exists: !!createdRoom,
+      actualRoomId: createdRoom?.id 
+    });
+    
     // Add both players to the room
     roomManager.joinRoom(match.roomId, match.player1.userId, match.player1.socketId, match.player1.username);
     roomManager.joinRoom(match.roomId, match.player2.userId, match.player2.socketId, match.player2.username);

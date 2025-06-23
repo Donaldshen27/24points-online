@@ -32,7 +32,8 @@ export class RoomManager {
     let isRanked: boolean = false;
 
     // Check if this is being called from matchmaking (3 params: roomId, roomType, isRanked)
-    if (typeof playerNameOrIsRanked === 'boolean' && socketIdOrRoomType && !roomType) {
+    if (typeof playerNameOrIsRanked === 'boolean' && socketIdOrRoomType && arguments.length === 3) {
+      console.log('[RoomManager] Creating room from matchmaking:', { providedRoomId: roomIdOrPlayerId, roomType: socketIdOrRoomType, isRanked: playerNameOrIsRanked });
       roomId = roomIdOrPlayerId;
       roomType = socketIdOrRoomType;
       isRanked = playerNameOrIsRanked;
@@ -86,6 +87,7 @@ export class RoomManager {
     }
 
     this.rooms.set(roomId, room);
+    console.log('[RoomManager] Room created and stored:', { roomId, totalRooms: this.rooms.size, isRanked });
     
     // Create appropriate game manager based on room type
     const GameManagerClass = this.getGameManagerClass(roomType);

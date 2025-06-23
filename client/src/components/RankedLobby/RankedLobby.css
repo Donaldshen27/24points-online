@@ -1,0 +1,375 @@
+.ranked-lobby {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: var(--color-surface-1);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+}
+
+.ranked-lobby-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.ranked-lobby-header h1 {
+  font-size: 2.5em;
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+}
+
+/* Queue Tabs */
+.queue-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.queue-tab {
+  padding: 12px 30px;
+  font-size: 1.1em;
+  font-weight: 600;
+  background: var(--color-surface-2);
+  border: 2px solid transparent;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--color-text-secondary);
+}
+
+.queue-tab:hover {
+  background: var(--color-surface-3);
+  transform: translateY(-1px);
+}
+
+.queue-tab.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary-hover);
+}
+
+/* Player Stats Section */
+.player-stats-section {
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.player-rank-display {
+  width: 100%;
+  max-width: 500px;
+}
+
+.placement-notice {
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  border-radius: 8px;
+  padding: 12px 20px;
+  color: var(--color-warning-text);
+  font-weight: 500;
+}
+
+/* Auth Required Notice */
+.auth-required-notice {
+  text-align: center;
+  padding: 40px;
+  background: var(--color-surface-2);
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.auth-required-notice p {
+  font-size: 1.2em;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+}
+
+.auth-button {
+  padding: 12px 30px;
+  font-size: 1.1em;
+  font-weight: 600;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+/* Game Mode Section */
+.game-mode-section {
+  margin-bottom: 30px;
+}
+
+.game-mode-section h3 {
+  text-align: center;
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+  font-size: 1.3em;
+}
+
+/* Queue Section */
+.queue-section {
+  margin-bottom: 30px;
+}
+
+.queue-button {
+  width: 100%;
+  padding: 20px;
+  font-size: 1.3em;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.queue-button.join-queue {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: white;
+}
+
+.queue-button.join-queue:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+}
+
+.queue-button.join-queue:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.queue-button.leave-queue {
+  background: var(--color-danger);
+  color: white;
+  margin-top: 15px;
+}
+
+.queue-button.leave-queue:hover {
+  background: var(--color-danger-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Queue Status */
+.queue-status {
+  background: var(--color-surface-2);
+  border-radius: 12px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.queue-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.queue-time,
+.search-range,
+.estimated-wait {
+  text-align: center;
+}
+
+.queue-label {
+  display: block;
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+}
+
+.queue-value {
+  display: block;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+/* Queue Animation */
+.queue-animation {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+}
+
+.queue-pulse {
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.queue-pulse:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.queue-pulse:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.queue-pulse:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+/* Match History Section */
+.match-history-section {
+  margin-top: 40px;
+}
+
+.match-history-section h3 {
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+  font-size: 1.3em;
+}
+
+.match-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.match-history-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  padding: 15px 20px;
+  background: var(--color-surface-2);
+  border-radius: 8px;
+  border-left: 4px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.match-history-item.win {
+  border-left-color: var(--color-success);
+}
+
+.match-history-item.loss {
+  border-left-color: var(--color-danger);
+}
+
+.match-history-item:hover {
+  background: var(--color-surface-3);
+  transform: translateX(5px);
+}
+
+.match-opponent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.opponent-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.opponent-rating {
+  color: var(--color-text-secondary);
+  font-size: 0.9em;
+}
+
+.match-result {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.result-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.result-badge.win {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.result-badge.loss {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+.rating-change {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.rating-change.positive {
+  color: var(--color-success);
+}
+
+.rating-change.negative {
+  color: var(--color-danger);
+}
+
+.match-time {
+  color: var(--color-text-secondary);
+  font-size: 0.9em;
+  text-align: right;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .ranked-lobby {
+    padding: 15px;
+  }
+
+  .ranked-lobby-header h1 {
+    font-size: 2em;
+  }
+
+  .queue-tabs {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .queue-tab {
+    width: 100%;
+  }
+
+  .queue-info {
+    grid-template-columns: 1fr;
+  }
+
+  .match-history-item {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .match-result {
+    justify-content: space-between;
+  }
+
+  .match-time {
+    text-align: left;
+  }
+}

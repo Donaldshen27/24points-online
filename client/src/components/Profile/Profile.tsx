@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { BadgeShowcase } from '../Badges/BadgeShowcase';
 import { LevelIndicator } from '../Badges/BadgeProgress';
+import { RankDisplay } from '../Rank/RankDisplay';
 import socketService from '../../services/socketService';
 import './Profile.css';
 
@@ -26,6 +27,28 @@ interface BadgeData {
   badgeCount: number;
 }
 
+interface RankedStats {
+  currentRating: number;
+  peakRating: number;
+  gamesPlayed: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  placementMatchesRemaining: number;
+}
+
+interface MatchHistoryItem {
+  matchId: string;
+  opponentName: string;
+  opponentRating: number;
+  result: 'win' | 'loss';
+  ratingChange: number;
+  newRating: number;
+  timestamp: string;
+  gameMode: string;
+  duration: number;
+}
+
 export const Profile: React.FC<ProfileProps> = ({ userId }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -35,7 +58,10 @@ export const Profile: React.FC<ProfileProps> = ({ userId }) => {
     level: 1,
     badgeCount: 0
   });
+  const [rankedStats, setRankedStats] = useState<RankedStats | null>(null);
+  const [matchHistory, setMatchHistory] = useState<MatchHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'overview' | 'ranked' | 'badges'>('overview');
 
   const profileUserId = userId || user?.id;
   const isOwnProfile = !userId || userId === user?.id;
@@ -82,6 +108,18 @@ export const Profile: React.FC<ProfileProps> = ({ userId }) => {
       }
     });
     
+    // Load ranked stats
+    socketService.emit('ranked:get-rating', (ratingData: RankedStats | null) => {
+      if (ratingData) {
+        setRankedStats(ratingData);
+      }
+    });
+    
+    // Load match history
+    socketService.emit('ranked:get-match-history', { userId: profileUserId, limit: 10 }, (history: MatchHistoryItem[]) => {
+      setMatchHistory(history);
+    });
+    
     setLoading(false);
   };
 
@@ -115,55 +153,141 @@ export const Profile: React.FC<ProfileProps> = ({ userId }) => {
         </div>
       </div>
 
-      <LevelIndicator
-        currentPoints={badgeData.totalPoints}
-        currentLevel={badgeData.level}
-        size="large"
-        showDetails={true}
-        animated={true}
-      />
-
-      <BadgeShowcase 
-        userId={profileUserId} 
-        isOwnProfile={isOwnProfile}
-      />
-
-      <div className="profile-stats">
-        <h2>{t('profile.statistics')}</h2>
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-label">{t('profile.gamesPlayed')}</div>
-            <div className="stat-value">{stats?.gamesPlayed || 0}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">{t('profile.gamesWon')}</div>
-            <div className="stat-value">{stats?.gamesWon || 0}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">{t('profile.winRate')}</div>
-            <div className="stat-value">{stats?.winRate || 0}%</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">{t('profile.avgSolveTime')}</div>
-            <div className="stat-value">{stats?.averageSolveTime || 0}s</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">{t('profile.fastestSolve')}</div>
-            <div className="stat-value">{stats?.fastestSolve || 0}s</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">{t('profile.longestStreak')}</div>
-            <div className="stat-value">{stats?.longestWinStreak || 0}</div>
-          </div>
-        </div>
+      <div className="profile-tabs">
+        <button
+          className={`profile-tab ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          {t('profile.tabs.overview')}
+        </button>
+        <button
+          className={`profile-tab ${activeTab === 'ranked' ? 'active' : ''}`}
+          onClick={() => setActiveTab('ranked')}
+        >
+          {t('profile.tabs.ranked')}
+        </button>
+        <button
+          className={`profile-tab ${activeTab === 'badges' ? 'active' : ''}`}
+          onClick={() => setActiveTab('badges')}
+        >
+          {t('profile.tabs.badges')}
+        </button>
       </div>
 
-      <div className="profile-recent-games">
-        <h2>{t('profile.recentGames')}</h2>
-        <div className="no-games">
-          {t('profile.noRecentGames')}
+      {activeTab === 'overview' && (
+        <div className="profile-content">
+          <div className="profile-stats">
+            <h2>{t('profile.statistics')}</h2>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-label">{t('profile.gamesPlayed')}</div>
+                <div className="stat-value">{stats?.gamesPlayed || 0}</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">{t('profile.gamesWon')}</div>
+                <div className="stat-value">{stats?.gamesWon || 0}</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">{t('profile.winRate')}</div>
+                <div className="stat-value">{stats?.winRate || 0}%</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">{t('profile.avgSolveTime')}</div>
+                <div className="stat-value">{stats?.averageSolveTime || 0}s</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">{t('profile.fastestSolve')}</div>
+                <div className="stat-value">{stats?.fastestSolve || 0}s</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">{t('profile.longestStreak')}</div>
+                <div className="stat-value">{stats?.longestWinStreak || 0}</div>
+              </div>
+            </div>
+          </div>
+
+          <LevelIndicator
+            currentPoints={badgeData.totalPoints}
+            currentLevel={badgeData.level}
+            size="large"
+            showDetails={true}
+            animated={true}
+          />
         </div>
-      </div>
+      )}
+
+      {activeTab === 'ranked' && (
+        <div className="profile-content">
+          {rankedStats ? (
+            <>
+              <RankDisplay
+                rating={rankedStats.currentRating}
+                peakRating={rankedStats.peakRating}
+                wins={rankedStats.wins}
+                losses={rankedStats.losses}
+                variant="full"
+                className="profile-rank-display"
+              />
+
+              {rankedStats.placementMatchesRemaining > 0 && (
+                <div className="placement-notice">
+                  {t('profile.placementMatches', { count: rankedStats.placementMatchesRemaining })}
+                </div>
+              )}
+
+              <div className="match-history-section">
+                <h2>{t('profile.matchHistory')}</h2>
+                {matchHistory.length > 0 ? (
+                  <div className="match-history-list">
+                    {matchHistory.map((match) => (
+                      <div key={match.matchId} className={`match-item ${match.result}`}>
+                        <div className="match-info">
+                          <div className="match-opponent">
+                            <span className="vs-label">vs</span>
+                            <span className="opponent-name">{match.opponentName}</span>
+                            <span className="opponent-rating">({match.opponentRating})</span>
+                          </div>
+                          <div className="match-mode">{match.gameMode}</div>
+                        </div>
+                        <div className="match-result">
+                          <span className={`result-badge ${match.result}`}>
+                            {match.result === 'win' ? t('profile.win') : t('profile.loss')}
+                          </span>
+                          <span className={`rating-change ${match.ratingChange > 0 ? 'positive' : 'negative'}`}>
+                            {match.ratingChange > 0 ? '+' : ''}{match.ratingChange}
+                          </span>
+                          <span className="new-rating">→ {match.newRating}</span>
+                        </div>
+                        <div className="match-meta">
+                          <span className="match-duration">{Math.floor(match.duration / 60)}:{(match.duration % 60).toString().padStart(2, '0')}</span>
+                          <span className="match-time">{new Date(match.timestamp).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="no-matches">
+                    {t('profile.noMatchHistory')}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="no-ranked-stats">
+              {t('profile.noRankedStats')}
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'badges' && (
+        <div className="profile-content">
+          <BadgeShowcase 
+            userId={profileUserId} 
+            isOwnProfile={isOwnProfile}
+          />
+        </div>
+      )}
     </div>
   );
 };

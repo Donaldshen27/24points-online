@@ -5,13 +5,17 @@ import socketService from '../../services/socketService';
 import './RoomTypeSelector.css';
 
 interface RoomTypeSelectorProps {
-  onSelectType: (typeId: string) => void;
+  onSelectType?: (typeId: string) => void;
+  onTypeSelect?: (typeId: string) => void;
   selectedType?: string;
+  disabled?: boolean;
 }
 
 export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({ 
-  onSelectType, 
-  selectedType = 'classic' 
+  onSelectType,
+  onTypeSelect,
+  selectedType = 'classic',
+  disabled = false
 }) => {
   const { t } = useTranslation();
   const [roomTypes, setRoomTypes] = useState<RoomTypeInfo[]>([]);
@@ -29,24 +33,29 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
     });
   }, [selectedType]);
   
+  const handleSelectType = (typeId: string) => {
+    if (onSelectType) onSelectType(typeId);
+    if (onTypeSelect) onTypeSelect(typeId);
+  };
+
   const handlePrevious = () => {
-    if (isAnimating || roomTypes.length === 0) return;
+    if (isAnimating || roomTypes.length === 0 || disabled) return;
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 500);
     
     const newIndex = currentIndex === 0 ? roomTypes.length - 1 : currentIndex - 1;
     setCurrentIndex(newIndex);
-    onSelectType(roomTypes[newIndex].id);
+    handleSelectType(roomTypes[newIndex].id);
   };
   
   const handleNext = () => {
-    if (isAnimating || roomTypes.length === 0) return;
+    if (isAnimating || roomTypes.length === 0 || disabled) return;
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 500);
     
     const newIndex = currentIndex === roomTypes.length - 1 ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
-    onSelectType(roomTypes[newIndex].id);
+    handleSelectType(roomTypes[newIndex].id);
   };
   
   if (roomTypes.length === 0) {
@@ -153,7 +162,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
         <button 
           className="carousel-arrow left"
           onClick={handlePrevious}
-          disabled={isAnimating}
+          disabled={isAnimating || disabled}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" role="img" aria-label="Previous room type">
             <polyline points="15 18 9 12 15 6" />
@@ -213,7 +222,7 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
         <button 
           className="carousel-arrow right"
           onClick={handleNext}
-          disabled={isAnimating}
+          disabled={isAnimating || disabled}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" role="img" aria-label="Next room type">
             <polyline points="9 18 15 12 9 6" />
@@ -227,9 +236,9 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
             key={index}
             className={`indicator ${index === currentIndex ? 'active' : ''}`}
             onClick={() => {
-              if (!isAnimating) {
+              if (!isAnimating && !disabled) {
                 setCurrentIndex(index);
-                onSelectType(roomTypes[index].id);
+                handleSelectType(roomTypes[index].id);
               }
             }}
           />

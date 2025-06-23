@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import socketService from './services/socketService'
 import { useAuth } from './contexts/AuthContext'
 import { Lobby } from './components/Lobby/Lobby'
+import { RankedLobby } from './components/RankedLobby/RankedLobby'
 import { WaitingRoom } from './components/WaitingRoom/WaitingRoom'
 import { GameScreen } from './components/GameScreen/GameScreen'
 import { DeckTest } from './components/DeckTest/DeckTest'
@@ -28,6 +29,7 @@ import './App.css'
 const AppState = {
   CONNECTING: 'connecting',
   LOBBY: 'lobby',
+  RANKED_LOBBY: 'ranked_lobby',
   WAITING_ROOM: 'waiting_room',
   IN_GAME: 'in_game',
   TEST_MODE: 'test_mode',
@@ -271,7 +273,22 @@ function App() {
         )}
 
         {appState === AppState.LOBBY && (
-          <Lobby onRoomJoined={handleRoomJoined} authUser={authUser} />
+          <Lobby 
+            onRoomJoined={handleRoomJoined} 
+            authUser={authUser}
+            onRankedClick={() => setAppState(AppState.RANKED_LOBBY)}
+          />
+        )}
+
+        {appState === AppState.RANKED_LOBBY && (
+          <RankedLobby
+            onRoomJoined={handleRoomJoined}
+            authUser={authUser}
+            onAuthRequired={() => {
+              setShowAuthModal(true);
+              setAuthMode('signin');
+            }}
+          />
         )}
 
         {appState === AppState.WAITING_ROOM && currentRoom && (

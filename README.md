@@ -69,6 +69,42 @@ cd 24points-online
 npm run install:all
 ```
 
+3. Set up environment variables:
+```bash
+# Create .env file in server directory
+cd server
+cp .env.example .env  # If example exists, otherwise create new
+```
+
+4. Configure Supabase (if using database features):
+   - Add `SUPABASE_URL` and `SUPABASE_ANON_KEY` to server/.env
+   - Run database migrations (see Database Setup below)
+
+### Database Setup
+
+The game supports optional database features for rankings, badges, and statistics:
+
+1. **Run migrations** in Supabase SQL Editor:
+   ```sql
+   -- Option 1: Run all ELO migrations at once
+   -- Copy contents of server/migrations/elo_combined_migration.sql
+   
+   -- Option 2: Run individual migrations in order
+   -- Files in server/migrations/ numbered sequentially
+   ```
+
+2. **Verify migration status**:
+   ```bash
+   cd server
+   node scripts/check-elo-migrations.js
+   ```
+
+3. **Common migrations**:
+   - Core game tables: `schema.sql`
+   - Badge system: `002_badge_system.sql`
+   - Authentication: `003_auth_system.sql`
+   - ELO rankings: `elo_combined_migration.sql`
+
 ### Running the Application
 
 #### Development Mode

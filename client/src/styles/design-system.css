@@ -31,6 +31,21 @@
   --color-warning: #f0c45c;            /* Warning yellow */
   --color-info: #5d9fd5;               /* Info blue */
   
+  /* Semantic backgrounds */
+  --color-success-bg: rgba(98, 151, 96, 0.15);
+  --color-success-text: #81c784;
+  --color-danger: #ca3431;
+  --color-danger-bg: rgba(202, 52, 49, 0.15);
+  --color-danger-text: #ff6b6b;
+  --color-danger-hover: #b02a28;
+  --color-warning-bg: rgba(240, 196, 92, 0.15);
+  --color-warning-border: rgba(240, 196, 92, 0.3);
+  --color-warning-text: #f0c45c;
+  
+  /* Primary colors */
+  --color-primary: #81c784;
+  --color-primary-hover: #629760;
+  
   /* Button colors */
   --color-button-primary: #81c784;
   --color-button-primary-hover: #629760;

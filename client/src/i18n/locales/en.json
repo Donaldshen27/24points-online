@@ -322,6 +322,9 @@
     "createRoom": "Create New Room",
     "joinRoom": "Join Room",
     "joinBattle": "JOIN BATTLE",
+    "rankedPlay": "Ranked Play",
+    "rankedPlayDesc": "Compete in ranked matches",
+    "findMatch": "Find Match",
     "spectate": "👁️ SPECTATE",
     "soloPractice": "Solo Practice",
     "placeholders": {
@@ -445,6 +448,30 @@
     },
     "continueNow": "Continue Now",
     "firstSolve": "{{winner}} did it first in {{time}}s!"
+  },
+  "ranked": {
+    "title": "Matchmaking",
+    "rankedMode": "Ranked",
+    "casualMode": "Casual",
+    "authRequired": "Sign in to play ranked matches and track your rating",
+    "signIn": "Sign In",
+    "selectGameMode": "Select Game Mode",
+    "joinRankedQueue": "Find Ranked Match",
+    "joinCasualQueue": "Find Casual Match",
+    "leaveQueue": "Leave Queue",
+    "queueTime": "Queue Time",
+    "searchRange": "Search Range",
+    "estimatedWait": "Est. Wait",
+    "estimatedSeconds": "~{{seconds}}s",
+    "calculating": "Calculating...",
+    "placementMatches": "{{count}} placement matches remaining",
+    "recentMatches": "Recent Matches",
+    "win": "Win",
+    "loss": "Loss",
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}} hr ago",
+    "daysAgo": "{{count}} days ago"
   },
   "gameOver": {
     "spectator": {
@@ -580,7 +607,7 @@
   "leaderboard": {
     "recordHoldings": "Record Holdings",
     "badges": "Badge Rankings",
-    "eloRank": "Elo Rank (Coming Soon)",
+    "eloRank": "Elo Rank",
     "totalPuzzles": "Total unique puzzles: {{count}}",
     "noRecordsYet": "No records yet. Be the first to set a record!",
     "noBadgesYet": "No badges earned yet. Play games to unlock badges!",
@@ -597,7 +624,19 @@
     "sortByRare": "Rare Badges",
     "loading": "Loading...",
     "comingSoon": "Coming Soon",
-    "eloDescription": "Elo ranking system will track your competitive performance"
+    "eloDescription": "Elo ranking system will track your competitive performance",
+    "rankedLeaderboard": "Ranked Leaderboard",
+    "region": "Region",
+    "global": "Global",
+    "northAmerica": "North America",
+    "europe": "Europe",
+    "asia": "Asia",
+    "noRankedPlayers": "No ranked players yet",
+    "rating": "Rating",
+    "peak": "Peak",
+    "games": "Games",
+    "winRate": "Win Rate",
+    "loadMore": "Load More"
   },
   "patchNotes": {
     "title": "Patch Notes"
@@ -613,7 +652,18 @@
     "fastestSolve": "Fastest Solve",
     "longestStreak": "Longest Win Streak",
     "recentGames": "Recent Games",
-    "noRecentGames": "No recent games to display"
+    "noRecentGames": "No recent games to display",
+    "tabs": {
+      "overview": "Overview",
+      "ranked": "Ranked",
+      "badges": "Badges"
+    },
+    "placementMatches": "{{count}} placement matches remaining",
+    "matchHistory": "Match History",
+    "win": "Win",
+    "loss": "Loss",
+    "noMatchHistory": "No ranked matches played yet",
+    "noRankedStats": "Play ranked matches to see your statistics"
   },
   "badges": {
     "featuredBadges": "Featured Badges",

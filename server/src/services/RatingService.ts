@@ -249,28 +249,41 @@ export class RatingService {
   async getLeaderboard(limit: number = 100, offset: number = 0) {
     if (!supabase) throw new Error('Supabase not initialized');
     
-    const { data, error } = await supabase
+    // First get the ratings
+    const { data: ratingsData, error: ratingsError } = await supabase
       .from('player_ratings')
-      .select(`
-        user_id,
-        current_rating,
-        games_played,
-        wins,
-        losses,
-        peak_rating,
-        users!inner(username)
-      `)
+      .select('*')
       .order('current_rating', { ascending: false })
       .range(offset, offset + limit - 1);
 
-    if (error) {
-      throw new Error(`Failed to get leaderboard: ${error.message}`);
+    if (ratingsError) {
+      throw new Error(`Failed to get leaderboard: ${ratingsError.message}`);
     }
 
-    return data.map((row, index) => ({
+    if (!ratingsData || ratingsData.length === 0) {
+      return [];
+    }
+
+    // Get usernames for these user IDs
+    const userIds = ratingsData.map(r => r.user_id);
+    const { data: usersData, error: usersError } = await supabase
+      .from('users')
+      .select('id, username')
+      .in('id', userIds);
+
+    if (usersError) {
+      throw new Error(`Failed to get usernames: ${usersError.message}`);
+    }
+
+    // Create a map of user IDs to usernames
+    const usernameMap = new Map(
+      (usersData || []).map(u => [u.id, u.username])
+    );
+
+    return ratingsData.map((row, index) => ({
       rank: offset + index + 1,
       userId: row.user_id,
-      username: (row as any).users.username,
+      username: usernameMap.get(row.user_id) || 'Unknown',
       rating: row.current_rating,
       gamesPlayed: row.games_played,
       winRate: row.games_played > 0 ? (row.wins / row.games_played) * 100 : 0,
@@ -285,22 +298,64 @@ export class RatingService {
   async getMatchHistory(userId: string, limit: number = 20) {
     if (!supabase) throw new Error('Supabase not initialized');
     
-    const { data, error } = await supabase
+    // First get the matches
+    const { data: matchesData, error: matchesError } = await supabase
       .from('ranked_matches')
-      .select(`
-        *,
-        player1:users!player1_id(username),
-        player2:users!player2_id(username)
-      `)
+      .select('*')
       .or(`player1_id.eq.${userId},player2_id.eq.${userId}`)
       .order('created_at', { ascending: false })
       .limit(limit);
 
-    if (error) {
-      throw new Error(`Failed to get match history: ${error.message}`);
+    if (matchesError) {
+      throw new Error(`Failed to get match history: ${matchesError.message}`);
     }
 
-    return data;
+    if (!matchesData || matchesData.length === 0) {
+      return [];
+    }
+
+    // Get all unique user IDs from matches
+    const userIds = new Set<string>();
+    matchesData.forEach(match => {
+      userIds.add(match.player1_id);
+      userIds.add(match.player2_id);
+    });
+
+    // Get usernames for these user IDs
+    const { data: usersData, error: usersError } = await supabase
+      .from('users')
+      .select('id, username')
+      .in('id', Array.from(userIds));
+
+    if (usersError) {
+      throw new Error(`Failed to get usernames: ${usersError.message}`);
+    }
+
+    // Create a map of user IDs to usernames
+    const usernameMap = new Map(
+      (usersData || []).map(u => [u.id, u.username])
+    );
+
+    // Transform the data to include usernames and format for frontend
+    return matchesData.map(match => {
+      const isPlayer1 = match.player1_id === userId;
+      const opponentId = isPlayer1 ? match.player2_id : match.player1_id;
+      const playerRating = isPlayer1 ? match.player1_rating_before : match.player2_rating_before;
+      const opponentRating = isPlayer1 ? match.player2_rating_before : match.player1_rating_before;
+      const ratingChange = isPlayer1 ? match.player1_rating_change : match.player2_rating_change;
+      
+      return {
+        matchId: match.id,
+        opponentName: usernameMap.get(opponentId) || 'Unknown',
+        opponentRating,
+        result: match.winner_id === userId ? 'win' : 'loss',
+        ratingChange,
+        newRating: playerRating + ratingChange,
+        timestamp: match.created_at,
+        gameMode: match.game_mode || 'classic',
+        duration: match.duration_seconds || 0
+      };
+    });
   }
 
   /**

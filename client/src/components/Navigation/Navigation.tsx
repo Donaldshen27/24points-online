@@ -56,7 +56,7 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
           
           <div className="nav-links">
             <button 
-              className={`nav-link ${currentView === 'lobby' || currentView === 'waiting_room' || currentView === 'in_game' ? 'active' : ''}`}
+              className={`nav-link ${currentView === 'lobby' || currentView === 'ranked_lobby' || currentView === 'waiting_room' || currentView === 'in_game' ? 'active' : ''}`}
               onClick={onPlayClick}
             >
               <span className="nav-link-icon">🎮</span>
@@ -92,7 +92,7 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
           {/* Mobile navigation buttons */}
           <div className="nav-links-mobile">
             <button 
-              className={`nav-link ${currentView === 'lobby' || currentView === 'waiting_room' || currentView === 'in_game' ? 'active' : ''}`}
+              className={`nav-link ${currentView === 'lobby' || currentView === 'ranked_lobby' || currentView === 'waiting_room' || currentView === 'in_game' ? 'active' : ''}`}
               onClick={onPlayClick}
               title={t('app.nav.play')}
             >

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
 import { leaderboardCache } from '../../services/puzzleRecordsCache';
+import { RankBadge } from '../Rank/RankBadge';
 import './Leaderboard.css';
 
 interface LeaderboardEntry {
@@ -16,6 +17,17 @@ interface LeaderboardEntry {
   rareBadges?: number;
 }
 
+interface RankedLeaderboardEntry {
+  rank: number;
+  userId: string;
+  username: string;
+  rating: number;
+  gamesPlayed: number;
+  winRate: number;
+  tier: string;
+  peakRating: number;
+}
+
 interface LeaderboardData {
   recordHoldings: LeaderboardEntry[];
   totalPuzzles: number;
@@ -23,6 +35,7 @@ interface LeaderboardData {
 
 type ViewMode = 'records' | 'elo' | 'badges';
 type BadgeSortMode = 'points' | 'count' | 'legendary' | 'epic' | 'rare';
+type RankedRegion = 'global' | 'na' | 'eu' | 'asia';
 
 export const Leaderboard: React.FC = () => {
   const { t } = useTranslation();
@@ -31,6 +44,11 @@ export const Leaderboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [currentUsername, setCurrentUsername] = useState<string>('');
   const [badgeSortMode, setBadgeSortMode] = useState<BadgeSortMode>('points');
+  const [rankedLeaderboard, setRankedLeaderboard] = useState<RankedLeaderboardEntry[]>([]);
+  const [rankedRegion, setRankedRegion] = useState<RankedRegion>('global');
+  const [rankedLoading, setRankedLoading] = useState(false);
+  const [rankedPage, setRankedPage] = useState(0);
+  const [hasMoreRanked, setHasMoreRanked] = useState(true);
 
   useEffect(() => {
     // Get current username from localStorage or auth
@@ -54,6 +72,13 @@ export const Leaderboard: React.FC = () => {
     const interval = setInterval(fetchLeaderboardInBackground, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  // Fetch ranked leaderboard when tab is selected
+  useEffect(() => {
+    if (viewMode === 'elo' && rankedLeaderboard.length === 0) {
+      fetchRankedLeaderboard(0);
+    }
+  }, [viewMode]);
 
   const fetchLeaderboard = () => {
     socketService.emit('get-leaderboard-data', (data: LeaderboardData) => {
@@ -82,15 +107,6 @@ export const Leaderboard: React.FC = () => {
     return ((recordCount / leaderboardData.totalPuzzles) * 100).toFixed(1);
   };
 
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1: return '🥇';
-      case 2: return '🥈';
-      case 3: return '🥉';
-      default: return `#${rank}`;
-    }
-  };
-
   const sortBadgeEntries = (entries: LeaderboardEntry[]) => {
     const filtered = entries.filter(entry => entry.badgeCount && entry.badgeCount > 0);
     
@@ -109,6 +125,32 @@ export const Leaderboard: React.FC = () => {
         return filtered;
     }
   };
+
+  const fetchRankedLeaderboard = (page: number = 0, append: boolean = false) => {
+    setRankedLoading(true);
+    const limit = 50;
+    const offset = page * limit;
+
+    socketService.emit('ranked:get-leaderboard', { limit, offset }, (data: RankedLeaderboardEntry[]) => {
+      if (append) {
+        setRankedLeaderboard(prev => [...prev, ...data]);
+      } else {
+        setRankedLeaderboard(data);
+      }
+      setHasMoreRanked(data.length === limit);
+      setRankedLoading(false);
+    });
+  };
+
+  const getRankIcon = (rank: number) => {
+    switch (rank) {
+      case 1: return '🥇';
+      case 2: return '🥈';
+      case 3: return '🥉';
+      default: return `#${rank}`;
+    }
+  };
+
 
   if (loading) {
     return (
@@ -137,9 +179,8 @@ export const Leaderboard: React.FC = () => {
           {t('leaderboard.badges')}
         </button>
         <button
-          className={`toggle-btn ${viewMode === 'elo' ? 'active' : ''} disabled`}
+          className={`toggle-btn ${viewMode === 'elo' ? 'active' : ''}`}
           onClick={() => setViewMode('elo')}
-          disabled
         >
           {t('leaderboard.eloRank')}
         </button>
@@ -282,10 +323,94 @@ export const Leaderboard: React.FC = () => {
       )}
 
       {viewMode === 'elo' && (
-        <div className="coming-soon">
-          <div className="coming-soon-icon">🏗️</div>
-          <h3>{t('leaderboard.comingSoon')}</h3>
-          <p>{t('leaderboard.eloDescription')}</p>
+        <div className="leaderboard-content">
+          <div className="leaderboard-header">
+            <p className="total-puzzles">
+              {t('leaderboard.rankedLeaderboard')}
+            </p>
+            <div className="region-filter">
+              <label>{t('leaderboard.region')}:</label>
+              <select 
+                value={rankedRegion} 
+                onChange={(e) => {
+                  setRankedRegion(e.target.value as RankedRegion);
+                  setRankedPage(0);
+                  fetchRankedLeaderboard(0);
+                }}
+                className="region-select"
+              >
+                <option value="global">{t('leaderboard.global')}</option>
+                <option value="na">{t('leaderboard.northAmerica')}</option>
+                <option value="eu">{t('leaderboard.europe')}</option>
+                <option value="asia">{t('leaderboard.asia')}</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="leaderboard-list ranked-list">
+            {rankedLoading && rankedLeaderboard.length === 0 ? (
+              <div className="loading-spinner">{t('app.loading')}</div>
+            ) : rankedLeaderboard.length === 0 ? (
+              <div className="empty-state">
+                {t('leaderboard.noRankedPlayers')}
+              </div>
+            ) : (
+              <>
+                {rankedLeaderboard.map((entry) => (
+                  <div
+                    key={entry.userId}
+                    className={`leaderboard-entry ranked-entry ${entry.username === currentUsername ? 'current-user' : ''}`}
+                  >
+                    <div className="rank-column">
+                      {getRankIcon(entry.rank)}
+                    </div>
+                    <div className="username-column">
+                      <RankBadge tier={entry.tier as any} rating={entry.rating} size="small" />
+                      <span className="username">{entry.username}</span>
+                      {entry.username === currentUsername && (
+                        <span className="you-badge">{t('leaderboard.you')}</span>
+                      )}
+                    </div>
+                    <div className="rating-column">
+                      <span className="rating-value">{entry.rating}</span>
+                      <span className="rating-label">{t('leaderboard.rating')}</span>
+                      {entry.peakRating > entry.rating && (
+                        <span className="peak-rating">
+                          {t('leaderboard.peak')}: {entry.peakRating}
+                        </span>
+                      )}
+                    </div>
+                    <div className="stats-column">
+                      <div className="games-played">
+                        <span className="stat-value">{entry.gamesPlayed}</span>
+                        <span className="stat-label">{t('leaderboard.games')}</span>
+                      </div>
+                      <div className="win-rate">
+                        <span className="stat-value">{entry.winRate.toFixed(1)}%</span>
+                        <span className="stat-label">{t('leaderboard.winRate')}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {hasMoreRanked && (
+                  <div className="load-more-container">
+                    <button
+                      className="load-more-btn"
+                      onClick={() => {
+                        const nextPage = rankedPage + 1;
+                        setRankedPage(nextPage);
+                        fetchRankedLeaderboard(nextPage, true);
+                      }}
+                      disabled={rankedLoading}
+                    >
+                      {rankedLoading ? t('leaderboard.loading') : t('leaderboard.loadMore')}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>

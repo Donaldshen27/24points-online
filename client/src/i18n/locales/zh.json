@@ -322,6 +322,9 @@
     "createRoom": "创建新房间",
     "joinRoom": "加入房间",
     "joinBattle": "加入对战",
+    "rankedPlay": "排位对战",
+    "rankedPlayDesc": "参加排位赛",
+    "findMatch": "寻找对手",
     "spectate": "👁️ 观战",
     "soloPractice": "单人练习",
     "placeholders": {
@@ -445,6 +448,30 @@
     },
     "continueNow": "立即继续",
     "firstSolve": "{{winner}} 首次解出，用时 {{time}} 秒！"
+  },
+  "ranked": {
+    "title": "匹配对战",
+    "rankedMode": "排位赛",
+    "casualMode": "休闲赛",
+    "authRequired": "登录后可参加排位赛并追踪您的段位",
+    "signIn": "登录",
+    "selectGameMode": "选择游戏模式",
+    "joinRankedQueue": "寻找排位对手",
+    "joinCasualQueue": "寻找休闲对手",
+    "leaveQueue": "退出队列",
+    "queueTime": "排队时间",
+    "searchRange": "搜索范围",
+    "estimatedWait": "预计等待",
+    "estimatedSeconds": "约{{seconds}}秒",
+    "calculating": "计算中...",
+    "placementMatches": "还有{{count}}场定级赛",
+    "recentMatches": "最近对局",
+    "win": "胜利",
+    "loss": "失败",
+    "justNow": "刚刚",
+    "minutesAgo": "{{count}}分钟前",
+    "hoursAgo": "{{count}}小时前",
+    "daysAgo": "{{count}}天前"
   },
   "gameOver": {
     "spectator": {
@@ -579,7 +606,7 @@
   "leaderboard": {
     "recordHoldings": "记录保持者",
     "badges": "徽章排名",
-    "eloRank": "Elo排名（即将推出）",
+    "eloRank": "Elo排名",
     "totalPuzzles": "总题目数：{{count}}",
     "noRecordsYet": "还没有记录。成为第一个创造记录的人！",
     "noBadgesYet": "还没有获得徽章。开始游戏解锁徽章！",
@@ -596,7 +623,19 @@
     "sortByRare": "稀有徽章",
     "loading": "加载中...",
     "comingSoon": "即将推出",
-    "eloDescription": "Elo排名系统将跟踪您的竞技表现"
+    "eloDescription": "Elo排名系统将跟踪您的竞技表现",
+    "rankedLeaderboard": "排位排行榜",
+    "region": "地区",
+    "global": "全球",
+    "northAmerica": "北美",
+    "europe": "欧洲",
+    "asia": "亚洲",
+    "noRankedPlayers": "暂无排位玩家",
+    "rating": "段位分",
+    "peak": "巅峰",
+    "games": "场次",
+    "winRate": "胜率",
+    "loadMore": "加载更多"
   },
   "patchNotes": {
     "title": "更新日志"
@@ -612,7 +651,18 @@
     "fastestSolve": "最快解题",
     "longestStreak": "最长连胜",
     "recentGames": "最近游戏",
-    "noRecentGames": "暂无最近游戏记录"
+    "noRecentGames": "暂无最近游戏记录",
+    "tabs": {
+      "overview": "概览",
+      "ranked": "排位",
+      "badges": "徽章"
+    },
+    "placementMatches": "还有{{count}}场定级赛",
+    "matchHistory": "对战记录",
+    "win": "胜利",
+    "loss": "失败",
+    "noMatchHistory": "暂无排位对战记录",
+    "noRankedStats": "参加排位赛查看您的统计数据"
   },
   "badges": {
     "featuredBadges": "精选徽章",

@@ -10,9 +10,10 @@ import './Lobby.css';
 interface LobbyProps {
   onRoomJoined: (room: GameRoom, playerId: string, isReconnection?: boolean) => void;
   authUser?: AuthUser | null;
+  onRankedClick?: () => void;
 }
 
-export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
+export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser, onRankedClick }) => {
   const { t } = useTranslation();
   const [playerName, setPlayerName] = useState(() => {
     // Priority: authenticated user > cached guest username > empty
@@ -207,6 +208,27 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser }) => {
 
         {/* Game Options */}
         <div className="game-options">
+          {/* Ranked Matchmaking */}
+          <div className="game-option-card ranked-option">
+            <div className="option-icon">🎯</div>
+            <h3 className="option-title">
+              <span className="title-full">{t('lobby.rankedPlay', 'Ranked Play')}</span>
+              <span className="title-mobile">Ranked</span>
+            </h3>
+            <p className="option-description">
+              <span className="desc-full">{t('lobby.rankedPlayDesc', 'Compete in ranked matches')}</span>
+              <span className="desc-mobile">Compete</span>
+            </p>
+            <button 
+              onClick={onRankedClick}
+              className="ranked-play-btn"
+              aria-label="Play ranked 24 Points matches"
+            >
+              <span className="btn-text-full">{t('lobby.findMatch', 'Find Match')}</span>
+              <span className="btn-text-mobile">Play</span>
+            </button>
+          </div>
+
           {/* Quick Play */}
           <div className="game-option-card">
             <div className="option-icon">⚡</div>

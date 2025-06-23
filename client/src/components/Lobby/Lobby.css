@@ -229,6 +229,40 @@
   transform: none;
 }
 
+/* Ranked Play Button */
+.ranked-play-btn {
+  width: 100%;
+  padding: var(--space-4);
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  cursor: pointer;
+  transition: var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.ranked-play-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(135deg, #e67e22, #d35400);
+}
+
+.ranked-play-btn:disabled {
+  background: var(--color-button-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ranked-option {
+  background: linear-gradient(135deg, #fef9e7, #fcf3cf);
+  border: 2px solid #f39c12;
+}
+
 /* Join with Code */
 .join-code-section {
   display: flex;

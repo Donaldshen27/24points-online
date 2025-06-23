@@ -413,8 +413,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
             leftName={currentPlayer?.name}
             rightName={opponent?.name}
             isCurrentPlayerLeft={!isSpectator}
-            leftIsBot={currentPlayer?.isAI || false}
-            rightIsBot={opponent?.isAI || false}
+            leftIsBot={currentPlayer?.isAI ?? false}
+            rightIsBot={opponent?.isAI ?? false}
           />
         </div>
       )}

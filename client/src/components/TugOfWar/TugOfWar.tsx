@@ -26,12 +26,12 @@ export const TugOfWar: React.FC<TugOfWarProps> = ({
   
   // Calculate rope center position (as percentage)
   // Range: 10% to 90% of container width
-  const ropePosition = 50 + (position * 10);
+  const ropePosition = 50 - (position * 10);
   
   // Determine who's winning for visual feedback
-  const leftWinning = position > 0;
-  const rightWinning = position < 0;
-  const tied = position === 0;
+  const leftWinning = leftScore > rightScore;
+  const rightWinning = rightScore > leftScore;
+  const tied = leftScore === rightScore;
 
   return (
     <div className="tug-of-war-container">

@@ -4,6 +4,7 @@ import { RatingService } from '../services/RatingService';
 import { MatchReplayService } from '../services/MatchReplayService';
 import roomManager from './RoomManager';
 import { v4 as uuidv4 } from 'uuid';
+import { userService } from '../services/UserService';
 
 export function setupRankedHandlers(io: Server, socket: Socket) {
   const matchmakingService = MatchmakingService.getInstance();
@@ -76,6 +77,13 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
       const username = (socket as any).username;
       const gameMode = data.gameMode || 'classic';
 
+      // Ensure user exists in the database for ranked play
+      const userExists = await userService.ensureUserExists(userId, username);
+      if (!userExists) {
+        socket.emit('ranked:error', { message: 'Failed to create user account' });
+        return;
+      }
+
       // Join the matchmaking queue
       await matchmakingService.joinQueue(
         userId,
@@ -144,6 +152,11 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
       }
 
       const userId = (socket as any).userId;
+      const username = (socket as any).username || 'Unknown';
+      
+      // Ensure user exists before getting rating
+      await userService.ensureUserExists(userId, username);
+      
       const rating = await ratingService.getPlayerRating(userId);
       
       socket.emit('ranked:rating', {
@@ -223,6 +236,9 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
       }
       
       const gameMode = data.gameMode || 'classic';
+
+      // Ensure user exists in the database (even for casual)
+      await userService.ensureUserExists(userId, username);
 
       // Join the casual matchmaking queue
       await matchmakingService.joinQueue(

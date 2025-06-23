@@ -6,6 +6,7 @@ import './Navigation.css';
 
 interface NavigationProps {
   username?: string;
+  rating?: number;
   onSignOut?: () => void;
   onAuthSuccess?: (user: any) => void;
   onPuzzlesClick?: () => void;
@@ -16,7 +17,7 @@ interface NavigationProps {
   currentView?: string;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onAuthSuccess, onPuzzlesClick, onPlayClick, onLeaderboardClick, onBadgesClick, onProfileClick, currentView }) => {
+const Navigation: React.FC<NavigationProps> = ({ username, rating, onSignOut, onAuthSuccess, onPuzzlesClick, onPlayClick, onLeaderboardClick, onBadgesClick, onProfileClick, currentView }) => {
   const { t } = useTranslation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
@@ -125,16 +126,20 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onAuthSucc
           
           {username ? (
             <>
-              <div className="nav-stats">
-                <div className="stat-item">
-                  <span className="stat-label">Rating</span>
-                  <span className="stat-value">1500</span>
+              {rating !== undefined && (
+                <div className="nav-rating-display">
+                  <div className="rating-badge">
+                    <div className="rating-tier">
+                      {rating >= 2000 ? '👑' : rating >= 1800 ? '💎' : rating >= 1600 ? '🏆' : rating >= 1400 ? '⭐' : rating >= 1200 ? '🎯' : '🌟'}
+                    </div>
+                    <div className="rating-content">
+                      <span className="rating-label">ELO</span>
+                      <span className="rating-value">{rating}</span>
+                    </div>
+                    <div className="rating-glow"></div>
+                  </div>
                 </div>
-                <div className="stat-item">
-                  <span className="stat-label">Games</span>
-                  <span className="stat-value">0</span>
-                </div>
-              </div>
+              )}
               
               <div 
                 className="nav-user"

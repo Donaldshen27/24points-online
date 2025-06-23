@@ -54,6 +54,7 @@ function App() {
   const [showPatchNotes, setShowPatchNotes] = useState<boolean>(false)
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
+  const [userRating, setUserRating] = useState<number | undefined>(undefined)
   const { user: authUser, logout } = useAuth()
   
   // Use ref to access current appState in event handlers without causing re-renders
@@ -92,6 +93,29 @@ function App() {
       setAppState(AppState.TEST_MODE);
     }
   }, []);
+
+  // Fetch user rating when authenticated
+  useEffect(() => {
+    if (authUser && isConnected) {
+      // Listen for rating response
+      const handleRatingResponse = (rating: any) => {
+        if (rating && rating.currentRating !== undefined) {
+          setUserRating(rating.currentRating)
+        } else {
+          setUserRating(undefined)
+        }
+      }
+      
+      socketService.on('ranked:rating', handleRatingResponse)
+      socketService.emit('ranked:get-rating')
+      
+      return () => {
+        socketService.off('ranked:rating', handleRatingResponse)
+      }
+    } else {
+      setUserRating(undefined)
+    }
+  }, [authUser, isConnected])
 
   useEffect(() => {
     console.log('[App] useEffect mounting, connecting to socket...')
@@ -247,6 +271,7 @@ function App() {
       <DynamicSEO />
       <Navigation 
         username={authUser?.username || currentRoom?.players.find(p => p.id === playerId)?.name} 
+        rating={userRating}
         onSignOut={authUser ? handleSignOut : handleLeaveRoom}
         onAuthSuccess={handleAuthSuccess}
         onPuzzlesClick={() => handleNavigation(AppState.PUZZLES)}

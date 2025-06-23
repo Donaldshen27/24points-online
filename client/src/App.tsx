@@ -10,6 +10,7 @@ import { DeckTest } from './components/DeckTest/DeckTest'
 import { CalculatorTest } from './components/CalculatorTest/CalculatorTest'
 import { InteractiveTableTest } from './components/InteractiveTableTest/InteractiveTableTest'
 import { AuthTest } from './components/AuthTest/AuthTest'
+import { ELOTest } from './components/ELOTest/ELOTest'
 import { PuzzleRecordsView } from './components/PuzzleRecordsView/PuzzleRecordsView'
 import { Leaderboard } from './components/Leaderboard/Leaderboard'
 import { BadgesPage } from './components/Badges/BadgesPage'
@@ -47,7 +48,7 @@ function App() {
   const [appState, setAppState] = useState<AppState>(AppState.CONNECTING)
   const [currentRoom, setCurrentRoom] = useState<GameRoom | null>(null)
   const [playerId, setPlayerId] = useState<string>('')
-  const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | 'auth' | null>(null)
+  const [testComponent, setTestComponent] = useState<'deck' | 'calculator' | 'interactive' | 'auth' | 'elo' | null>(null)
   const [onlineUsers, setOnlineUsers] = useState<number>(0)
   const [isSpectator, setIsSpectator] = useState<boolean>(false)
   const [showPatchNotes, setShowPatchNotes] = useState<boolean>(false)
@@ -84,6 +85,14 @@ function App() {
     }
   }, [])
 
+  // Check URL on mount and handle /testmode route
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/testmode' || path.startsWith('/testmode/')) {
+      setAppState(AppState.TEST_MODE);
+    }
+  }, []);
+
   useEffect(() => {
     console.log('[App] useEffect mounting, connecting to socket...')
     
@@ -92,7 +101,10 @@ function App() {
     
     const handleConnect = () => {
       setIsConnected(true)
-      setAppState(AppState.LOBBY)
+      // Only set to LOBBY if not already in test mode or connecting
+      if (appStateRef.current !== AppState.TEST_MODE && appStateRef.current !== AppState.CONNECTING) {
+        setAppState(AppState.LOBBY)
+      }
       
       // Get initial online users count
       socketService.emit('get-online-users', (data: { count: number }) => {
@@ -231,11 +243,6 @@ function App() {
       <Navigation 
         username={authUser?.username || currentRoom?.players.find(p => p.id === playerId)?.name} 
         onSignOut={authUser ? handleSignOut : handleLeaveRoom}
-        onTestModeToggle={() => {
-          handleNavigation(appState === AppState.TEST_MODE ? AppState.LOBBY : AppState.TEST_MODE);
-          setTestComponent(null);
-        }}
-        isTestMode={appState === AppState.TEST_MODE}
         onAuthSuccess={handleAuthSuccess}
         onPuzzlesClick={() => handleNavigation(AppState.PUZZLES)}
         onPlayClick={() => handleNavigation(AppState.LOBBY)}
@@ -311,6 +318,25 @@ function App() {
 
         {appState === AppState.TEST_MODE && (
           <div className="test-mode">
+            <div style={{ marginBottom: '2rem' }}>
+              <button 
+                style={{
+                  background: 'var(--color-surface)',
+                  color: 'var(--color-text)',
+                  border: '1px solid var(--color-border)',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '1rem'
+                }}
+                onClick={() => {
+                  window.history.replaceState({}, '', '/');
+                  setAppState(AppState.LOBBY);
+                }}
+              >
+                ← Back to Game
+              </button>
+            </div>
             {!testComponent && (
               <div className="test-selector">
                 <h2>{t('app.testMenu.title')}</h2>
@@ -327,6 +353,9 @@ function App() {
                   <button onClick={() => setTestComponent('auth')}>
                     Authentication Test
                   </button>
+                  <button onClick={() => setTestComponent('elo')}>
+                    ELO Rating Test
+                  </button>
                 </div>
               </div>
             )}
@@ -335,6 +364,7 @@ function App() {
             {testComponent === 'calculator' && <CalculatorTest />}
             {testComponent === 'interactive' && <InteractiveTableTest />}
             {testComponent === 'auth' && <AuthTest />}
+            {testComponent === 'elo' && <ELOTest />}
             
             {testComponent && (
               <div className="test-back">

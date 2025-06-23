@@ -1062,6 +1062,234 @@ export const handleConnection = (io: Server, socket: Socket) => {
     }
   });
 
+  // ELO Test handlers
+  socket.on('get-test-players', async (callback: (data: { players: any[] }) => void) => {
+    try {
+      const { supabase, isDatabaseConfigured } = require('../db/supabase');
+      
+      if (!isDatabaseConfigured() || !supabase) {
+        console.log('[get-test-players] Database not configured');
+        callback({ players: [] });
+        return;
+      }
+      
+      // Try both 'users' and 'players' tables to see which one exists
+      let players: any[] = [];
+      
+      // First try the 'players' table
+      const { data: playersData, error: playersError } = await supabase
+        .from('players')
+        .select('id, username, rating')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (!playersError && playersData) {
+        console.log('[get-test-players] Found players in "players" table:', playersData.length);
+        players = playersData;
+      } else {
+        // If that fails, try the 'users' table (without rating column)
+        const { data: usersData, error: usersError } = await supabase
+          .from('users')
+          .select('id, username')
+          .order('created_at', { ascending: false })
+          .limit(10);
+        
+        if (!usersError && usersData) {
+          console.log('[get-test-players] Found players in "users" table:', usersData.length);
+          // Add default rating of 1000 to each user
+          players = usersData.map(user => ({
+            ...user,
+            rating: 1000
+          }));
+        } else {
+          console.error('[get-test-players] Error fetching from both tables:', {
+            playersError,
+            usersError
+          });
+        }
+      }
+      
+      // Make sure our test user is in the list
+      const testUserId = '594e1ba2-d563-4cdf-8f1f-16ea3604ac2d';
+      const hasTestUser = players.some(p => p.id === testUserId);
+      
+      if (!hasTestUser) {
+        // Add a mock test user if not found
+        players.unshift({
+          id: testUserId,
+          username: 'Test User',
+          rating: 1000
+        });
+      }
+      
+      console.log('[get-test-players] Returning players:', players);
+      callback({ players });
+    } catch (error) {
+      console.error('Error in get-test-players:', error);
+      callback({ players: [] });
+    }
+  });
+
+  socket.on('test-elo-update', async (data: {
+    player1Id: string;
+    player2Id: string;
+    winnerId: string;
+    gameMode: string;
+    finalScore: any;
+    roundsPlayed: number;
+    duration: number;
+  }, callback: (response: any) => void) => {
+    try {
+      console.log('[test-elo-update] Received data:', data);
+      
+      // Validate required fields
+      if (!data.player1Id || !data.player2Id || !data.winnerId) {
+        callback({ 
+          success: false, 
+          error: `Missing required player IDs. Got: player1Id=${data.player1Id}, player2Id=${data.player2Id}, winnerId=${data.winnerId}` 
+        });
+        return;
+      }
+      
+      // Check if user is authenticated
+      if (!(socket as any).isAuthenticated) {
+        callback({ success: false, error: 'Authentication required' });
+        return;
+      }
+      
+      const { RatingService } = require('../services/RatingService');
+      const ratingService = new RatingService();
+      
+      // Determine winner and loser
+      const loserId = data.winnerId === data.player1Id ? data.player2Id : data.player1Id;
+      
+      // Calculate rounds won by each player
+      const winnerScore = data.finalScore[data.winnerId] || 0;
+      const loserScore = data.finalScore[loserId] || 0;
+      
+      // Update ratings using the correct method signature
+      const result = await ratingService.updateRatingsAfterMatch(
+        data.winnerId,
+        loserId,
+        data.gameMode as 'classic' | 'super' | 'extended',
+        {
+          duration: Math.floor(data.duration / 1000), // Convert to seconds
+          roundsPlayed: data.roundsPlayed,
+          winnerRoundsWon: winnerScore,
+          loserRoundsWon: loserScore
+        }
+      );
+      
+      console.log('[test-elo-update] Result:', JSON.stringify(result, null, 2));
+      
+      // Format the response - map winner/loser back to player1/player2
+      const player1IsWinner = data.player1Id === data.winnerId;
+      
+      callback({
+        success: true,
+        newRatings: {
+          player1: player1IsWinner ? {
+            before: result.winnerUpdate.oldRating,
+            after: result.winnerUpdate.newRating,
+            change: result.winnerUpdate.ratingChange
+          } : {
+            before: result.loserUpdate.oldRating,
+            after: result.loserUpdate.newRating,
+            change: result.loserUpdate.ratingChange
+          },
+          player2: player1IsWinner ? {
+            before: result.loserUpdate.oldRating,
+            after: result.loserUpdate.newRating,
+            change: result.loserUpdate.ratingChange
+          } : {
+            before: result.winnerUpdate.oldRating,
+            after: result.winnerUpdate.newRating,
+            change: result.winnerUpdate.ratingChange
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Error in test-elo-update:', error);
+      callback({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  socket.on('test-reset-ratings', async (data: {
+    player1Id: string;
+    player2Id: string;
+    newRating: number;
+  }, callback: (response: any) => void) => {
+    try {
+      console.log('[test-reset-ratings] Received data:', data);
+      
+      // Check if user is authenticated
+      if (!(socket as any).isAuthenticated) {
+        callback({ success: false, error: 'Authentication required' });
+        return;
+      }
+      
+      const { supabase, isDatabaseConfigured } = require('../db/supabase');
+      
+      if (!isDatabaseConfigured() || !supabase) {
+        callback({ success: false, error: 'Database not configured' });
+        return;
+      }
+      
+      // Reset both players' ratings
+      const resetRating = data.newRating || 1200;
+      
+      // Update player_ratings table for both players
+      const updates = await Promise.all([
+        supabase
+          .from('player_ratings')
+          .update({ 
+            current_rating: resetRating,
+            peak_rating: resetRating,
+            games_played: 0,
+            wins: 0,
+            losses: 0,
+            win_streak: 0,
+            loss_streak: 0,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', data.player1Id),
+        supabase
+          .from('player_ratings')
+          .update({ 
+            current_rating: resetRating,
+            peak_rating: resetRating,
+            games_played: 0,
+            wins: 0,
+            losses: 0,
+            win_streak: 0,
+            loss_streak: 0,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', data.player2Id)
+      ]);
+      
+      // Check for errors
+      const errors = updates.filter(result => result.error);
+      if (errors.length > 0) {
+        console.error('[test-reset-ratings] Errors:', errors);
+        callback({ 
+          success: false, 
+          error: 'Failed to reset one or more ratings' 
+        });
+        return;
+      }
+      
+      callback({ 
+        success: true, 
+        message: `Both players' ratings have been reset to ${resetRating}!` 
+      });
+      
+    } catch (error) {
+      console.error('Error in test-reset-ratings:', error);
+      callback({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
     

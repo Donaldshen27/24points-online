@@ -7,8 +7,6 @@ import './Navigation.css';
 interface NavigationProps {
   username?: string;
   onSignOut?: () => void;
-  onTestModeToggle?: () => void;
-  isTestMode?: boolean;
   onAuthSuccess?: (user: any) => void;
   onPuzzlesClick?: () => void;
   onPlayClick?: () => void;
@@ -18,7 +16,7 @@ interface NavigationProps {
   currentView?: string;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestModeToggle, isTestMode, onAuthSuccess, onPuzzlesClick, onPlayClick, onLeaderboardClick, onBadgesClick, onProfileClick, currentView }) => {
+const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onAuthSuccess, onPuzzlesClick, onPlayClick, onLeaderboardClick, onBadgesClick, onProfileClick, currentView }) => {
   const { t } = useTranslation();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authDefaultTab, setAuthDefaultTab] = useState<'signin' | 'signup'>('signin');
@@ -123,17 +121,6 @@ const Navigation: React.FC<NavigationProps> = ({ username, onSignOut, onTestMode
         </div>
         
         <div className="nav-right">
-          {onTestModeToggle && (
-            <button 
-              className="test-mode-btn"
-              onClick={onTestModeToggle}
-              title={isTestMode ? t('app.exitTestMode') : t('app.testMode')}
-            >
-              <span className="test-mode-full">{isTestMode ? t('app.exitTestMode') : t('app.testMode')}</span>
-              <span className="test-mode-mobile">{isTestMode ? '✖' : '🧪'}</span>
-            </button>
-          )}
-          
           <LanguageToggle />
           
           {username ? (

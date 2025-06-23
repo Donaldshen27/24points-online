@@ -1,0 +1,130 @@
+.elo-test {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.elo-test h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.test-info {
+  background: var(--color-surface);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.test-controls {
+  background: var(--color-surface);
+  padding: 2rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.opponent-selector {
+  margin-bottom: 2rem;
+}
+
+.opponent-selector label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.opponent-selector select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.test-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.test-actions button {
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.win-button {
+  background: var(--color-primary);
+  color: white;
+}
+
+.win-button:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.lose-button {
+  background: var(--color-error);
+  color: white;
+}
+
+.lose-button:hover:not(:disabled) {
+  background: var(--color-error-dark);
+}
+
+.reset-button {
+  background: var(--color-secondary);
+  color: white;
+}
+
+.reset-button:hover:not(:disabled) {
+  background: var(--color-secondary-dark);
+}
+
+.test-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.test-result {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.test-result pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.test-notes {
+  background: var(--color-surface);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.test-notes h3 {
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+}
+
+.test-notes ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.test-notes li {
+  margin-bottom: 0.5rem;
+  color: var(--color-text-secondary);
+}

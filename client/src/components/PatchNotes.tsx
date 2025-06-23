@@ -13,6 +13,15 @@ interface PatchNote {
 
 const patchNotes: PatchNote[] = [
   {
+    date: '2025-01-23',
+    version: '2.0.2',
+    changes: [
+      { type: 'fix', description: 'Fixed authentication API URL issue preventing signup/login on production' },
+      { type: 'fix', description: 'Resolved double-slash URL bug (//api/auth/register) in server endpoints' },
+      { type: 'fix', description: 'Added robust trailing slash handling for all API and WebSocket connections' }
+    ]
+  },
+  {
     date: '2025-01-22',
     version: '2.0.1',
     changes: [

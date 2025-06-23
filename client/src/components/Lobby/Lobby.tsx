@@ -328,7 +328,17 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser, onRankedCl
               const gameStatus = getGameStatus(room);
               
               return (
-                <div key={room.id} className="game-card">
+                <div 
+                  key={room.id} 
+                  className="game-card"
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    e.currentTarget.style.setProperty('--mouse-x', `${x}%`);
+                    e.currentTarget.style.setProperty('--mouse-y', `${y}%`);
+                  }}
+                >
                   {/* Player Match Display */}
                   <div className="player-match">
                     <div className="player-info">
@@ -362,7 +372,29 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser, onRankedCl
                   
                   {/* Game Meta Info */}
                   <div className="game-meta">
-                    <span className="room-code-display">{t('lobby.status.roomCode', { code: room.id })}</span>
+                    <div className="room-code-modern">
+                      <span className="room-code-icon">#</span>
+                      <span className="room-code-value">{room.id}</span>
+                      <button 
+                        className="room-code-copy"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigator.clipboard.writeText(room.id);
+                          const button = e.currentTarget;
+                          button.classList.add('copied');
+                          setTimeout(() => button.classList.remove('copied'), 2000);
+                        }}
+                        title={t('lobby.copyRoomCode')}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        <svg className="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </button>
+                    </div>
                     <span className={`game-status ${gameStatus.className}`}>
                       {gameStatus.text}
                     </span>

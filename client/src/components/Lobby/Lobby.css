@@ -229,7 +229,7 @@
   transform: none;
 }
 
-/* Ranked Play Button */
+/* Ranked Play Button - Modern Design */
 .ranked-play-btn {
   width: 100%;
   padding: var(--space-4);
@@ -240,27 +240,109 @@
   font-size: var(--text-base);
   font-weight: var(--font-bold);
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+}
+
+.ranked-play-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ranked-play-btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .ranked-play-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
   background: linear-gradient(135deg, #e67e22, #d35400);
+}
+
+.ranked-play-btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 10px rgba(243, 156, 18, 0.3);
 }
 
 .ranked-play-btn:disabled {
   background: var(--color-button-secondary);
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 .ranked-option {
-  background: linear-gradient(135deg, #fef9e7, #fcf3cf);
-  border: 2px solid #f39c12;
+  background: linear-gradient(135deg, rgba(243, 156, 18, 0.08), rgba(230, 126, 34, 0.05));
+  border: 2px solid transparent;
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+
+.ranked-option::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #f39c12, #e67e22, #d35400);
+  border-radius: var(--radius-xl);
+  z-index: -1;
+  opacity: 0.8;
+  transition: opacity var(--transition-base);
+}
+
+.ranked-option:hover::before {
+  opacity: 1;
+  animation: ranked-glow 2s ease-in-out infinite;
+}
+
+@keyframes ranked-glow {
+  0%, 100% { 
+    filter: blur(3px) brightness(1);
+  }
+  50% { 
+    filter: blur(5px) brightness(1.2);
+  }
+}
+
+.ranked-option::after {
+  content: '⚡';
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  font-size: var(--text-2xl);
+  opacity: 0.3;
+  animation: lightning-pulse 3s ease-in-out infinite;
+}
+
+@keyframes lightning-pulse {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: scale(1) rotate(-10deg);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(1.1) rotate(10deg);
+  }
+}
+
+.ranked-option .option-icon {
+  filter: drop-shadow(0 0 20px rgba(243, 156, 18, 0.5));
+  animation: icon-float 3s ease-in-out infinite;
+}
+
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 /* Join with Code */
@@ -415,13 +497,14 @@
   font-size: var(--text-lg);
 }
 
-/* Game Card */
+/* Game Card - Modern Design */
 .game-card {
-  background-color: var(--color-surface-1);
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  transition: all var(--transition-base);
+  background: rgba(46, 43, 39, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
@@ -432,25 +515,35 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-accent-primary) 0%, var(--color-accent-secondary) 50%, var(--color-accent-primary) 100%);
-  background-size: 200% 100%;
-  animation: shimmer 3s linear infinite;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-accent-primary) 20%, var(--color-accent-primary) 80%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+.game-card:hover::before {
+  opacity: 1;
+}
+
+.game-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(129, 199, 132, 0.06), transparent 40%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .game-card:hover {
-  border-color: var(--color-border-strong);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+}
+
+.game-card:hover::after {
+  opacity: 1;
 }
 
 /* Player Match Display */
@@ -517,6 +610,103 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: var(--font-semibold);
+}
+
+/* Modern Room Code Display */
+.room-code-modern {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: rgba(129, 199, 132, 0.1);
+  border: 1px solid rgba(129, 199, 132, 0.2);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-base);
+}
+
+.room-code-modern:hover {
+  background: rgba(129, 199, 132, 0.15);
+  border-color: rgba(129, 199, 132, 0.3);
+}
+
+.room-code-icon {
+  color: var(--color-accent-primary);
+  font-weight: var(--font-bold);
+  font-size: var(--text-sm);
+  opacity: 0.8;
+}
+
+.room-code-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.05em;
+  color: var(--color-text-primary);
+}
+
+.room-code-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+  position: relative;
+}
+
+.room-code-copy:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+}
+
+.room-code-copy svg {
+  transition: all var(--transition-base);
+}
+
+.room-code-copy .check-icon {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.8);
+  color: var(--color-accent-primary);
+}
+
+.room-code-copy.copied svg:first-child {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.room-code-copy.copied .check-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.room-code-copy::after {
+  content: 'Copied!';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--color-bg-tertiary);
+  color: var(--color-accent-primary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.room-code-copy.copied::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
 }
 
 .game-status {

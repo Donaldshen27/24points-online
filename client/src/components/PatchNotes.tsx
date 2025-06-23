@@ -22,7 +22,6 @@ const patchNotes: PatchNote[] = [
       { type: 'feature', description: 'Global and Regional Leaderboards - See how you rank against players worldwide' },
       { type: 'feature', description: 'Match History & Replay System - Review and learn from your ranked games' },
       { type: 'feature', description: 'Badge Tooltips - View badge requirements by hovering in waiting room' },
-      { type: 'feature', description: 'Hidden Test Mode - Access developer tools at /testmode URL' },
       { type: 'fix', description: 'Fixed connection status display synchronization issues' },
       { type: 'fix', description: 'Resolved ranked matchmaking authentication problems' },
       { type: 'fix', description: 'Fixed React StrictMode compatibility for better stability' },

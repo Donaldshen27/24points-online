@@ -77,6 +77,7 @@ export interface RankedMatch {
   roundsPlayed: number;
   player1RoundsWon: number;
   player2RoundsWon: number;
+  gameMode?: 'classic' | 'super' | 'extended';
   seasonId?: number;
   createdAt: Date;
 }

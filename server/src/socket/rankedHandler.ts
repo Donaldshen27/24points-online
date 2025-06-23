@@ -70,6 +70,23 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
       },
       matchId // Include for ranked matches
     });
+    
+    // Emit room-joined event to trigger the client navigation
+    const roomInfo = roomManager.getRoomInfo(match.roomId);
+    if (roomInfo) {
+      io.to(match.player1.socketId).emit('room-joined', { 
+        room: roomInfo, 
+        playerId: match.player1.userId 
+      });
+      
+      io.to(match.player2.socketId).emit('room-joined', { 
+        room: roomInfo, 
+        playerId: match.player2.userId 
+      });
+      
+      // Broadcast room update to all players in the room
+      io.to(match.roomId).emit('room-updated', roomInfo);
+    }
   });
 
   // Join ranked queue

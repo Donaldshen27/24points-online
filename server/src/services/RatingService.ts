@@ -21,6 +21,23 @@ export class RatingService {
   }
 
   /**
+   * Convert camelCase object to snake_case for database
+   */
+  private toSnakeCase(obj: any): any {
+    const snakeCase = (str: string) => 
+      str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+    
+    const converted: any = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const snakeKey = snakeCase(key);
+        converted[snakeKey] = obj[key];
+      }
+    }
+    return converted;
+  }
+
+  /**
    * Get or create player rating record
    */
   async getPlayerRating(userId: string): Promise<PlayerRating> {
@@ -150,6 +167,9 @@ export class RatingService {
       player2RoundsWon: matchStats.loserRoundsWon,
       createdAt: new Date()
     };
+    
+    // Add gameMode to match data for database
+    (match as any).gameMode = gameMode;
 
     // Save match to database and get the ID
     const savedMatchId = await this.saveMatch(match);
@@ -383,9 +403,23 @@ export class RatingService {
   private async saveMatch(match: RankedMatch): Promise<string> {
     if (!supabase) throw new Error('Supabase not initialized');
     
+    // Convert camelCase to snake_case for database
+    const dbMatch = this.toSnakeCase(match);
+    
+    // Handle special cases
+    if (dbMatch.match_duration !== undefined) {
+      dbMatch.duration_seconds = dbMatch.match_duration;
+      delete dbMatch.match_duration;
+    }
+    
+    // Convert Date to ISO string
+    if (dbMatch.created_at instanceof Date) {
+      dbMatch.created_at = dbMatch.created_at.toISOString();
+    }
+    
     const { data, error } = await supabase
       .from('ranked_matches')
-      .insert(match)
+      .insert(dbMatch)
       .select('id')
       .single();
 

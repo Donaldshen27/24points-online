@@ -908,9 +908,9 @@ export const handleConnection = (io: Server, socket: Socket) => {
               rareBadges: number;
             }>();
             
-            // Initialize stats for all users
-            usernames.forEach(username => {
-              badgeStats.set(username, {
+            // Initialize stats only for users that exist in the database
+            userData.forEach(user => {
+              badgeStats.set(user.username, {
                 badgeCount: 0,
                 badgePoints: 0,
                 legendaryBadges: 0,
@@ -961,13 +961,17 @@ export const handleConnection = (io: Server, socket: Socket) => {
               const stats = badgeStats.get(entry.username);
               if (stats) {
                 const level = Math.floor(stats.badgePoints / 100) + 1;
-                console.log(`[Badge Stats] ${entry.username}: points=${stats.badgePoints}, level=${level}, badges=${stats.badgeCount}`);
+                // Only log if user has badges
+                if (stats.badgeCount > 0) {
+                  console.log(`[Badge Stats] ${entry.username}: points=${stats.badgePoints}, level=${level}, badges=${stats.badgeCount}`);
+                }
                 return {
                   ...entry,
                   ...stats,
                   level
                 };
               }
+              // User not in database, don't add badge stats
               return entry;
             });
           }

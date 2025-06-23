@@ -105,6 +105,21 @@ class SocketService {
   joinRoom(roomId: string, playerName: string, callback?: (response: any) => void): void {
     this.socket.emit('join-room', { roomId, playerName }, callback);
   }
+
+  // Reconnect with updated auth token
+  reconnectWithAuth(): void {
+    console.log('[SocketService] Reconnecting with updated auth...');
+    
+    // Update auth callback with new token
+    this.socket.auth = (cb) => {
+      const token = localStorage.getItem('accessToken');
+      cb({ token });
+    };
+    
+    // Disconnect and reconnect
+    this.socket.disconnect();
+    this.socket.connect();
+  }
 }
 
 // Handle HMR cleanup

@@ -210,6 +210,9 @@ function App() {
   
   const handleAuthSuccess = () => {
     // Auth context will handle the user state update
+    // Reconnect socket with new auth token
+    console.log('[App] Auth success, reconnecting socket with new token...')
+    socketService.reconnectWithAuth()
   }
   
   const handleSignOut = async () => {

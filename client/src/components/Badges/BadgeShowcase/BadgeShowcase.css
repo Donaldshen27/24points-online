@@ -195,6 +195,13 @@
   position: relative;
   border: 2px solid;
   background: var(--color-surface-1);
+  cursor: help;
+  transition: transform 0.2s ease;
+}
+
+.showcase-badge:hover {
+  transform: scale(1.1);
+  z-index: 10;
 }
 
 .showcase-badge.common {
@@ -391,6 +398,80 @@
   background: var(--primary-hover, #45a049);
 }
 
+/* Badge Tooltip Styles */
+.badge-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: var(--color-surface-elevated, #fff);
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  pointer-events: none;
+}
+
+.showcase-badge:hover .badge-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.badge-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--color-surface-elevated, #fff);
+}
+
+.tooltip-header {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  color: var(--text-primary, #333);
+}
+
+.tooltip-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.tooltip-rarity {
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  text-transform: capitalize;
+}
+
+.tooltip-tier {
+  font-size: 0.8rem;
+  color: var(--primary-color, #4CAF50);
+  font-weight: 500;
+}
+
+/* Rarity-specific tooltip colors */
+.showcase-badge.rare .tooltip-rarity {
+  color: #42a5f5;
+}
+
+.showcase-badge.epic .tooltip-rarity {
+  color: #ab47bc;
+}
+
+.showcase-badge.legendary .tooltip-rarity {
+  color: #ffa726;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .player-stats {
@@ -409,5 +490,10 @@
   .modal-content {
     margin: 20px;
     padding: 20px;
+  }
+
+  /* Hide advanced tooltip on mobile, keep simple title */
+  .badge-tooltip {
+    display: none;
   }
 }

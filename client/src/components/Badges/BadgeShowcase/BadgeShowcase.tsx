@@ -156,11 +156,25 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
         <div className="featured-badges-row">
           {featuredBadges.length > 0 ? (
             featuredBadges.map(badge => (
-              <div key={badge.badgeId || badge.badge_id} className={`showcase-badge ${badge.rarity}`}>
+              <div 
+                key={badge.badgeId || badge.badge_id} 
+                className={`showcase-badge ${badge.rarity}`}
+                title={`${getTranslatedBadgeName(badge)} - ${t(`badges.definitions.${badge.badgeId || badge.badge_id || ''}.description`, badge.description)}`}
+              >
                 <span className="badge-emoji">{badge.icon}</span>
                 {badge.tier && (
                   <span className="tier-indicator">{badge.tier}</span>
                 )}
+                <div className="badge-tooltip">
+                  <div className="tooltip-header">{getTranslatedBadgeName(badge)}</div>
+                  <div className="tooltip-description">
+                    {t(`badges.definitions.${badge.badgeId || badge.badge_id || ''}.description`, badge.description)}
+                  </div>
+                  <div className="tooltip-rarity">{t(`badges.rarity.${badge.rarity}`, badge.rarity)}</div>
+                  {badge.tier && (
+                    <div className="tooltip-tier">{t('badges.tier', 'Tier')}: {badge.tier}</div>
+                  )}
+                </div>
               </div>
             ))
           ) : (

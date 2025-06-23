@@ -678,6 +678,14 @@
     "noFeaturedBadges": "No featured badges selected",
     "selectBadges": "Select Badges",
     "selectFeaturedBadges": "Select Featured Badges",
-    "selectUpTo": "Select up to {{count}} badges to feature on your profile"
+    "selectUpTo": "Select up to {{count}} badges to feature on your profile",
+    "points": "Points",
+    "tier": "Tier",
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    }
   }
 }

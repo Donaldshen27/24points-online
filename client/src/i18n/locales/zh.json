@@ -677,6 +677,14 @@
     "noFeaturedBadges": "未选择精选徽章",
     "selectBadges": "选择徽章",
     "selectFeaturedBadges": "选择精选徽章",
-    "selectUpTo": "最多可选择 {{count}} 个徽章展示在您的个人资料上"
+    "selectUpTo": "最多可选择 {{count}} 个徽章展示在您的个人资料上",
+    "points": "积分",
+    "tier": "等级",
+    "rarity": {
+      "common": "普通",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传奇"
+    }
   }
 }

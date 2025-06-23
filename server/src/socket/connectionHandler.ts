@@ -872,13 +872,33 @@ export const handleConnection = (io: Server, socket: Socket) => {
           // Get all usernames from the leaderboard
           const usernames = recordHoldings.slice(0, 100).map(entry => entry.username);
           
-          // Fetch badge data for all users
-          const { data: badgeData, error: badgeError } = await supabase
-            .from('user_badges')
-            .select('*')
-            .in('user_id', usernames);
+          // First, get user IDs for these usernames
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('id, username')
+            .in('username', usernames);
+          
+          if (!userError && userData && userData.length > 0) {
+            console.log(`[Badge Leaderboard] Found ${userData.length} users with usernames`);
+            
+            // Create username to user_id mapping
+            const usernameToId = new Map<string, string>();
+            userData.forEach(user => {
+              usernameToId.set(user.username, user.id);
+            });
+            
+            // Get user IDs for badge query
+            const userIds = userData.map(user => user.id);
+            
+            // Fetch badge data for all users
+            const { data: badgeData, error: badgeError } = await supabase
+              .from('user_badges')
+              .select('*')
+              .in('user_id', userIds);
           
           if (!badgeError && badgeData) {
+            console.log(`[Badge Leaderboard] Found ${badgeData.length} badge records`);
+            
             // Count badges by user and rarity
             const badgeStats = new Map<string, {
               badgeCount: number;
@@ -901,7 +921,16 @@ export const handleConnection = (io: Server, socket: Socket) => {
             
             // Process badge data
             for (const userBadge of badgeData) {
-              const stats = badgeStats.get(userBadge.user_id);
+              // Find username for this user_id
+              let username = null;
+              for (const [uname, uid] of usernameToId.entries()) {
+                if (uid === userBadge.user_id) {
+                  username = uname;
+                  break;
+                }
+              }
+              
+              const stats = username ? badgeStats.get(username) : null;
               if (stats) {
                 stats.badgeCount++;
                 
@@ -940,6 +969,7 @@ export const handleConnection = (io: Server, socket: Socket) => {
               return entry;
             });
           }
+          } // Close the userData check
         } catch (error) {
           console.error('Error fetching badge statistics for leaderboard:', error);
           // Continue without badge data

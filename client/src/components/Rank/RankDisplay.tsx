@@ -1,5 +1,5 @@
 import React from 'react';
-import { getRankTier } from '../../../../shared/game/elo';
+import { getRankTier, getRankTierInfo } from '../../../../shared/game/elo';
 import { RankBadge } from './RankBadge';
 import { RankProgressBar } from './RankProgressBar';
 import './RankDisplay.css';
@@ -22,6 +22,7 @@ export const RankDisplay: React.FC<RankDisplayProps> = ({
   className = ''
 }) => {
   const tier = getRankTier(rating);
+  const tierInfo = getRankTierInfo(tier);
   const totalGames = wins + losses;
   const winRate = totalGames > 0 ? (wins / totalGames * 100).toFixed(1) : '0.0';
   
@@ -58,7 +59,7 @@ export const RankDisplay: React.FC<RankDisplayProps> = ({
         <div className="rank-badge-section">
           <RankBadge tier={tier} rating={rating} size="large" animated />
           <div className="rank-info">
-            <h2 className="rank-tier-name">{tier.name}</h2>
+            <h2 className="rank-tier-name">{tierInfo.displayName}</h2>
             <div className="rank-rating-display">
               <span className="current-rating">{rating}</span>
               <span className="rating-label">ELO</span>

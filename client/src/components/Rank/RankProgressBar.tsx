@@ -9,6 +9,7 @@ interface RankProgressBarProps {
   showNextTier?: boolean;
   showLabels?: boolean;
   animated?: boolean;
+  compact?: boolean;
   className?: string;
 }
 
@@ -17,6 +18,7 @@ export const RankProgressBar: React.FC<RankProgressBarProps> = ({
   showNextTier = true,
   showLabels = true,
   animated = true,
+  compact = false,
   className = ''
 }) => {
   const currentTier = getRankTier(currentRating);
@@ -32,7 +34,7 @@ export const RankProgressBar: React.FC<RankProgressBarProps> = ({
   const isMaxTier = currentTier === 'grandmaster';
   
   return (
-    <div className={`rank-progress-container ${className}`}>
+    <div className={`rank-progress-container ${compact ? 'compact' : ''} ${className}`}>
       <div className="rank-progress-header">
         <RankBadge tier={currentTier} rating={currentRating} size="small" />
         {showLabels && (

@@ -43,60 +43,168 @@
   color: #ffffff;
 }
 
-/* Full Variant */
+/* Full Variant - Competitive Horizontal Layout */
 .rank-display-full {
+  display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
-  padding: 24px;
-  border-radius: 16px;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
+  background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.rank-display-header {
+.rank-display-main {
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  padding: 24px;
+  gap: 32px;
+  align-items: center;
 }
 
-.rank-display-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 16px;
-  margin-top: 20px;
+/* Rank Badge Section */
+.rank-badge-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
 }
 
-.rank-stat-item {
+.rank-info {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  gap: 8px;
 }
 
-.rank-stat-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-}
-
-.rank-stat-icon {
+.rank-tier-name {
   font-size: 24px;
-  margin-bottom: 4px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.rank-stat-item .rank-stat-label {
-  font-size: 11px;
+.rank-rating-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.current-rating {
+  font-size: 36px;
+  font-weight: 900;
+  color: #ffd700;
+  line-height: 1;
+}
+
+.rating-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Stats Section */
+.rank-stats-section {
+  flex: 1;
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  justify-content: space-around;
+}
+
+/* Performance Stats */
+.stat-group.performance {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-box {
   text-align: center;
 }
 
-.rank-stat-item .rank-stat-value {
-  font-size: 18px;
+.stat-box.wins .stat-number {
+  color: #4ade80;
+}
+
+.stat-box.losses .stat-number {
+  color: #ef4444;
+}
+
+.stat-number {
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1;
+  display: block;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+  display: block;
+}
+
+.stat-divider {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 300;
+}
+
+/* Metrics */
+.stat-group.metrics {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-size: 20px;
   font-weight: 700;
+  color: #ffffff;
+}
+
+.metric-value.peak {
+  color: #a78bfa;
+}
+
+/* Win Rate Bar */
+.metric-value-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.winrate-bar {
+  width: 100px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.winrate-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
 }
 
 /* Responsive */
@@ -112,11 +220,56 @@
     justify-content: space-around;
   }
   
-  .rank-display-full {
-    padding: 16px;
+  /* Full Variant Mobile */
+  .rank-display-main {
+    flex-direction: column;
+    padding: 20px;
+    gap: 24px;
   }
   
-  .rank-display-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .rank-badge-section {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .rank-stats-section {
+    width: 100%;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .stat-group.performance {
+    order: 1;
+  }
+  
+  .stat-group.metrics {
+    order: 2;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .metric-item {
+    flex: 1;
+    min-width: 80px;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .winrate-bar {
+    width: 80px;
+  }
+  
+  .stat-number {
+    font-size: 36px;
+  }
+  
+  .current-rating {
+    font-size: 32px;
+  }
+  
+  .rank-tier-name {
+    font-size: 20px;
   }
 }

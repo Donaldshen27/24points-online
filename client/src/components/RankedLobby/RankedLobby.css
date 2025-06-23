@@ -1,67 +1,81 @@
 .ranked-lobby {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 20px;
-  background: var(--color-surface-1);
-  border-radius: 16px;
-  box-shadow: var(--shadow-lg);
+  padding: 24px;
+  background: linear-gradient(135deg, var(--color-surface-1) 0%, var(--color-surface-2) 100%);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .ranked-lobby-header {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   text-align: center;
+  position: relative;
 }
 
 .ranked-lobby-header h1 {
-  font-size: 2.5em;
+  font-size: 2em;
   color: var(--color-text-primary);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #fff 0%, #ddd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Queue Tabs */
+/* Queue Tabs - Competitive Design */
 .queue-tabs {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  border-radius: 40px;
+  gap: 4px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .queue-tab {
-  padding: 12px 30px;
-  font-size: 1.1em;
-  font-weight: 600;
-  background: var(--color-surface-2);
-  border: 2px solid transparent;
-  border-radius: 30px;
+  padding: 10px 24px;
+  font-size: 0.95em;
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  border-radius: 36px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .queue-tab:hover {
-  background: var(--color-surface-3);
-  transform: translateY(-1px);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .queue-tab.active {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
   color: white;
-  border-color: var(--color-primary-hover);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
 }
 
-/* Player Stats Section */
+/* Player Stats Section - Compact Design */
 .player-stats-section {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .player-rank-display {
   width: 100%;
-  max-width: 500px;
+  max-width: 800px;
 }
 
 .placement-notice {
@@ -106,74 +120,99 @@
   box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
 }
 
-/* Game Mode Section */
+/* Game Mode Section - Streamlined */
 .game-mode-section {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 16px;
+  backdrop-filter: blur(5px);
 }
 
 .game-mode-section h3 {
   text-align: center;
   color: var(--color-text-primary);
-  margin-bottom: 20px;
-  font-size: 1.3em;
+  margin-bottom: 16px;
+  font-size: 1.1em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
 }
 
-/* Queue Section */
+/* Queue Section - Action Focused */
 .queue-section {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .queue-button {
   width: 100%;
-  padding: 20px;
-  font-size: 1.3em;
-  font-weight: bold;
+  padding: 18px 24px;
+  font-size: 1.2em;
+  font-weight: 800;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
 }
 
 .queue-button.join-queue {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  background: linear-gradient(135deg, #4a90e2 0%, #5ca0f2 50%, #4a90e2 100%);
   color: white;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .queue-button.join-queue:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 25px rgba(74, 144, 226, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #5ca0f2 0%, #6db0ff 50%, #5ca0f2 100%);
+}
+
+.queue-button.join-queue:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .queue-button.join-queue:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
 }
 
 .queue-button.leave-queue {
-  background: var(--color-danger);
+  background: rgba(220, 53, 69, 0.9);
   color: white;
-  margin-top: 15px;
+  margin-top: 16px;
+  font-size: 1em;
+  padding: 14px 20px;
 }
 
 .queue-button.leave-queue:hover {
-  background: var(--color-danger-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+  background: rgba(220, 53, 69, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
 }
 
-/* Queue Status */
+/* Queue Status - Competitive Feel */
 .queue-status {
-  background: var(--color-surface-2);
-  border-radius: 12px;
-  padding: 30px;
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(74, 144, 226, 0.05) 100%);
+  border: 1px solid rgba(74, 144, 226, 0.3);
+  border-radius: 16px;
+  padding: 24px;
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .queue-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 32px;
   margin-bottom: 20px;
 }
 
@@ -238,45 +277,56 @@
   }
 }
 
-/* Match History Section */
+/* Match History Section - Compact List */
 .match-history-section {
-  margin-top: 40px;
+  margin-top: 32px;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  border-radius: 16px;
+  backdrop-filter: blur(5px);
 }
 
 .match-history-section h3 {
   color: var(--color-text-primary);
-  margin-bottom: 20px;
-  font-size: 1.3em;
+  margin-bottom: 16px;
+  font-size: 1.1em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
 }
 
 .match-history-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .match-history-item {
   display: grid;
   grid-template-columns: 1fr auto auto;
   align-items: center;
-  padding: 15px 20px;
-  background: var(--color-surface-2);
-  border-radius: 8px;
-  border-left: 4px solid transparent;
-  transition: all 0.3s ease;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left-width: 3px;
+  transition: all 0.2s ease;
 }
 
 .match-history-item.win {
-  border-left-color: var(--color-success);
+  border-left-color: #4ade80;
+  background: rgba(74, 222, 128, 0.05);
 }
 
 .match-history-item.loss {
-  border-left-color: var(--color-danger);
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
 }
 
 .match-history-item:hover {
-  background: var(--color-surface-3);
-  transform: translateX(5px);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(2px);
 }
 
 .match-opponent {
@@ -337,39 +387,173 @@
   text-align: right;
 }
 
+/* Additional Styling for Competitive Feel */
+.loading-stats {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.queue-time .queue-value {
+  color: #4ade80;
+  font-weight: 900;
+}
+
+.search-range .queue-value {
+  color: #fbbf24;
+  font-weight: 900;
+}
+
+.estimated-wait .queue-value {
+  color: #60a5fa;
+  font-weight: 900;
+}
+
+/* Queue Animation Enhancement */
+.queue-animation {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+
+.queue-pulse {
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, #4a90e2 0%, #60a5fa 100%);
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+}
+
+/* Stat Highlights */
+.opponent-name {
+  font-weight: 700;
+  font-size: 0.95em;
+}
+
+.opponent-rating {
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.result-badge {
+  padding: 3px 10px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.result-badge.win {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.2) 0%, rgba(74, 222, 128, 0.1) 100%);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.result-badge.loss {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.rating-change {
+  font-weight: 900;
+  font-size: 1em;
+}
+
+.match-time {
+  font-size: 0.85em;
+  opacity: 0.6;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .ranked-lobby {
-    padding: 15px;
+    padding: 16px;
+    border-radius: 20px;
   }
 
   .ranked-lobby-header h1 {
-    font-size: 2em;
+    font-size: 1.5em;
+    letter-spacing: 1px;
   }
 
   .queue-tabs {
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
     width: 100%;
+    max-width: 300px;
+    margin: 0 auto 20px;
   }
 
   .queue-tab {
-    width: 100%;
+    flex: 1;
+    padding: 8px 16px;
+    font-size: 0.85em;
   }
 
   .queue-info {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .queue-time,
+  .search-range,
+  .estimated-wait {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .queue-label {
+    font-size: 0.85em;
+  }
+  
+  .queue-value {
+    font-size: 1.2em;
   }
 
   .match-history-item {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  
+  .match-opponent {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
   }
 
   .match-result {
+    display: flex;
     justify-content: space-between;
+    width: 100%;
   }
 
   .match-time {
-    text-align: left;
+    text-align: right;
+    font-size: 0.8em;
+  }
+  
+  .game-mode-section,
+  .match-history-section {
+    padding: 16px;
+  }
+  
+  .queue-button {
+    padding: 16px 20px;
+    font-size: 1.1em;
+  }
+  
+  .queue-button.leave-queue {
+    padding: 12px 16px;
+    font-size: 0.9em;
   }
 }

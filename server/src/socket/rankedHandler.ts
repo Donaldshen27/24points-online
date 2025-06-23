@@ -162,16 +162,28 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
   });
 
   // Get leaderboard
-  socket.on('ranked:get-leaderboard', async (data: { limit?: number; offset?: number }) => {
+  socket.on('ranked:get-leaderboard', async (data: { limit?: number; offset?: number }, callback?: Function) => {
     try {
       const limit = data.limit || 100;
       const offset = data.offset || 0;
       
       const leaderboard = await ratingService.getLeaderboard(limit, offset);
-      socket.emit('ranked:leaderboard', leaderboard);
+      
+      // Support both callback and event patterns
+      if (callback) {
+        callback(leaderboard);
+      } else {
+        socket.emit('ranked:leaderboard', leaderboard);
+      }
     } catch (error) {
       console.error('[RankedHandler] Error getting leaderboard:', error);
-      socket.emit('ranked:leaderboard', []);
+      
+      // Support both callback and event patterns
+      if (callback) {
+        callback([]);
+      } else {
+        socket.emit('ranked:leaderboard', []);
+      }
     }
   });
 

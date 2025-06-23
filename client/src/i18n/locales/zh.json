@@ -635,7 +635,11 @@
     "peak": "巅峰",
     "games": "场次",
     "winRate": "胜率",
-    "loadMore": "加载更多"
+    "loadMore": "加载更多",
+    "connectionError": "无法连接到排名服务器",
+    "databaseError": "数据库表未配置。请运行数据库迁移。",
+    "databaseHint": "请联系管理员设置ELO排名系统。",
+    "retry": "重试"
   },
   "patchNotes": {
     "title": "更新日志"

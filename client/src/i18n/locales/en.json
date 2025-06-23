@@ -636,7 +636,11 @@
     "peak": "Peak",
     "games": "Games",
     "winRate": "Win Rate",
-    "loadMore": "Load More"
+    "loadMore": "Load More",
+    "connectionError": "Failed to connect to the ranking server",
+    "databaseError": "Database tables not configured. Please run migrations.",
+    "databaseHint": "Contact the administrator to set up the ELO ranking system.",
+    "retry": "Retry"
   },
   "patchNotes": {
     "title": "Patch Notes"

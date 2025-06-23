@@ -49,6 +49,7 @@ export const Leaderboard: React.FC = () => {
   const [rankedLoading, setRankedLoading] = useState(false);
   const [rankedPage, setRankedPage] = useState(0);
   const [hasMoreRanked, setHasMoreRanked] = useState(true);
+  const [rankedError, setRankedError] = useState<string | null>(null);
 
   useEffect(() => {
     // Get current username from localStorage or auth
@@ -128,10 +129,26 @@ export const Leaderboard: React.FC = () => {
 
   const fetchRankedLeaderboard = (page: number = 0, append: boolean = false) => {
     setRankedLoading(true);
+    setRankedError(null);
     const limit = 50;
     const offset = page * limit;
 
+    // Add timeout to handle no response
+    const timeoutId = setTimeout(() => {
+      setRankedLoading(false);
+      setRankedError(t('leaderboard.connectionError'));
+    }, 10000);
+
     socketService.emit('ranked:get-leaderboard', { limit, offset }, (data: RankedLeaderboardEntry[]) => {
+      clearTimeout(timeoutId);
+      
+      // Check if data is valid
+      if (!Array.isArray(data)) {
+        setRankedError(t('leaderboard.databaseError'));
+        setRankedLoading(false);
+        return;
+      }
+      
       if (append) {
         setRankedLeaderboard(prev => [...prev, ...data]);
       } else {
@@ -348,7 +365,18 @@ export const Leaderboard: React.FC = () => {
           </div>
 
           <div className="leaderboard-list ranked-list">
-            {rankedLoading && rankedLeaderboard.length === 0 ? (
+            {rankedError ? (
+              <div className="error-state">
+                <p className="error-message">{rankedError}</p>
+                <p className="error-hint">{t('leaderboard.databaseHint')}</p>
+                <button 
+                  className="retry-btn"
+                  onClick={() => fetchRankedLeaderboard(rankedPage)}
+                >
+                  {t('leaderboard.retry')}
+                </button>
+              </div>
+            ) : rankedLoading && rankedLeaderboard.length === 0 ? (
               <div className="loading-spinner">{t('app.loading')}</div>
             ) : rankedLeaderboard.length === 0 ? (
               <div className="empty-state">

@@ -24,6 +24,8 @@ export class RatingService {
    * Get or create player rating record
    */
   async getPlayerRating(userId: string): Promise<PlayerRating> {
+    if (!supabase) throw new Error('Supabase not initialized');
+    
     const { data, error } = await supabase
       .from('player_ratings')
       .select('*')
@@ -63,7 +65,7 @@ export class RatingService {
    * Create initial rating for new player
    */
   private async createInitialRating(userId: string): Promise<PlayerRating> {
-    const initialRating: Partial<PlayerRating> = {
+    const initialRating = {
       user_id: userId,
       current_rating: ELO_CONSTANTS.BASE_RATING,
       peak_rating: ELO_CONSTANTS.BASE_RATING,
@@ -73,9 +75,11 @@ export class RatingService {
       win_streak: 0,
       loss_streak: 0,
       placement_matches_remaining: ELO_CONSTANTS.PLACEMENT_MATCHES,
-      created_at: new Date(),
-      updated_at: new Date()
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
+
+    if (!supabase) throw new Error('Supabase not initialized');
 
     const { data, error } = await supabase
       .from('player_ratings')
@@ -158,7 +162,7 @@ export class RatingService {
       win_streak: winnerRating.win_streak + 1,
       loss_streak: 0,
       placement_matches_remaining: Math.max(0, winnerRating.placement_matches_remaining - 1),
-      last_game_at: new Date()
+      last_game_at: new Date().toISOString()
     };
 
     // Update loser rating
@@ -169,7 +173,7 @@ export class RatingService {
       win_streak: 0,
       loss_streak: loserRating.loss_streak + 1,
       placement_matches_remaining: Math.max(0, loserRating.placement_matches_remaining - 1),
-      last_game_at: new Date()
+      last_game_at: new Date().toISOString()
     };
 
     // Apply updates to database
@@ -241,6 +245,8 @@ export class RatingService {
    * Get leaderboard
    */
   async getLeaderboard(limit: number = 100, offset: number = 0) {
+    if (!supabase) throw new Error('Supabase not initialized');
+    
     const { data, error } = await supabase
       .from('player_ratings')
       .select(`
@@ -262,7 +268,7 @@ export class RatingService {
     return data.map((row, index) => ({
       rank: offset + index + 1,
       userId: row.user_id,
-      username: row.users.username,
+      username: (row as any).users.username,
       rating: row.current_rating,
       gamesPlayed: row.games_played,
       winRate: row.games_played > 0 ? (row.wins / row.games_played) * 100 : 0,
@@ -275,6 +281,8 @@ export class RatingService {
    * Get player's match history
    */
   async getMatchHistory(userId: string, limit: number = 20) {
+    if (!supabase) throw new Error('Supabase not initialized');
+    
     const { data, error } = await supabase
       .from('ranked_matches')
       .select(`
@@ -296,12 +304,14 @@ export class RatingService {
   /**
    * Update rating in database
    */
-  private async updateRatingInDatabase(userId: string, updates: Partial<PlayerRating>) {
+  private async updateRatingInDatabase(userId: string, updates: any) {
+    if (!supabase) throw new Error('Supabase not initialized');
+    
     const { error } = await supabase
       .from('player_ratings')
       .update({
         ...updates,
-        updated_at: new Date()
+        updated_at: new Date().toISOString()
       })
       .eq('user_id', userId);
 
@@ -314,6 +324,8 @@ export class RatingService {
    * Save match to database
    */
   private async saveMatch(match: RankedMatch) {
+    if (!supabase) throw new Error('Supabase not initialized');
+    
     const { error } = await supabase
       .from('ranked_matches')
       .insert(match);
@@ -327,6 +339,8 @@ export class RatingService {
    * Get current season (if any)
    */
   async getCurrentSeason() {
+    if (!supabase) throw new Error('Supabase not initialized');
+    
     const { data, error } = await supabase
       .from('seasons')
       .select('*')
@@ -344,6 +358,8 @@ export class RatingService {
    * Check if players have played recently (for fair match prevention)
    */
   async havePlayedRecently(player1Id: string, player2Id: string, cooldownMinutes: number = 30): Promise<boolean> {
+    if (!supabase) throw new Error('Supabase not initialized');
+    
     const cutoffTime = new Date(Date.now() - cooldownMinutes * 60 * 1000);
 
     const { data, error } = await supabase

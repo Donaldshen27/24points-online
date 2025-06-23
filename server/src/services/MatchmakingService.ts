@@ -20,7 +20,7 @@ export class MatchmakingService {
   private static instance: MatchmakingService;
   private rankedQueue: Map<string, QueueEntry> = new Map(); // userId -> QueueEntry
   private casualQueue: Map<string, QueueEntry> = new Map(); // userId -> QueueEntry
-  private matchCheckInterval: NodeJS.Timer | null = null;
+  private matchCheckInterval: NodeJS.Timeout | null = null;
   private onMatchFoundCallback?: (match: MatchFound) => void;
   private recentMatches: Map<string, Set<string>> = new Map(); // userId -> Set of recent opponent IDs
   private static readonly MATCH_CHECK_INTERVAL_MS = 2000; // Check for matches every 2 seconds

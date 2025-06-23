@@ -24,18 +24,18 @@ export const RANK_TIERS: RankTierInfo[] = [
 
 // Player rating information
 export interface PlayerRating {
-  userId: string;
-  currentRating: number;
-  peakRating: number;
-  gamesPlayed: number;
+  user_id: string;
+  current_rating: number;
+  peak_rating: number;
+  games_played: number;
   wins: number;
   losses: number;
-  winStreak: number;
-  lossStreak: number;
-  lastGameAt?: Date;
-  placementMatchesRemaining: number;
-  createdAt: Date;
-  updatedAt: Date;
+  win_streak: number;
+  loss_streak: number;
+  last_game_at?: string;
+  placement_matches_remaining: number;
+  created_at: string;
+  updated_at: string;
 }
 
 // Seasonal rating information

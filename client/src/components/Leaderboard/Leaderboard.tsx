@@ -314,7 +314,7 @@ export const Leaderboard: React.FC = () => {
                       {entry.username === currentUsername && (
                         <span className="you-badge">{t('leaderboard.you')}</span>
                       )}
-                      {entry.level && (
+                      {entry.level && entry.level > 1 && (
                         <span className="level-badge">Lv.{entry.level}</span>
                       )}
                     </div>

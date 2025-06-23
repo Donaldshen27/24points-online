@@ -960,10 +960,12 @@ export const handleConnection = (io: Server, socket: Socket) => {
             recordHoldings = recordHoldings.map(entry => {
               const stats = badgeStats.get(entry.username);
               if (stats) {
+                const level = Math.floor(stats.badgePoints / 100) + 1;
+                console.log(`[Badge Stats] ${entry.username}: points=${stats.badgePoints}, level=${level}, badges=${stats.badgeCount}`);
                 return {
                   ...entry,
                   ...stats,
-                  level: Math.floor(stats.badgePoints / 100) + 1
+                  level
                 };
               }
               return entry;

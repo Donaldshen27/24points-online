@@ -149,8 +149,12 @@ router.post('/refresh', async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'No refresh token provided' });
     }
 
+    // Get client info
+    const ipAddress = req.ip || 'unknown';
+    const userAgent = req.get('user-agent') || 'unknown';
+
     // Refresh the tokens
-    const result = await authService.refreshTokens(refreshToken);
+    const result = await authService.refreshTokens(refreshToken, ipAddress, userAgent);
 
     // Set new refresh token as httpOnly cookie
     res.cookie('refreshToken', result.refreshToken, {

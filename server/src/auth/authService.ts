@@ -278,7 +278,7 @@ export class AuthService {
     });
   }
 
-  async refreshTokens(refreshToken: string): Promise<LoginResponse> {
+  async refreshTokens(refreshToken: string, ipAddress: string, userAgent: string): Promise<LoginResponse> {
     try {
       // Verify the refresh token
       const { verifyRefreshToken } = await import('./jwt');
@@ -316,8 +316,8 @@ export class AuthService {
         userId: user.id,
         token: newRefreshToken,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-        ipAddress: '',
-        userAgent: ''
+        ipAddress,
+        userAgent
       });
       
       return {

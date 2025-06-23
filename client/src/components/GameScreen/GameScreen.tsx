@@ -391,11 +391,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           <div className="compact-scores">
             <div className="score-item current">
               <span className="score-name">{currentPlayer?.name || 'You'}</span>
-              <span className="score-value">{gameState.scores?.[currentPlayer?.id || ''] || 0}</span>
+              <span className="score-value">{currentPlayer?.points || 0}</span>
             </div>
             <div className="score-separator">-</div>
             <div className={`score-item opponent ${opponentDisconnectedTime ? 'disconnected' : ''}`}>
-              <span className="score-value">{gameState.scores?.[opponent?.id || ''] || 0}</span>
+              <span className="score-value">{opponent?.points || 0}</span>
               <span className="score-name">
                 {opponentDisconnectedTime && <span className="disconnect-indicator">⚠ </span>}
                 {opponent?.name || 'Opponent'}

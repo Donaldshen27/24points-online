@@ -377,9 +377,9 @@
     "round": "Round {{number}}",
     "spectating": "👁️ Spectating",
     "winConditions": {
-      "classic": "Win by running out of cards",
+      "classic": "First to 4 points",
       "extended": "First to 4 points",
-      "super": "Win by running out of cards"
+      "super": "First to 4 points"
     },
     "status": {
       "loading": "Loading game...",

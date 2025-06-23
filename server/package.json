@@ -10,7 +10,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "seed:badges": "ts-node src/scripts/seedBadges.ts"
+    "seed:badges": "ts-node src/scripts/seedBadges.ts",
+    "migration:comprehensive-fix": "node scripts/run-comprehensive-fix.js",
+    "migration:elo-fix": "node scripts/run-elo-fix-migration.js"
   },
   "engines": {
     "node": ">=18.0.0"

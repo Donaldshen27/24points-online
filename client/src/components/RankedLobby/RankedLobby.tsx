@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
 import { RankDisplay } from '../Rank/RankDisplay';
@@ -53,21 +53,41 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
   });
   const [matchHistory, setMatchHistory] = useState<MatchHistory[]>([]);
   const [queueStartTime, setQueueStartTime] = useState<number | null>(null);
-  const [queueTimer, setQueueTimer] = useState<ReturnType<typeof setInterval> | null>(null);
+  const queueTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Fetch player rating on mount and when auth changes
   useEffect(() => {
     if (authUser) {
-      socketService.emit('ranked:get-rating');
-      socketService.emit('ranked:get-match-history', { limit: 5 });
+      // Reset player rating to trigger loading state
+      setPlayerRating(null);
+      
+      // Small delay to ensure socket has reconnected with auth
+      const timer = setTimeout(() => {
+        console.log('[RankedLobby] Fetching rating for authenticated user');
+        socketService.emit('ranked:get-rating');
+        socketService.emit('ranked:get-match-history', { limit: 5 });
+      }, 500); // Increased delay to ensure socket reconnection completes
+      
+      return () => clearTimeout(timer);
+    } else {
+      // Clear rating when logged out
+      setPlayerRating(null);
+      setMatchHistory([]);
     }
   }, [authUser]);
 
   // Set up socket event listeners
   useEffect(() => {
     const handleRating = (rating: PlayerRating | null) => {
+      console.log('[RankedLobby] Received rating:', rating);
       if (rating) {
         setPlayerRating(rating);
+      } else if (authUser) {
+        // If we're authenticated but got null rating, retry once
+        console.log('[RankedLobby] Got null rating for authenticated user, retrying...');
+        setTimeout(() => {
+          socketService.emit('ranked:get-rating');
+        }, 1000);
       }
     };
 
@@ -76,6 +96,7 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
     };
 
     const handleQueueJoined = (data: { gameMode: string; estimatedWaitTime: number }) => {
+      console.log('[RankedLobby] Queue joined event received:', data);
       setQueueStatus(prev => ({
         ...prev,
         isQueuing: true,
@@ -85,6 +106,7 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
     };
 
     const handleQueueLeft = () => {
+      console.log('[RankedLobby] Queue left event received');
       setQueueStatus(prev => ({
         ...prev,
         isQueuing: false,
@@ -101,7 +123,17 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
       estimatedWaitTime: number; 
       searchRange: number 
     }) => {
-      setQueueStatus(status);
+      console.log('[RankedLobby] Queue status update received:', status);
+      // Only update if we're actually in queue (prevent server from resetting our state)
+      if (queueStatus.isQueuing || status.isQueuing) {
+        setQueueStatus(prev => ({
+          ...prev,
+          // Don't update queueTime from server - we maintain it locally for smooth UI
+          // queueTime: prev.queueTime,
+          estimatedWaitTime: status.estimatedWaitTime,
+          searchRange: status.searchRange
+        }));
+      }
     };
 
     const handleMatchFound = (data: { 
@@ -110,9 +142,9 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
       matchId?: string;
     }) => {
       // Cancel queue timer
-      if (queueTimer) {
-        clearInterval(queueTimer);
-        setQueueTimer(null);
+      if (queueTimerRef.current) {
+        clearInterval(queueTimerRef.current);
+        queueTimerRef.current = null;
       }
       
       // Reset queue status
@@ -168,10 +200,16 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
       
       socketService.off('room-joined', handleRoomJoined);
     };
-  }, [onRoomJoined, queueTimer]);
+  }, [onRoomJoined, queueStatus.isQueuing, authUser]); // Added authUser to deps
 
   // Update queue timer
   useEffect(() => {
+    // Clear any existing timer first
+    if (queueTimerRef.current) {
+      clearInterval(queueTimerRef.current);
+      queueTimerRef.current = null;
+    }
+
     if (queueStatus.isQueuing && queueStartTime) {
       const timer = setInterval(() => {
         const elapsed = Math.floor((Date.now() - queueStartTime) / 1000);
@@ -179,16 +217,25 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
         
         // Request updated queue status every 5 seconds
         if (elapsed % 5 === 0) {
+          console.log('[RankedLobby] Requesting queue status update');
           socketService.emit(activeTab === 'ranked' ? 'ranked:queue-status' : 'casual:queue-status');
         }
       }, 1000);
       
-      setQueueTimer(timer);
+      queueTimerRef.current = timer;
       
       return () => {
         clearInterval(timer);
+        queueTimerRef.current = null;
       };
     }
+    
+    return () => {
+      if (queueTimerRef.current) {
+        clearInterval(queueTimerRef.current);
+        queueTimerRef.current = null;
+      }
+    };
   }, [queueStatus.isQueuing, queueStartTime, activeTab]);
 
   const handleJoinQueue = useCallback(() => {
@@ -197,11 +244,13 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
       return;
     }
 
+    console.log('[RankedLobby] Joining queue:', { activeTab, gameMode: selectedGameMode });
     const event = activeTab === 'ranked' ? 'ranked:join-queue' : 'casual:join-queue';
     socketService.emit(event, { gameMode: selectedGameMode });
   }, [activeTab, authUser, onAuthRequired, selectedGameMode]);
 
   const handleLeaveQueue = useCallback(() => {
+    console.log('[RankedLobby] Leaving queue:', { activeTab });
     const event = activeTab === 'ranked' ? 'ranked:leave-queue' : 'casual:leave-queue';
     socketService.emit(event);
   }, [activeTab]);
@@ -262,6 +311,12 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
               {t('ranked.placementMatches', { count: playerRating.placementMatchesRemaining })}
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === 'ranked' && authUser && !playerRating && (
+        <div className="loading-stats">
+          <p>{t('ranked.loadingStats', 'Loading player stats...')}</p>
         </div>
       )}
 

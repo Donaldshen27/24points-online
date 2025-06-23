@@ -5,6 +5,7 @@ import { MatchReplayService } from '../services/MatchReplayService';
 import roomManager from './RoomManager';
 import { v4 as uuidv4 } from 'uuid';
 import { userService } from '../services/UserService';
+import { getMatchmakingRange } from '../../../shared/game/elo';
 
 export function setupRankedHandlers(io: Server, socket: Socket) {
   const matchmakingService = MatchmakingService.getInstance();
@@ -169,7 +170,13 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
       const userId = (socket as any).userId;
       const status = matchmakingService.getQueueStatus(userId);
       
-      socket.emit('ranked:queue-status', status);
+      // Transform the response to match client expectations
+      socket.emit('ranked:queue-status', {
+        isQueuing: status.inQueue,
+        queueTime: status.queueTime || 0,
+        estimatedWaitTime: status.estimatedWaitTime || 0,
+        searchRange: status.inQueue ? getMatchmakingRange(status.queueTime || 0) : 50
+      });
     } catch (error) {
       console.error('[RankedHandler] Error getting queue status:', error);
     }
@@ -334,7 +341,14 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
       }
       
       const status = matchmakingService.getQueueStatus(userId);
-      socket.emit('casual:queue-status', status);
+      
+      // Transform the response to match client expectations
+      socket.emit('casual:queue-status', {
+        isQueuing: status.inQueue,
+        queueTime: status.queueTime || 0,
+        estimatedWaitTime: status.estimatedWaitTime || 0,
+        searchRange: status.inQueue ? getMatchmakingRange(status.queueTime || 0) : 50
+      });
     } catch (error) {
       console.error('[RankedHandler] Error getting casual queue status:', error);
     }

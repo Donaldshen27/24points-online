@@ -432,6 +432,7 @@ function App() {
           onClose={() => setShowAuthModal(false)}
           onSuccess={() => {
             setShowAuthModal(false)
+            handleAuthSuccess()
             // Refresh page state after successful auth
             if (appState === AppState.BADGES) {
               // Force re-render of badges page

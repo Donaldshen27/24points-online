@@ -8,6 +8,7 @@ import { SolutionReplay } from '../SolutionReplay/SolutionReplay';
 import { VictoryCelebration } from '../VictoryCelebration/VictoryCelebration';
 import DisconnectNotification from '../DisconnectNotification/DisconnectNotification';
 import { PuzzleRecords } from '../PuzzleRecords/PuzzleRecords';
+import { TugOfWar } from '../TugOfWar';
 import socketService from '../../services/socketService';
 import type { GameRoom, Solution, Card, Operation } from '../../types/game.types';
 import { GameState } from '../../types/game.types';
@@ -405,6 +406,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
           <div className="win-condition">
             {t(`gameScreen.winConditions.${room.roomType || 'classic'}`)}
           </div>
+          {/* Tug of War Animation */}
+          <TugOfWar
+            leftScore={currentPlayer?.points || 0}
+            rightScore={opponent?.points || 0}
+            leftName={currentPlayer?.name}
+            rightName={opponent?.name}
+            isCurrentPlayerLeft={!isSpectator}
+            leftIsBot={currentPlayer?.isAI || false}
+            rightIsBot={opponent?.isAI || false}
+          />
         </div>
       )}
 

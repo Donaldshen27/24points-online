@@ -1,0 +1,264 @@
+.tug-of-war-container {
+  width: 100%;
+  padding: 1rem 0;
+  background: linear-gradient(135deg, rgba(129, 199, 132, 0.05) 0%, rgba(66, 165, 245, 0.05) 100%);
+  border-radius: 12px;
+  margin-top: 0.5rem;
+}
+
+.tug-of-war-game {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  position: relative;
+  height: 120px;
+}
+
+/* Player Figures */
+.player-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+.player-figure.left {
+  animation: pullLeft 2s ease-in-out infinite;
+}
+
+.player-figure.right {
+  animation: pullRight 2s ease-in-out infinite;
+}
+
+.player-figure.winning {
+  transform: scale(1.1);
+}
+
+.player-figure.current .player-avatar {
+  box-shadow: 0 0 0 3px var(--color-accent-primary);
+}
+
+.player-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.player-emoji {
+  font-size: 28px;
+}
+
+.player-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.player-stars {
+  display: flex;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.star {
+  font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+.star.filled {
+  animation: starPop 0.5s ease;
+}
+
+/* Rope Container */
+.rope-container {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.rope {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    #8B4513,
+    #8B4513 5px,
+    #A0522D 5px,
+    #A0522D 10px
+  );
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.rope-center-flag {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 3;
+}
+
+.flag {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  animation: flagWave 2s ease-in-out infinite;
+}
+
+/* Victory Zones */
+.victory-zone {
+  position: absolute;
+  top: -20px;
+  bottom: -20px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+}
+
+.victory-zone.left {
+  left: -20px;
+  background: linear-gradient(90deg, transparent, rgba(129, 199, 132, 0.2));
+}
+
+.victory-zone.right {
+  right: -20px;
+  background: linear-gradient(90deg, rgba(66, 165, 245, 0.2), transparent);
+}
+
+.zone-marker {
+  font-size: 20px;
+  opacity: 0.7;
+}
+
+/* Center Line */
+.center-line {
+  position: absolute;
+  left: 50%;
+  top: -15px;
+  bottom: -15px;
+  width: 2px;
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateX(-50%);
+}
+
+/* Status Messages */
+.tug-status {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  height: 1.2rem;
+}
+
+.status-tied {
+  color: var(--color-text-secondary);
+}
+
+.status-winning {
+  color: var(--color-accent-primary);
+  font-weight: 600;
+}
+
+.status-victory {
+  color: var(--color-success);
+  font-weight: 700;
+  font-size: 1rem;
+  animation: victoryPulse 1s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes pullLeft {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-3px) rotate(-2deg);
+  }
+  75% {
+    transform: translateX(2px) rotate(1deg);
+  }
+}
+
+@keyframes pullRight {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(3px) rotate(2deg);
+  }
+  75% {
+    transform: translateX(-2px) rotate(-1deg);
+  }
+}
+
+@keyframes flagWave {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotate(-5deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(5deg);
+  }
+}
+
+@keyframes starPop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes victoryPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .tug-of-war-game {
+    padding: 0 1rem;
+    height: 100px;
+  }
+
+  .player-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .player-emoji {
+    font-size: 24px;
+  }
+
+  .player-label {
+    font-size: 0.75rem;
+  }
+
+  .rope-container {
+    left: 20%;
+    right: 20%;
+  }
+}

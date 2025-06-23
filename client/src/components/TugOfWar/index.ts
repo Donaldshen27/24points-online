@@ -1,0 +1,1 @@
+export { TugOfWar } from './TugOfWar';

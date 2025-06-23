@@ -7,6 +7,7 @@ export class SuperGameRules extends BaseGameRules {
   initializeDecks(players: Player[]): void {
     players.forEach(player => {
       player.deck = [];
+      player.points = 0; // Initialize points for tug-of-war system
       // Super mode: 14 cards per player (1-10, plus 4 extra cards)
       for (let i = 1; i <= 10; i++) {
         player.deck.push({
@@ -92,18 +93,10 @@ export class SuperGameRules extends BaseGameRules {
   }
   
   checkWinCondition(room: GameRoom): WinResult | null {
-    // Same as classic: first to run out of cards wins
-    const winner = room.players.find(p => p.deck.length === 0);
+    // Check if any player has reached 4 points (wins)
+    const winner = room.players.find(p => (p.points || 0) >= 4);
     if (winner) {
-      return { winnerId: winner.id, reason: 'no_cards' };
-    }
-    
-    // Check if any player has all cards (loses)
-    const totalCards = this.config.cardsPerPlayer * room.players.length;
-    const loser = room.players.find(p => p.deck.length === totalCards);
-    if (loser) {
-      const winnerId = room.players.find(p => p.id !== loser.id)?.id;
-      return { winnerId: winnerId!, reason: 'opponent_all_cards' };
+      return { winnerId: winner.id, reason: 'reached_4_points' };
     }
     
     return null;

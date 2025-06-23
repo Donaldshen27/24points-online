@@ -32,7 +32,7 @@ export const GameOver: React.FC<GameOverProps> = ({
 
   const playerScore = gameState.scores[playerId] || 0;
   const opponentScore = opponent ? (gameState.scores[opponent.id] || 0) : 0;
-  const isWinner = currentPlayer?.deck.length === 0 || opponent?.deck.length === 20;
+  const isWinner = (currentPlayer?.points || 0) >= 4;
 
   useEffect(() => {
     // Animate in

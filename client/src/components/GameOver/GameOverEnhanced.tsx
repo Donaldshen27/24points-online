@@ -72,7 +72,7 @@ export const GameOverEnhanced: React.FC<GameOverEnhancedProps> = ({
     playerScore = gameState.scores[playerId] || 0;
     opponentScore = opponent ? (gameState.scores[opponent.id] || 0) : 0;
     // Use gameOverWinnerId if provided (for forfeit cases), otherwise use deck length
-    isWinner = gameOverWinnerId ? gameOverWinnerId === playerId : (currentPlayer?.deck.length === 0 || opponent?.deck.length === 20);
+    isWinner = gameOverWinnerId ? gameOverWinnerId === playerId : ((currentPlayer?.points || 0) >= 4);
   }
 
   // Calculate detailed statistics

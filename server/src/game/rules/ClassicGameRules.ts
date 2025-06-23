@@ -7,6 +7,7 @@ export class ClassicGameRules extends BaseGameRules {
   initializeDecks(players: Player[]): void {
     players.forEach(player => {
       player.deck = [];
+      player.points = 0; // Initialize points for tug-of-war system
       for (let i = 1; i <= this.config.cardsPerPlayer; i++) {
         player.deck.push({
           value: i,
@@ -57,18 +58,10 @@ export class ClassicGameRules extends BaseGameRules {
   }
   
   checkWinCondition(room: GameRoom): WinResult | null {
-    // Check if any player has no cards (wins)
-    const winner = room.players.find(p => p.deck.length === 0);
+    // Check if any player has reached 4 points (wins)
+    const winner = room.players.find(p => (p.points || 0) >= 4);
     if (winner) {
-      return { winnerId: winner.id, reason: 'no_cards' };
-    }
-    
-    // Check if any player has all cards (loses)
-    const totalCards = this.config.cardsPerPlayer * room.players.length;
-    const loser = room.players.find(p => p.deck.length === totalCards);
-    if (loser) {
-      const winnerId = room.players.find(p => p.id !== loser.id)?.id;
-      return { winnerId: winnerId!, reason: 'opponent_all_cards' };
+      return { winnerId: winner.id, reason: 'reached_4_points' };
     }
     
     return null;

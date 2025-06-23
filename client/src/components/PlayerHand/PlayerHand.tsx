@@ -13,37 +13,17 @@ interface PlayerHandProps {
 export const PlayerHand: React.FC<PlayerHandProps> = ({
   player,
   isCurrentPlayer,
-  isDisconnected = false,
-  roomType
+  isDisconnected = false
 }) => {
-  const cardCount = player.deck.length;
   const points = player.points || 0;
-  const isExtendedMode = roomType === 'extended';
   
-  // Generate display based on game mode
+  // Generate display for all game modes using points
   const getDisplay = () => {
-    if (isExtendedMode) {
-      // Extended mode: show points (0-4)
-      const stars = '⭐'.repeat(points);
-      const emptyStars = '☆'.repeat(4 - points);
-      const className = points >= 3 ? 'points-display near-win' : 'points-display';
-      return <span className={className}>{stars}{emptyStars}</span>;
-    } else {
-      // Classic/Super mode: show hearts based on card count
-      if (cardCount === 0) {
-        // Victory - show empty hearts
-        return '🤍🤍🤍🤍🤍';
-      }
-      
-      const fullHearts = Math.floor(cardCount / 2);
-      const hasHalfHeart = cardCount % 2 === 1;
-      const hearts = '❤️'.repeat(fullHearts) + (hasHalfHeart ? '💔' : '');
-      
-      // Add shaking class for low health (2 or less cards)
-      const className = cardCount <= 2 ? 'hearts-display shaking' : 'hearts-display';
-      
-      return <span className={className}>{hearts}</span>;
-    }
+    // All modes now use points (0-4)
+    const stars = '⭐'.repeat(points);
+    const emptyStars = '☆'.repeat(4 - points);
+    const className = points >= 3 ? 'points-display near-win' : 'points-display';
+    return <span className={className}>{stars}{emptyStars}</span>;
   };
 
   return (
@@ -56,7 +36,7 @@ export const PlayerHand: React.FC<PlayerHandProps> = ({
         <div className="card-display">
           {getDisplay()}
           <span className="card-count">
-            {isExtendedMode ? `(${points}/4)` : `(${cardCount})`}
+            ({points}/4)
           </span>
         </div>
       </div>

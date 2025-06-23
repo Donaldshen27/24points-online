@@ -173,7 +173,14 @@ export const Leaderboard: React.FC = () => {
     return (
       <div className="leaderboard-container">
         <h2 className="leaderboard-title">{t('app.nav.leaderboard')}</h2>
-        <div className="loading-spinner">{t('app.loading')}</div>
+        <div className="loading-spinner">
+          <span className="loading-text">{t('app.loading')}</span>
+          <span className="loading-dots">
+            <span>.</span>
+            <span>.</span>
+            <span>.</span>
+          </span>
+        </div>
       </div>
     );
   }
@@ -377,7 +384,14 @@ export const Leaderboard: React.FC = () => {
                 </button>
               </div>
             ) : rankedLoading && rankedLeaderboard.length === 0 ? (
-              <div className="loading-spinner">{t('app.loading')}</div>
+              <div className="loading-spinner">
+          <span className="loading-text">{t('app.loading')}</span>
+          <span className="loading-dots">
+            <span>.</span>
+            <span>.</span>
+            <span>.</span>
+          </span>
+        </div>
             ) : rankedLeaderboard.length === 0 ? (
               <div className="empty-state">
                 {t('leaderboard.noRankedPlayers')}

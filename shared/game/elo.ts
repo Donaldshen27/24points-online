@@ -1,9 +1,9 @@
 // ELO Rating Calculation Utilities
 
 import { 
-  ELOCalculationParams, 
-  ELOCalculationResult, 
-  RankTier, 
+  type ELOCalculationParams, 
+  type ELOCalculationResult, 
+  type RankTier, 
   RANK_TIERS, 
   ELO_CONSTANTS 
 } from '../types/elo';
@@ -145,7 +145,6 @@ export function applyRankProtection(
   }
   
   const oldTier = getRankTier(oldRating);
-  const newTier = getRankTier(newRating);
   
   // If would be demoted on first game after promotion, keep at tier floor
   if (isDemotion(oldRating, newRating)) {

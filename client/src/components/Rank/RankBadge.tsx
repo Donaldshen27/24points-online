@@ -1,5 +1,5 @@
 import React from 'react';
-import { RankTier, RANK_TIERS } from '../../../../shared/types/elo';
+import { type RankTier, RANK_TIERS } from '../../../../shared/types/elo';
 import './RankBadge.css';
 
 interface RankBadgeProps {

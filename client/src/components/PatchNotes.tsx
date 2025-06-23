@@ -13,6 +13,26 @@ interface PatchNote {
 
 const patchNotes: PatchNote[] = [
   {
+    date: '2025-06-22',
+    version: '3.0.0',
+    changes: [
+      { type: 'feature', description: '🎯 NEW: ELO Ranking System - Climb from Iron to Grandmaster with skill-based matchmaking!' },
+      { type: 'feature', description: 'Automated Ranked Matchmaking - Find opponents at your skill level automatically' },
+      { type: 'feature', description: '8 Competitive Tiers: Iron → Bronze → Silver → Gold → Platinum → Diamond → Master → Grandmaster' },
+      { type: 'feature', description: 'Global and Regional Leaderboards - See how you rank against players worldwide' },
+      { type: 'feature', description: 'Match History & Replay System - Review and learn from your ranked games' },
+      { type: 'feature', description: 'Badge Tooltips - View badge requirements by hovering in waiting room' },
+      { type: 'feature', description: 'Hidden Test Mode - Access developer tools at /testmode URL' },
+      { type: 'fix', description: 'Fixed connection status display synchronization issues' },
+      { type: 'fix', description: 'Resolved ranked matchmaking authentication problems' },
+      { type: 'fix', description: 'Fixed React StrictMode compatibility for better stability' },
+      { type: 'fix', description: 'Fixed ELO database schema foreign key constraints' },
+      { type: 'fix', description: 'Socket reconnection after login now properly updates auth state' },
+      { type: 'performance', description: 'Optimized matchmaking algorithm with progressive search expansion' },
+      { type: 'performance', description: 'Improved badge system performance with local implementations' }
+    ]
+  },
+  {
     date: '2025-01-23',
     version: '2.0.2',
     changes: [

@@ -87,26 +87,8 @@ export class SuperGameRules extends BaseGameRules {
   }
   
   calculateScore(solution: Solution, timeElapsed: number): number {
-    // Complexity scoring for Super mode
-    let score = 1; // Base score
-    
-    // Bonus points for using more cards
-    const cardsUsed = solution.cards.length;
-    if (cardsUsed >= 5) score += 1;
-    if (cardsUsed >= 6) score += 1;
-    if (cardsUsed === 7) score += 2; // Extra bonus for using all cards
-    
-    // Speed bonus (under 10 seconds)
-    if (timeElapsed < 10000) score += 1;
-    
-    // Complexity bonus for operations
-    const operations = solution.operations;
-    const hasMultiplication = operations.some(op => op.operator === '*');
-    const hasDivision = operations.some(op => op.operator === '/');
-    
-    if (hasMultiplication || hasDivision) score += 1;
-    
-    return score;
+    // Unified scoring: simple 1 point per correct solution
+    return 1;
   }
   
   checkWinCondition(room: GameRoom): WinResult | null {

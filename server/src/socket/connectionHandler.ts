@@ -922,7 +922,7 @@ export const handleConnection = (io: Server, socket: Socket) => {
             // Process badge data
             for (const userBadge of badgeData) {
               // Find username for this user_id
-              let username = null;
+              let username: string | null = null;
               for (const [uname, uid] of usernameToId.entries()) {
                 if (uid === userBadge.user_id) {
                   username = uname;

@@ -4,6 +4,7 @@ import { Solution, GameState } from '../types/game.types';
 import { authService } from '../auth/authService';
 import { badgeDetectionService } from '../badges/BadgeDetectionService';
 import { statisticsService } from '../badges/StatisticsService';
+import { setupRankedHandlers } from './rankedHandler';
 
 // Helper function to broadcast game state to spectators
 function broadcastToSpectators(io: Server, roomId: string, event: string, data: any) {
@@ -21,6 +22,9 @@ export const handleConnection = (io: Server, socket: Socket) => {
   
   // Set io instance in RoomManager if not already set
   roomManager.setIo(io);
+  
+  // Set up ranked game handlers
+  setupRankedHandlers(io, socket);
 
   socket.on('create-room', async (data: { playerName: string; roomType?: string; isSoloPractice?: boolean }) => {
     // For authenticated users, use their actual user ID for badge tracking
@@ -638,6 +642,12 @@ export const handleConnection = (io: Server, socket: Socket) => {
   socket.on('request-rematch', () => {
     const room = roomManager.getRoomBySocketId(socket.id);
     if (!room || room.state !== GameState.GAME_OVER) return;
+
+    // Prevent rematch in ranked games
+    if (room.isRanked) {
+      socket.emit('rematch-error', { message: 'Rematch is not allowed in ranked games' });
+      return;
+    }
 
     const player = room.players.find(p => p.socketId === socket.id);
     if (!player) return;

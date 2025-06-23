@@ -23,37 +23,67 @@ export class RoomManager {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 
-  createRoom(playerId: string, socketId: string, playerName: string, roomType: string = 'classic', isSoloPractice: boolean = false): GameRoom {
+  createRoom(roomIdOrPlayerId: string, socketIdOrRoomType?: string, playerNameOrIsRanked?: string | boolean, roomType: string = 'classic', isSoloPractice: boolean = false): GameRoom {
+    // Handle overloaded parameters
+    let roomId: string;
+    let playerId: string;
+    let socketId: string;
+    let playerName: string;
+    let isRanked: boolean = false;
+
+    // Check if this is being called from matchmaking (3 params: roomId, roomType, isRanked)
+    if (typeof playerNameOrIsRanked === 'boolean' && socketIdOrRoomType && !roomType) {
+      roomId = roomIdOrPlayerId;
+      roomType = socketIdOrRoomType;
+      isRanked = playerNameOrIsRanked;
+      // For matchmaking, players will be added later
+      playerId = '';
+      socketId = '';
+      playerName = '';
+    } else {
+      // Original signature (5 params: playerId, socketId, playerName, roomType, isSoloPractice)
+      roomId = this.generateRoomId();
+      playerId = roomIdOrPlayerId;
+      socketId = socketIdOrRoomType || '';
+      playerName = playerNameOrIsRanked as string || '';
+    }
     const config = getRoomTypeConfig(roomType);
     if (!config) {
       throw new Error(`Invalid room type: ${roomType}`);
     }
 
-    const roomId = this.generateRoomId();
-    const player: Player = {
-      id: playerId,
-      socketId,
-      name: playerName,
-      deck: [],
-      isReady: false
-    };
-
     const room: GameRoom = {
       id: roomId,
-      players: [player],
+      players: [],
       state: GameState.WAITING,
       centerCards: [],
       currentRound: 0,
-      scores: {
-        [playerId]: 0
-      },
+      scores: {},
       roomType,
       isSoloPractice,
+      isRanked,
+      createdAt: Date.now(),
       // Initialize battle statistics
-      roundTimes: { [playerId]: [] },
-      firstSolves: { [playerId]: 0 },
-      correctSolutions: { [playerId]: 0 }
+      roundTimes: {},
+      firstSolves: {},
+      correctSolutions: {}
     };
+
+    // Add initial player if provided (not from matchmaking)
+    if (playerId && socketId && playerName) {
+      const player: Player = {
+        id: playerId,
+        socketId,
+        name: playerName,
+        deck: [],
+        isReady: false
+      };
+      room.players.push(player);
+      room.scores[playerId] = 0;
+      room.roundTimes![playerId] = [];
+      room.firstSolves![playerId] = 0;
+      room.correctSolutions![playerId] = 0;
+    }
 
     this.rooms.set(roomId, room);
     
@@ -86,7 +116,11 @@ export class RoomManager {
     });
     
     this.gameManagers.set(roomId, gameManager);
-    this.playerToRoom.set(socketId, roomId);
+    
+    // Only set playerToRoom if we have a socketId
+    if (socketId) {
+      this.playerToRoom.set(socketId, roomId);
+    }
     
     return room;
   }

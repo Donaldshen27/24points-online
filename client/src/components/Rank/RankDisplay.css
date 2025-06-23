@@ -1,0 +1,122 @@
+/* Rank Display Base */
+.rank-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #ffffff;
+}
+
+/* Compact Variant */
+.rank-display-compact {
+  gap: 8px;
+}
+
+/* Detailed Variant */
+.rank-display-detailed {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.rank-display-stats {
+  display: flex;
+  gap: 20px;
+}
+
+.rank-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rank-stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rank-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Full Variant */
+.rank-display-full {
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+  padding: 24px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+}
+
+.rank-display-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.rank-display-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.rank-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.rank-stat-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.rank-stat-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.rank-stat-item .rank-stat-label {
+  font-size: 11px;
+  text-align: center;
+}
+
+.rank-stat-item .rank-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rank-display-detailed {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .rank-display-stats {
+    width: 100%;
+    justify-content: space-around;
+  }
+  
+  .rank-display-full {
+    padding: 16px;
+  }
+  
+  .rank-display-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

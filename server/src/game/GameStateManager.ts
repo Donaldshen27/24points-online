@@ -9,6 +9,7 @@ import { SuperGameRules } from './rules/SuperGameRules';
 import { ExtendedGameRules } from './rules/ExtendedGameRules';
 import { trackPuzzle, recordSolveTime, getPuzzleStats, isNewRecord } from '../models/puzzleRepository';
 import { statisticsService } from '../badges/StatisticsService';
+import { RatingService } from '../services/RatingService';
 
 export interface GameEvent {
   type: 'round_start' | 'player_claim' | 'solution_attempt' | 'round_end' | 'game_over';
@@ -535,6 +536,16 @@ export class GameStateManager {
     
     console.log(`[GameStateManager] Game forfeited by ${playerId}. Winner: ${otherPlayer.id}`);
     
+    // Apply disconnect penalty if this is a ranked game
+    if (this.room.isRanked) {
+      const ratingService = RatingService.getInstance();
+      ratingService.applyDisconnectPenalty(playerId)
+        .then(update => {
+          console.log(`[GameStateManager] Applied disconnect penalty to ${playerId}: -${update.ratingChange} rating`);
+        })
+        .catch(err => console.error('Failed to apply disconnect penalty:', err));
+    }
+    
     // End the game with the connected player as winner
     this.endGame(otherPlayer.id, 'forfeit');
   }
@@ -598,6 +609,33 @@ export class GameStateManager {
       
       // Check for special achievements
       this.checkSpecialAchievements(winnerId, loser.id, finalReason);
+      
+      // Update ELO ratings if this is a ranked game
+      if (this.room.isRanked) {
+        const ratingService = RatingService.getInstance();
+        
+        // Calculate match duration
+        const matchDuration = Math.floor((Date.now() - this.room.createdAt) / 1000);
+        const totalRounds = (this.room.scores[winnerId] || 0) + (this.room.scores[loser.id] || 0);
+        
+        ratingService.updateRatingsAfterMatch(
+          winnerId,
+          loser.id,
+          this.config.id as 'classic' | 'super' | 'extended',
+          {
+            duration: matchDuration,
+            roundsPlayed: totalRounds,
+            winnerRoundsWon: this.room.scores[winnerId] || 0,
+            loserRoundsWon: this.room.scores[loser.id] || 0
+          }
+        ).then(({ winnerUpdate, loserUpdate }) => {
+          // Store rating updates for sending to clients
+          this.room.ratingUpdates = {
+            [winnerId]: winnerUpdate,
+            [loser.id]: loserUpdate
+          };
+        }).catch(err => console.error('Failed to update ELO ratings:', err));
+      }
     }
     
     // Notify that game ended

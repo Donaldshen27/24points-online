@@ -41,6 +41,12 @@ export interface GameRoom {
     } | null;
   };
   newRecordSet?: boolean;
+  // Ranked game support
+  isRanked?: boolean;
+  createdAt: number;
+  ratingUpdates?: {
+    [playerId: string]: any; // RatingUpdatePayload
+  };
 }
 
 export const GameState = {

@@ -86,3 +86,6 @@ docs/                   # Comprehensive documentation
 
 ## Task Tracking
 Tasks are managed through the MCP task coordination system with IDs following the pattern: 24points-X.Y where X is the phase number and Y is the task number within that phase.
+
+## Organizational Guidelines
+- Documentation should go to appropriate docs subfolders

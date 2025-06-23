@@ -19,6 +19,9 @@ if (process.env.NODE_ENV === 'production') {
   allowedOrigins.push('https://verdant-flan-eeb30e.netlify.app');
   allowedOrigins.push('https://twentyfourpoints.com');
   allowedOrigins.push('https://www.twentyfourpoints.com');
+  // Also allow without trailing slash
+  allowedOrigins.push('http://twentyfourpoints.com');
+  allowedOrigins.push('http://www.twentyfourpoints.com');
 }
 
 const io = new Server(server, {

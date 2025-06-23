@@ -1,0 +1,212 @@
+/* Rank Badge Base Styles */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  position: relative;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.rank-badge::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--rank-color), transparent, var(--rank-color));
+  border-radius: 8px;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+.rank-badge-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 6px;
+  width: 100%;
+  height: 100%;
+}
+
+/* Size Variants */
+.rank-badge-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.rank-badge-small .rank-badge-inner {
+  padding: 4px;
+}
+
+.rank-badge-small .rank-icon {
+  font-size: 20px;
+}
+
+.rank-badge-medium {
+  min-width: 80px;
+  height: 60px;
+}
+
+.rank-badge-medium .rank-icon {
+  font-size: 24px;
+}
+
+.rank-badge-large {
+  min-width: 120px;
+  min-height: 100px;
+  border-radius: 12px;
+}
+
+.rank-badge-large .rank-badge-inner {
+  padding: 16px 20px;
+  gap: 8px;
+}
+
+.rank-badge-large .rank-icon {
+  font-size: 36px;
+}
+
+/* Icon and Labels */
+.rank-badge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rank-icon {
+  display: block;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.rank-badge-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.rank-badge-large .rank-badge-label {
+  font-size: 14px;
+}
+
+.rank-badge-rating {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--rank-color);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Tier-specific colors and effects */
+.rank-badge-iron {
+  --rank-color: #7C7C7C;
+}
+
+.rank-badge-bronze {
+  --rank-color: #CD7F32;
+}
+
+.rank-badge-silver {
+  --rank-color: #C0C0C0;
+}
+
+.rank-badge-gold {
+  --rank-color: #FFD700;
+}
+
+.rank-badge-platinum {
+  --rank-color: #E5E4E2;
+}
+
+.rank-badge-diamond {
+  --rank-color: #B9F2FF;
+}
+
+.rank-badge-diamond::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(185, 242, 255, 0.2) 0%, transparent 50%);
+  animation: diamond-sparkle 3s ease-in-out infinite;
+}
+
+@keyframes diamond-sparkle {
+  0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.8); }
+  50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+.rank-badge-master {
+  --rank-color: #9B30FF;
+}
+
+.rank-badge-grandmaster {
+  --rank-color: #FF0000;
+  background: linear-gradient(135deg, #2a0000 0%, #4a0000 100%);
+}
+
+.rank-badge-grandmaster::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    transparent 70%
+  );
+  animation: grandmaster-shine 3s infinite;
+}
+
+@keyframes grandmaster-shine {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* Animated variant */
+.rank-badge-animated {
+  animation: rank-badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes rank-badge-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Hover effects */
+.rank-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.rank-badge:hover::before {
+  opacity: 1;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .rank-badge {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  }
+  
+  .rank-badge-inner {
+    background: rgba(0, 0, 0, 0.8);
+  }
+}

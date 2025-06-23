@@ -33,7 +33,7 @@ interface RegisterRequest {
 class AuthService {
   private accessToken: string | null = null;
   private user: AuthUser | null = null;
-  private readonly API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3024';
+  private readonly API_BASE_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3024';
   private refreshPromise: Promise<string | null> | null = null;
 
   constructor() {

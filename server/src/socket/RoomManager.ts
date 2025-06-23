@@ -286,6 +286,10 @@ export class RoomManager {
     return Array.from(this.rooms.values());
   }
 
+  getGameManager(roomId: string): GameStateManager | undefined {
+    return this.gameManagers.get(roomId);
+  }
+
   getOpenRooms(): GameRoom[] {
     return this.getAllRooms().filter(room => {
       // Don't show solo practice rooms

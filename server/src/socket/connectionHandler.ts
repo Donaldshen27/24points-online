@@ -5,6 +5,8 @@ import { authService } from '../auth/authService';
 import { badgeDetectionService } from '../badges/BadgeDetectionService';
 import { statisticsService } from '../badges/StatisticsService';
 import { setupRankedHandlers } from './rankedHandler';
+import { registerMatchAnalyticsHandlers } from './handlers/matchAnalytics';
+import { registerMatchReplayHandlers } from './handlers/matchReplay';
 
 // Helper function to broadcast game state to spectators
 function broadcastToSpectators(io: Server, roomId: string, event: string, data: any) {
@@ -25,6 +27,12 @@ export const handleConnection = (io: Server, socket: Socket) => {
   
   // Set up ranked game handlers
   setupRankedHandlers(io, socket);
+  
+  // Set up match analytics handlers
+  registerMatchAnalyticsHandlers(socket);
+  
+  // Set up match replay handlers
+  registerMatchReplayHandlers(socket);
 
   socket.on('create-room', async (data: { playerName: string; roomType?: string; isSoloPractice?: boolean }) => {
     // For authenticated users, use their actual user ID for badge tracking

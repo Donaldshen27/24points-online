@@ -10,6 +10,8 @@ import { ExtendedGameRules } from './rules/ExtendedGameRules';
 import { trackPuzzle, recordSolveTime, getPuzzleStats, isNewRecord } from '../models/puzzleRepository';
 import { statisticsService } from '../badges/StatisticsService';
 import { RatingService } from '../services/RatingService';
+import { MatchAnalyticsService } from '../services/MatchAnalyticsService';
+import { MatchReplayService } from '../services/MatchReplayService';
 
 export interface GameEvent {
   type: 'round_start' | 'player_claim' | 'solution_attempt' | 'round_end' | 'game_over';
@@ -50,6 +52,7 @@ export class GameStateManager {
   protected static readonly DISCONNECT_TIMEOUT_MS = 30000; // 30 seconds
   protected config: RoomTypeConfig;
   protected gameRules: BaseGameRules;
+  protected currentMatchId: string | null = null;
 
   constructor(room: GameRoom, config?: RoomTypeConfig) {
     this.room = room;
@@ -171,6 +174,17 @@ export class GameStateManager {
 
     this.room.state = GameState.PLAYING;
     this.startNewRound();
+  }
+
+  /**
+   * Set the match ID for replay recording (called for ranked games)
+   */
+  setMatchId(matchId: string): void {
+    this.currentMatchId = matchId;
+    if (this.room.isRanked) {
+      const replayService = MatchReplayService.getInstance();
+      replayService.startRecording(matchId);
+    }
   }
 
   /**
@@ -382,6 +396,19 @@ export class GameStateManager {
           solveTimeMs,
           true // isCorrect
         ).catch(err => console.error('Failed to update solo practice stats:', err));
+      }
+      
+      // Record replay for ranked matches
+      if (this.room.isRanked && this.currentMatchId) {
+        const replayService = MatchReplayService.getInstance();
+        replayService.recordGameRound(
+          this.currentMatchId,
+          this.room,
+          this.room.currentRound,
+          solution,
+          playerId,
+          solveTimeMs
+        ).catch(err => console.error('Failed to record replay:', err));
       }
       
       this.endRound({
@@ -627,13 +654,38 @@ export class GameStateManager {
             roundsPlayed: totalRounds,
             winnerRoundsWon: this.room.scores[winnerId] || 0,
             loserRoundsWon: this.room.scores[loser.id] || 0
-          }
-        ).then(({ winnerUpdate, loserUpdate }) => {
+          },
+          this.currentMatchId || undefined
+        ).then(async ({ winnerUpdate, loserUpdate, match }) => {
           // Store rating updates for sending to clients
           this.room.ratingUpdates = {
             [winnerId]: winnerUpdate,
             [loser.id]: loserUpdate
           };
+          
+          // Record detailed match analytics
+          const analyticsService = MatchAnalyticsService.getInstance();
+          await analyticsService.recordMatchStatistics(
+            match.id,
+            this.room,
+            winnerId,
+            loser.id,
+            finalReason === 'forfeit'
+          );
+          
+          // Finalize replay with final game state
+          if (this.currentMatchId) {
+            const replayService = MatchReplayService.getInstance();
+            await replayService.finalizeMatchReplay(this.currentMatchId, {
+              finalScores: this.room.scores,
+              finalDecks: {
+                [this.room.players[0].id]: this.room.players[0].deck.length,
+                [this.room.players[1].id]: this.room.players[1].deck.length
+              },
+              totalRounds: this.room.currentRound,
+              gameEndReason: finalReason
+            });
+          }
         }).catch(err => console.error('Failed to update ELO ratings:', err));
       }
     }

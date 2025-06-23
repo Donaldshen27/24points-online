@@ -1,7 +1,9 @@
 import { Server, Socket } from 'socket.io';
 import { MatchmakingService } from '../services/MatchmakingService';
 import { RatingService } from '../services/RatingService';
+import { MatchReplayService } from '../services/MatchReplayService';
 import roomManager from './RoomManager';
+import { v4 as uuidv4 } from 'uuid';
 
 export function setupRankedHandlers(io: Server, socket: Socket) {
   const matchmakingService = MatchmakingService.getInstance();
@@ -22,6 +24,21 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
     io.sockets.sockets.get(match.player1.socketId)?.join(match.roomId);
     io.sockets.sockets.get(match.player2.socketId)?.join(match.roomId);
     
+    // For ranked matches, pre-create a match ID for replay recording
+    let matchId: string | undefined;
+    if (match.queueType === 'ranked' && room) {
+      matchId = uuidv4();
+      
+      // Store the match ID in the room for later use
+      (room as any).preMatchId = matchId;
+      
+      // Get the game manager and set the match ID
+      const gameManager = roomManager.getGameManager(match.roomId);
+      if (gameManager) {
+        gameManager.setMatchId(matchId);
+      }
+    }
+    
     // Notify both players
     const eventName = match.queueType === 'ranked' ? 'ranked:match-found' : 'casual:match-found';
     
@@ -31,7 +48,8 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
       opponent: {
         username: match.player2.username,
         rating: match.player2.rating
-      }
+      },
+      matchId // Include for ranked matches
     });
     
     io.to(match.player2.socketId).emit(eventName, {
@@ -40,7 +58,8 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
       opponent: {
         username: match.player1.username,
         rating: match.player1.rating
-      }
+      },
+      matchId // Include for ranked matches
     });
   });
 

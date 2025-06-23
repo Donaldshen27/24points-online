@@ -106,7 +106,8 @@ export class RatingService {
       roundsPlayed: number;
       winnerRoundsWon: number;
       loserRoundsWon: number;
-    }
+    },
+    matchId?: string
   ): Promise<{
     winnerUpdate: RatingUpdatePayload;
     loserUpdate: RatingUpdatePayload;
@@ -132,9 +133,9 @@ export class RatingService {
     const loserOldTier = getRankTier(loserRating.current_rating);
     const loserNewTier = getRankTier(eloResult.loserNewRating);
 
-    // Create match record
+    // Create match record (use provided ID or generate new one)
     const match: RankedMatch = {
-      id: crypto.randomUUID(),
+      id: matchId || crypto.randomUUID(),
       player1Id: winnerId,
       player2Id: loserId,
       winnerId,
@@ -150,8 +151,9 @@ export class RatingService {
       createdAt: new Date()
     };
 
-    // Save match to database
-    await this.saveMatch(match);
+    // Save match to database and get the ID
+    const savedMatchId = await this.saveMatch(match);
+    match.id = savedMatchId;
 
     // Update winner rating
     const winnerUpdates = {
@@ -323,16 +325,20 @@ export class RatingService {
   /**
    * Save match to database
    */
-  private async saveMatch(match: RankedMatch) {
+  private async saveMatch(match: RankedMatch): Promise<string> {
     if (!supabase) throw new Error('Supabase not initialized');
     
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('ranked_matches')
-      .insert(match);
+      .insert(match)
+      .select('id')
+      .single();
 
     if (error) {
       throw new Error(`Failed to save match: ${error.message}`);
     }
+
+    return data.id;
   }
 
   /**

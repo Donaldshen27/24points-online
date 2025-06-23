@@ -101,9 +101,11 @@ function App() {
     
     const handleConnect = () => {
       setIsConnected(true)
-      // Only set to LOBBY if not already in test mode or connecting
-      if (appStateRef.current !== AppState.TEST_MODE && appStateRef.current !== AppState.CONNECTING) {
+      // Set to LOBBY if currently CONNECTING, otherwise preserve current state
+      if (appStateRef.current === AppState.CONNECTING) {
         setAppState(AppState.LOBBY)
+      } else if (appStateRef.current === AppState.TEST_MODE) {
+        // Keep test mode active
       }
       
       // Get initial online users count
@@ -276,7 +278,7 @@ function App() {
       </div>
 
       <main className="app-main">
-        {appState === AppState.CONNECTING && (
+        {appState === AppState.CONNECTING && !isConnected && (
           <div className="connecting">
             <h2>{t('app.status.connecting')}</h2>
           </div>

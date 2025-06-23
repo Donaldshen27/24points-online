@@ -423,22 +423,37 @@ export class BadgeDetectionService {
    * Update featured badges for a user
    */
   async updateFeaturedBadges(userId: string, badgeIds: string[]): Promise<boolean> {
-    if (!this.supabase) return false;
+    if (!this.supabase) {
+      console.log('[Featured Badges] Supabase not configured');
+      return false;
+    }
 
     try {
+      console.log('[Featured Badges] Updating for user:', userId, 'with badges:', badgeIds);
+      
       // First, reset all featured flags for this user
-      await this.supabase
+      const resetResult = await this.supabase
         .from('user_badges')
         .update({ is_featured: false })
         .eq('user_id', userId);
+      
+      console.log('[Featured Badges] Reset result:', resetResult.error ? 'Error' : 'Success');
+      if (resetResult.error) {
+        console.error('[Featured Badges] Reset error:', resetResult.error);
+      }
 
       // Then set featured flag for selected badges
       if (badgeIds.length > 0) {
-        await this.supabase
+        const updateResult = await this.supabase
           .from('user_badges')
           .update({ is_featured: true })
           .eq('user_id', userId)
           .in('badge_id', badgeIds);
+        
+        console.log('[Featured Badges] Update result:', updateResult.error ? 'Error' : 'Success');
+        if (updateResult.error) {
+          console.error('[Featured Badges] Update error:', updateResult.error);
+        }
       }
 
       return true;

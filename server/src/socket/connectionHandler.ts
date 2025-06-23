@@ -1032,9 +1032,23 @@ export const handleConnection = (io: Server, socket: Socket) => {
   socket.on('update-featured-badges', async (data: { userId: string; badgeIds: string[] }, callback: (response: any) => void) => {
     try {
       // Validate that user is updating their own badges
-      if ((socket as any).isAuthenticated && (socket as any).userId !== data.userId) {
-        callback({ success: false, error: 'Unauthorized' });
-        return;
+      const socketUserId = (socket as any).userId;
+      console.log('[Featured Badges] Update request - socketUserId:', socketUserId, 'targetUserId:', data.userId);
+      
+      // For authenticated users, verify they're updating their own badges
+      if ((socket as any).isAuthenticated) {
+        if (socketUserId !== data.userId) {
+          console.log('[Featured Badges] Unauthorized - user trying to update another user\'s badges');
+          callback({ success: false, error: 'Unauthorized' });
+          return;
+        }
+      } else {
+        // For guest users, allow updates if they have a consistent userId
+        if (!data.userId) {
+          console.log('[Featured Badges] No userId provided');
+          callback({ success: false, error: 'User ID required' });
+          return;
+        }
       }
 
       // Update featured badges (limit to 5)

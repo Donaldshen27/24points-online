@@ -3,10 +3,24 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class UserService {
   /**
+   * Check if a user ID is a valid UUID
+   */
+  private isValidUUID(id: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(id);
+  }
+
+  /**
    * Ensure a user exists in the users table
    * Creates a guest user if they don't exist
+   * Only creates users for valid UUIDs (not guest IDs)
    */
   async ensureUserExists(userId: string, username: string): Promise<boolean> {
+    // Guest users (non-UUID) don't need entries in the users table
+    if (!this.isValidUUID(userId)) {
+      console.log(`[UserService] Skipping user creation for guest ID: ${userId}`);
+      return true; // Return true to allow them to continue
+    }
     if (!supabase) {
       console.warn('[UserService] Supabase not configured, skipping user creation');
       return false;

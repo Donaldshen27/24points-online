@@ -77,6 +77,13 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
       const username = (socket as any).username;
       const gameMode = data.gameMode || 'classic';
 
+      // Validate that user has a proper UUID (not a guest ID)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(userId)) {
+        socket.emit('ranked:error', { message: 'Guest users cannot play ranked. Please create an account.' });
+        return;
+      }
+
       // Ensure user exists in the database for ranked play
       const userExists = await userService.ensureUserExists(userId, username);
       if (!userExists) {

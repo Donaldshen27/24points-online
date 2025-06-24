@@ -9,6 +9,16 @@ export default defineConfig({
     host: true,
     hmr: {
       overlay: false
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3024',
+        changeOrigin: true
+      },
+      '/badges': {
+        target: 'http://localhost:3024',
+        changeOrigin: true
+      }
     }
   },
   build: {

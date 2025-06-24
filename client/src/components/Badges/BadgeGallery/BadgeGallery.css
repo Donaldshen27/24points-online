@@ -286,6 +286,13 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.badge-custom-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
 .badge-tier-indicator {
   position: absolute;
   top: -4px;
@@ -472,6 +479,13 @@
 .badge-detail-icon.in-progress .icon-content {
   background: #F59E0B;
   color: white;
+}
+
+.badge-detail-icon .badge-custom-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
 }
 
 .tier-badge {

@@ -3,6 +3,9 @@ import { authenticateToken } from '../middleware/auth';
 import { BadgeDetectionService } from '../badges/BadgeDetectionService';
 import { StatisticsService } from '../badges/StatisticsService';
 import { supabase } from '../db/supabase';
+import { uploadBadgeImage } from '../middleware/upload';
+import path from 'path';
+import fs from 'fs';
 
 const router = Router();
 const badgeService = new BadgeDetectionService();
@@ -103,7 +106,14 @@ router.get('/definitions', async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch badge definitions' });
     }
 
-    res.json({ definitions: definitions || [] });
+    // Add icon emoji to each definition
+    const definitionsWithIcons = (definitions || []).map(def => ({
+      ...def,
+      icon: getDefaultIcon(def.category),
+      iconUrl: def.icon_url
+    }));
+
+    res.json({ definitions: definitionsWithIcons });
   } catch (error) {
     console.error('Error in badge definitions endpoint:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -178,5 +188,98 @@ router.get('/leaderboard', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Upload badge image (admin only - you can add admin check here)
+router.post('/upload/:badgeId', authenticateToken, uploadBadgeImage.single('image'), async (req, res) => {
+  try {
+    const { badgeId } = req.params;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    if (!supabase) {
+      // Clean up uploaded file
+      fs.unlinkSync(file.path);
+      return res.status(503).json({ error: 'Badge service unavailable' });
+    }
+
+    // Update badge definition with new image URL
+    const imageUrl = `/badges/${file.filename}`;
+    const { error: updateError } = await supabase
+      .from('badge_definitions')
+      .update({ icon_url: imageUrl })
+      .eq('id', badgeId);
+
+    if (updateError) {
+      // Clean up uploaded file on error
+      fs.unlinkSync(file.path);
+      console.error('Error updating badge image:', updateError);
+      return res.status(500).json({ error: 'Failed to update badge image' });
+    }
+
+    res.json({ 
+      success: true, 
+      imageUrl,
+      message: 'Badge image uploaded successfully'
+    });
+  } catch (error) {
+    // Clean up uploaded file on error
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
+    console.error('Error uploading badge image:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get list of badges with upload status (admin endpoint)
+router.get('/admin/upload-status', authenticateToken, async (req, res) => {
+  try {
+    // Log the user making the request
+    console.log('[Badge Admin] User requesting upload status:', (req as any).user?.username);
+    
+    if (!supabase) {
+      return res.status(503).json({ error: 'Badge service unavailable' });
+    }
+
+    const { data: badges, error } = await supabase
+      .from('badge_definitions')
+      .select('id, name, category, icon_url')
+      .order('category', { ascending: true })
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching badges for upload status:', error);
+      return res.status(500).json({ error: 'Failed to fetch badges' });
+    }
+
+    // Add a default icon emoji for each badge based on category
+    const badgesWithStatus = (badges || []).map(badge => ({
+      ...badge,
+      icon: getDefaultIcon(badge.category),
+      hasCustomImage: !!badge.icon_url
+    }));
+
+    res.json({ badges: badgesWithStatus });
+  } catch (error) {
+    console.error('Error in upload status endpoint:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Helper function to get default icon based on category
+function getDefaultIcon(category: string): string {
+  const iconMap: Record<string, string> = {
+    skill: '🎯',
+    progression: '📈',
+    mode: '🎮',
+    social: '👥',
+    unique: '⭐',
+    seasonal: '🎄'
+  };
+  return iconMap[category] || '🏆';
+}
 
 export default router;

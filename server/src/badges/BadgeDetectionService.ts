@@ -12,6 +12,7 @@ import {
 } from '../../../shared/types/badges';
 import { BADGE_DEFINITIONS, getBadgeById } from './badgeDefinitions';
 import { statisticsService } from './StatisticsService';
+import { getBadgeIcon } from './badgeIconMapping';
 
 export class BadgeDetectionService {
   private supabase!: SupabaseClient;
@@ -370,10 +371,13 @@ export class BadgeDetectionService {
     }
 
     try {
-      // Get earned badges
+      // Get earned badges with icon URLs from badge_definitions
       const { data: earnedBadges } = await this.supabase
         .from('user_badges')
-        .select('*')
+        .select(`
+          *,
+          badge_definition:badge_definitions!badge_id(icon_url)
+        `)
         .eq('user_id', userId);
 
       // Get badge progress
@@ -390,6 +394,10 @@ export class BadgeDetectionService {
         const badge = getBadgeById(userBadge.badge_id);
         if (badge) {
           totalPoints += badge.points * (userBadge.tier || 1);
+          
+          // Get icon URL from joined data
+          const iconUrl = userBadge.badge_definition?.icon_url || undefined;
+          
           enrichedBadges.push({
             ...userBadge,
             name: badge.name,
@@ -397,7 +405,8 @@ export class BadgeDetectionService {
             category: badge.category,
             rarity: badge.rarity,
             points: badge.points,
-            icon: badge.icon || '🏆',
+            icon: badge.icon || getBadgeIcon(userBadge.badge_id),
+            iconUrl: iconUrl,
             featured: userBadge.is_featured || false
           } as any);
         }

@@ -1,0 +1,18 @@
+--- a/server/src/routes/badges.ts
++++ b/server/src/routes/badges.ts
+@@ -240,7 +240,7 @@ router.get('/admin/upload-status', authenticateToken, async (req, res) => {
+ 
+     const { data: badges, error } = await supabase
+       .from('badge_definitions')
+-      .select('id, name, category, icon, icon_url')
++      .select('id, name, category, icon_url')
+       .order('category', { ascending: true })
+       .order('name', { ascending: true });
+ 
+@@ -251,6 +251,7 @@ router.get('/admin/upload-status', authenticateToken, async (req, res) => {
+ 
+     const badgesWithStatus = (badges || []).map(badge => ({
+       ...badge,
++      icon: '🏆', // Default icon emoji since the database doesn't have this column yet
+       hasCustomImage: !!badge.icon_url
+     }));

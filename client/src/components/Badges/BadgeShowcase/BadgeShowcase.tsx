@@ -10,6 +10,7 @@ interface EnrichedUserBadge extends UserBadge {
   name: string;
   description: string;
   icon: string;
+  iconUrl?: string;
   category: string;
   rarity: BadgeRarity;
   points: number;
@@ -161,7 +162,13 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
                 className={`showcase-badge ${badge.rarity}`}
                 title={`${getTranslatedBadgeName(badge)} - ${t(`badges.definitions.${badge.badgeId || badge.badge_id || ''}.description`, badge.description)}`}
               >
-                <span className="badge-emoji">{badge.icon}</span>
+                <span className="badge-emoji">
+                  {badge.iconUrl ? (
+                    <img src={badge.iconUrl} alt={getTranslatedBadgeName(badge)} className="badge-image" />
+                  ) : (
+                    badge.icon
+                  )}
+                </span>
                 {badge.tier && (
                   <span className="tier-indicator">{badge.tier}</span>
                 )}
@@ -215,7 +222,13 @@ export const BadgeShowcase: React.FC<BadgeShowcaseProps> = ({
         {featuredBadges.length > 0 ? (
           featuredBadges.map(badge => (
             <div key={badge.badgeId || badge.badge_id} className={`featured-badge ${badge.rarity}`}>
-              <div className="badge-icon">{badge.icon}</div>
+              <div className="badge-icon">
+                {badge.iconUrl ? (
+                  <img src={badge.iconUrl} alt={getTranslatedBadgeName(badge)} className="badge-image" />
+                ) : (
+                  badge.icon
+                )}
+              </div>
               <div className="badge-info">
                 <div className="badge-name">{getTranslatedBadgeName(badge)}</div>
                 {badge.tier && (
@@ -303,7 +316,13 @@ const BadgeSelector: React.FC<BadgeSelectorProps> = ({
               }`}
               onClick={() => toggleBadge(badge)}
             >
-              <div className="badge-icon">{badge.icon}</div>
+              <div className="badge-icon">
+                {badge.iconUrl ? (
+                  <img src={badge.iconUrl} alt={t(`badges.definitions.${badge.badgeId || badge.badge_id || ''}.name`, badge.name)} className="badge-image" />
+                ) : (
+                  badge.icon
+                )}
+              </div>
               <div className="badge-name">{t(`badges.definitions.${badge.badgeId || badge.badge_id || ''}.name`, badge.name)}</div>
               {badge.tier && (
                 <div className="badge-tier">T{badge.tier}</div>

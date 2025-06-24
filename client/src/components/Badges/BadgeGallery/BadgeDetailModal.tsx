@@ -56,7 +56,13 @@ const BadgeDetailModal: React.FC<BadgeDetailModalProps> = ({
         <div className="badge-detail-header">
           <div className={`badge-detail-icon ${status}`}>
             <div className="icon-content">
-              {status === 'earned' ? '✓' : status === 'in-progress' ? '◐' : '🔒'}
+              {badge.iconUrl ? (
+                <img src={badge.iconUrl} alt={translatedBadge.name} className="badge-custom-icon" />
+              ) : badge.icon ? (
+                badge.icon
+              ) : (
+                status === 'earned' ? '✓' : status === 'in-progress' ? '◐' : '🔒'
+              )}
             </div>
             {badge.tier && (
               <div 

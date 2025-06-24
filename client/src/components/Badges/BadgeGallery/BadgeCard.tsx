@@ -31,7 +31,11 @@ const BadgeCard: React.FC<BadgeCardProps> = ({ badge, status, progress, onClick 
     >
       <div className="badge-icon-wrapper">
         <div className="badge-icon">
-          {status === 'earned' ? '✓' : status === 'in-progress' ? '◐' : '🔒'}
+          {badge.iconUrl ? (
+            <img src={badge.iconUrl} alt={translatedBadge.name} className="badge-custom-icon" />
+          ) : (
+            status === 'earned' ? '✓' : status === 'in-progress' ? '◐' : '🔒'
+          )}
         </div>
         {badge.tier && (
           <div className={`badge-tier-indicator ${badge.tier}`}>

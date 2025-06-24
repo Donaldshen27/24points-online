@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
@@ -42,6 +43,9 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
+
+// Serve static files for badge images
+app.use('/badges', express.static(path.join(__dirname, '../public/badges')));
 
 app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'Server is running' });

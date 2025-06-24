@@ -16,6 +16,7 @@ import { Leaderboard } from './components/Leaderboard/Leaderboard'
 import { BadgesPage } from './components/Badges/BadgesPage'
 import { BadgeNotificationQueue } from './components/Badges/BadgeNotification/BadgeNotificationQueue'
 import { Profile } from './components/Profile/Profile'
+import { BadgeImageUpload } from './components/Admin/BadgeImageUpload'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
@@ -37,7 +38,8 @@ const AppState = {
   PUZZLES: 'puzzles',
   LEADERBOARD: 'leaderboard',
   BADGES: 'badges',
-  PROFILE: 'profile'
+  PROFILE: 'profile',
+  BADGE_ADMIN: 'badge_admin'
 } as const;
 
 type AppState = typeof AppState[keyof typeof AppState];
@@ -86,11 +88,13 @@ function App() {
     }
   }, [])
 
-  // Check URL on mount and handle /testmode route
+  // Check URL on mount and handle special routes
   useEffect(() => {
     const path = window.location.pathname;
     if (path === '/testmode' || path.startsWith('/testmode/')) {
       setAppState(AppState.TEST_MODE);
+    } else if (path === '/admin/badges') {
+      setAppState(AppState.BADGE_ADMIN);
     }
   }, []);
 
@@ -436,6 +440,31 @@ function App() {
 
         {appState === AppState.PROFILE && (
           <Profile userId={authUser?.id} />
+        )}
+
+        {appState === AppState.BADGE_ADMIN && (
+          <div className="admin-container">
+            <div style={{ marginBottom: '2rem' }}>
+              <button 
+                style={{
+                  background: 'var(--color-surface)',
+                  color: 'var(--color-text)',
+                  border: '1px solid var(--color-border)',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '1rem'
+                }}
+                onClick={() => {
+                  window.history.replaceState({}, '', '/');
+                  setAppState(AppState.LOBBY);
+                }}
+              >
+                ← Back to Game
+              </button>
+            </div>
+            <BadgeImageUpload />
+          </div>
         )}
       </main>
       

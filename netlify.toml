@@ -8,6 +8,13 @@
   # Build command
   command = "npm run build"
 
+# Baidu verification - serve directly without redirects
+[[redirects]]
+  from = "/baidu_verify_codeva-jt9W1siUJ0.html"
+  to = "/baidu_verify_codeva-jt9W1siUJ0.html"
+  status = 200
+  force = true
+
 # Language-specific redirects (must come before catch-all)
 [[redirects]]
   from = "/zh"

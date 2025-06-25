@@ -1,5 +1,6 @@
-# Baidu verification file - serve directly
+# Baidu verification files - serve directly
 /baidu_verify_codeva-jt9W1siUJ0.html    /baidu_verify_codeva-jt9W1siUJ0.html    200!
+/baidu_verify_codeva-uaF9Sbrzcu.html    /baidu_verify_codeva-uaF9Sbrzcu.html    200!
 
 # Language-specific redirects
 /zh              /index-zh.html    200

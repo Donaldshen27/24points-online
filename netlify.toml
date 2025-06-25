@@ -15,6 +15,12 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/baidu_verify_codeva-uaF9Sbrzcu.html"
+  to = "/baidu_verify_codeva-uaF9Sbrzcu.html"
+  status = 200
+  force = true
+
 # Language-specific redirects (must come before catch-all)
 [[redirects]]
   from = "/zh"

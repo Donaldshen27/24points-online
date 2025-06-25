@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "commonjs",
-    "lib": ["ES2020", "DOM"],
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -12,9 +12,7 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "types": ["node"]
+    "noEmit": false
   },
   "include": [
     "./client/src/**/*",
@@ -27,6 +25,7 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/dist",
-    "**/build"
+    "**/build",
+    "**/premium/**"
   ]
 }

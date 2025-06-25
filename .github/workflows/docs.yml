@@ -32,9 +32,11 @@ jobs:
           npm ci
           cd client && npm ci
           cd ../server && npm ci
+          cd ..
+          npm install --no-save @types/node
 
       - name: Build documentation
-        run: npm run docs
+        run: npx typedoc --options ./typedoc.json --skipErrorChecking
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "24 Points Game Documentation",
+  "entryPoints": [
+    "./client/src",
+    "./server/src",
+    "./shared"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "./docs/api",
+  "tsconfig": "./tsconfig.docs.json",
+  "exclude": [
+    "**/node_modules/**",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/tests/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/premium/**"
+  ],
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  },
+  "defaultCategory": "Other",
+  "plugin": [],
+  "theme": "default",
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "readme": "none",
+  "hideGenerator": true,
+  "searchInComments": true,
+  "validation": {
+    "notExported": false,
+    "invalidLink": false,
+    "notDocumented": false
+  },
+  "treatValidationWarningsAsErrors": false
+}

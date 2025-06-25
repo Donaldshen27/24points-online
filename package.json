@@ -8,6 +8,8 @@
     "dev:client": "cd client && npm run dev",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "build": "npm run build:server && npm run build:client",
+    "docs": "typedoc",
+    "docs:watch": "typedoc --watch",
     "build:server": "cd server && npm run build",
     "build:client": "cd client && npm run build"
   },
@@ -21,7 +23,8 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "typedoc": "^0.28.5"
   },
   "dependencies": {
     "socket.io-client": "^4.8.1"

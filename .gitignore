@@ -13,6 +13,9 @@ dist-ssr/
 *.local
 build/
 
+# Generated documentation
+docs/api/
+
 # Environment files
 .env
 .env.local

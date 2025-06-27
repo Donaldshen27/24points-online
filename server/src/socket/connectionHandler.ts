@@ -1303,7 +1303,36 @@ export const handleConnection = (io: Server, socket: Socket) => {
     }
   });
 
-  socket.on('disconnect', () => {
+  socket.on('track-language-usage', async (data: { userId: string; language: string }) => {
+    if (!data.userId || !data.language) return;
+    
+    try {
+      // Get current user stats to check languages used
+      const stats = await statisticsService.getUserStats(data.userId);
+      if (!stats) {
+        console.log('No stats found for user:', data.userId);
+        return;
+      }
+      
+      const currentLanguages = stats.languagesUsed || [];
+      
+      // Add language if not already tracked
+      if (!currentLanguages.includes(data.language)) {
+        // Update language usage via statistics service
+        await statisticsService.updateLanguageUsage(data.userId, data.language);
+        
+        // Check if this qualifies for international player badge (both en and zh)
+        const updatedLanguages = [...currentLanguages, data.language];
+        if (updatedLanguages.includes('en') && updatedLanguages.includes('zh')) {
+          await badgeDetectionService.checkBadgesAfterGame(data.userId);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to track language usage:', error);
+    }
+  });
+
+  socket.on('disconnect', async () => {
     console.log('Client disconnected:', socket.id);
     
     // Get the room and player info before leaving
@@ -1317,6 +1346,19 @@ export const handleConnection = (io: Server, socket: Socket) => {
       currentRoom.state === GameState.ROUND_END ||
       currentRoom.state === GameState.REPLAY
     );
+    
+    // Track session end for marathon badge if authenticated
+    if ((socket as any).isAuthenticated && (socket as any).userId) {
+      try {
+        await badgeDetectionService.trackSpecialEvent(
+          (socket as any).userId,
+          'session_end',
+          { disconnectTime: Date.now() }
+        );
+      } catch (error) {
+        console.error('Error tracking session end for badges:', error);
+      }
+    }
     
     // Emit disconnect notification BEFORE leaving room so other players get notified
     if (roomId && currentRoom && disconnectedPlayer) {

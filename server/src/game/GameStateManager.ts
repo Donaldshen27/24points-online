@@ -9,9 +9,11 @@ import { SuperGameRules } from './rules/SuperGameRules';
 import { ExtendedGameRules } from './rules/ExtendedGameRules';
 import { trackPuzzle, recordSolveTime, getPuzzleStats, isNewRecord } from '../models/puzzleRepository';
 import { statisticsService } from '../badges/StatisticsService';
+import { badgeDetectionService } from '../badges/BadgeDetectionService';
 import { RatingService } from '../services/RatingService';
 import { MatchAnalyticsService } from '../services/MatchAnalyticsService';
 import { MatchReplayService } from '../services/MatchReplayService';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export interface GameEvent {
   type: 'round_start' | 'player_claim' | 'solution_attempt' | 'round_end' | 'game_over';
@@ -53,10 +55,19 @@ export class GameStateManager {
   protected config: RoomTypeConfig;
   protected gameRules: BaseGameRules;
   protected currentMatchId: string | null = null;
+  protected supabase?: SupabaseClient;
 
   constructor(room: GameRoom, config?: RoomTypeConfig) {
     this.room = room;
     this.deckManager = new DeckManager();
+    
+    // Initialize Supabase client
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey) {
+      this.supabase = createClient(supabaseUrl, supabaseKey);
+    }
     
     // Use provided config or default to classic
     this.config = config || {
@@ -140,6 +151,13 @@ export class GameStateManager {
       [player2.id]: 0
     };
     this.room.centerCards = [];
+    
+    // Initialize score tracking for comeback detection
+    this.room.scoreHistory = [];
+    this.room.lowestScoreByPlayer = {
+      [player1.id]: 0,
+      [player2.id]: 0
+    };
     
     // Initialize battle statistics
     this.room.roundTimes = {
@@ -389,6 +407,51 @@ export class GameStateManager {
       // Store if this was a new record
       this.room.newRecordSet = wasNewRecord;
       
+      // Track special solution achievements
+      if (solution.operations && solution.operations.length > 0) {
+        // Check if solution uses all 4 operations (Mathematical Genius badge)
+        const operatorsUsed = new Set(solution.operations.map(op => op.operator));
+        if (operatorsUsed.size === 4 && operatorsUsed.has('+') && operatorsUsed.has('-') && 
+            operatorsUsed.has('*') && operatorsUsed.has('/')) {
+          badgeDetectionService.trackSpecialEvent(
+            playerId,
+            'all_operations_used',
+            { solution }
+          ).catch(err => console.error('Failed to track all operations event:', err));
+          
+          // Also update statistics
+          await this.supabase?.rpc('increment_user_stat', {
+            p_user_id: playerId,
+            p_stat_field: 'all_operations_rounds',
+            p_increment: 1
+          });
+        }
+        
+        // Check if solution uses only addition and subtraction (Minimalist badge)
+        const onlyAddSub = solution.operations.every(op => op.operator === '+' || op.operator === '-');
+        if (onlyAddSub) {
+          // This is a minimal operations solution, but we only track it as a win if the game ends with this player winning
+          this.room.lastMinimalOperationsSolver = playerId;
+        }
+      }
+      
+      // Track sub-second solves
+      if (solveTimeMs < 1000) {
+        await this.supabase?.rpc('increment_user_stat', {
+          p_user_id: playerId,
+          p_stat_field: 'total_sub_second_solves',
+          p_increment: 1
+        });
+        
+        // Also record in solve history
+        await this.supabase?.from('user_solve_history').insert({
+          user_id: playerId,
+          solve_time_ms: solveTimeMs,
+          puzzle_key: cardValues.sort((a, b) => a - b).join('-'),
+          game_mode: this.room.roomType || 'classic'
+        });
+      }
+      
       // Update solo practice stats if applicable
       if (this.room.isSoloPractice) {
         statisticsService.updateSoloPracticeStats(
@@ -491,6 +554,22 @@ export class GameStateManager {
         const points = result.solution ? 
           this.gameRules.calculateScore(result.solution, timeElapsed) : 1;
         this.room.scores[result.winnerId] += points;
+        
+        // Track score history for comeback detection
+        this.room.scoreHistory?.push({
+          round: this.room.currentRound,
+          scores: { ...this.room.scores }
+        });
+        
+        // Update lowest scores reached by each player
+        if (this.room.lowestScoreByPlayer) {
+          for (const playerId of Object.keys(this.room.scores)) {
+            const currentScore = this.room.scores[playerId];
+            if (currentScore < (this.room.lowestScoreByPlayer[playerId] || 0)) {
+              this.room.lowestScoreByPlayer[playerId] = currentScore;
+            }
+          }
+        }
         
         // Check win condition using game rules
         console.log(`[GameStateManager] Checking win condition - Winner deck: ${winner.deck.length}, Loser deck: ${loser.deck.length}`);
@@ -705,8 +784,55 @@ export class GameStateManager {
       // This is already tracked in the statistics service
     }
     
-    // Track if all operations were used in any solution
-    // This would require analyzing the solution operations throughout the game
+    // Check if the winner won using minimal operations (only + and -)
+    if (this.room.lastMinimalOperationsSolver === winnerId) {
+      badgeDetectionService.trackSpecialEvent(
+        winnerId,
+        'minimal_operations_win',
+        { gameRoom: this.room }
+      ).catch(err => console.error('Failed to track minimal operations win:', err));
+      
+      // Also update statistics
+      this.supabase?.rpc('increment_user_stat', {
+        p_user_id: winnerId,
+        p_stat_field: 'minimal_operations_wins',
+        p_increment: 1
+      });
+    }
+    
+    // Track comeback wins (was down 0-5 and won)
+    if (this.room.lowestScoreByPlayer && this.room.lowestScoreByPlayer[winnerId] <= -5) {
+      // The winner was down by at least 5 points at some point
+      statisticsService.trackSpecialAchievement(
+        winnerId,
+        'comeback_win',
+        { 
+          lowestScore: this.room.lowestScoreByPlayer[winnerId],
+          finalScore: winnerScore
+        }
+      ).catch(err => console.error('Failed to track comeback win:', err));
+    }
+    
+    // Track underdog wins (beating higher-ranked opponents)
+    // Get player statistics to compare experience
+    Promise.all([
+      statisticsService.getUserStats(winnerId),
+      statisticsService.getUserStats(loserId)
+    ]).then(([winnerStats, loserStats]) => {
+      if (winnerStats && loserStats) {
+        // Check if loser had significantly more games played (500+ more)
+        if (loserStats.gamesPlayed - winnerStats.gamesPlayed >= 500) {
+          statisticsService.trackSpecialAchievement(
+            winnerId,
+            'underdog_win',
+            {
+              winnerGames: winnerStats.gamesPlayed,
+              loserGames: loserStats.gamesPlayed
+            }
+          ).catch(err => console.error('Failed to track underdog win:', err));
+        }
+      }
+    }).catch(err => console.error('Failed to check underdog achievement:', err));
   }
 
   /**

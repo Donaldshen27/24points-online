@@ -61,6 +61,7 @@ app.use('/api/badges', badgeRoutes);
 
 import { handleConnection } from './socket/connectionHandler';
 import { verifyAccessToken } from './auth/jwt';
+import { badgeDetectionService } from './badges/BadgeDetectionService';
 
 // Socket.io authentication middleware
 io.use(async (socket, next) => {
@@ -97,7 +98,20 @@ io.use(async (socket, next) => {
   }
 });
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
+  // Track session start for marathon badge if authenticated
+  if ((socket as any).isAuthenticated && (socket as any).userId) {
+    try {
+      await badgeDetectionService.trackSpecialEvent(
+        (socket as any).userId,
+        'session_start',
+        { connectTime: Date.now() }
+      );
+    } catch (error) {
+      console.error('Error tracking session start for badges:', error);
+    }
+  }
+  
   handleConnection(io, socket);
 });
 

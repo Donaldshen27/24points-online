@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import socketService from './services/socketService'
 import { useAuth } from './contexts/AuthContext'
+import { useLanguageTracking } from './hooks/useLanguageTracking'
 import { Lobby } from './components/Lobby/Lobby'
 import { RankedLobby } from './components/RankedLobby/RankedLobby'
 import { WaitingRoom } from './components/WaitingRoom/WaitingRoom'
@@ -58,6 +59,9 @@ function App() {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const [userRating, setUserRating] = useState<number | undefined>(undefined)
   const { user: authUser, logout } = useAuth()
+  
+  // Track language usage for badges
+  useLanguageTracking()
   
   // Use ref to access current appState in event handlers without causing re-renders
   const appStateRef = useRef(appState)

@@ -189,47 +189,56 @@ export class BadgeDetectionService {
 
       case 'puzzle_records':
         // Query puzzle records from database
-        const { data: records } = await this.supabase
-          .from('solve_records')
-          .select('puzzle_key')
-          .eq('username', stats.username)
-          .eq('solve_time_ms', this.supabase.rpc('get_min_solve_time_for_puzzle'));
+        const { data: recordCount } = await this.supabase
+          .rpc('get_user_puzzle_records', { p_username: stats.username })
+          .single();
         
-        return (records?.length || 0) >= (requirement.params?.count || 0);
+        return ((recordCount as any)?.count || 0) >= (requirement.params?.count || 0);
 
       case 'same_opponent_games':
-        // This would require tracking opponent history
-        // For now, return false
-        return false;
+        // Check if player has played required games with any opponent
+        const { data: opponentHistory } = await this.supabase
+          .from('user_opponent_history')
+          .select('games_played')
+          .eq('user_id', userId)
+          .gte('games_played', requirement.params?.count || 50)
+          .limit(1);
+        
+        return !!(opponentHistory && opponentHistory.length > 0);
 
       case 'sub_second_solves':
         // Count puzzles solved in under 1 second
-        // This would require detailed solve history
-        return false;
+        const { data: subSecondCount } = await this.supabase
+          .from('user_solve_history')
+          .select('id', { count: 'exact' })
+          .eq('user_id', userId)
+          .lt('solve_time_ms', 1000);
+        
+        return (subSecondCount?.length || 0) >= (requirement.params?.count || 10);
 
       case 'marathon_session':
         // Check for 3+ hour continuous play session
-        // This would require session tracking
-        return false;
+        const marathonMinutes = (requirement.params?.hours || 3) * 60;
+        return (stats.longestSessionMinutes || 0) >= marathonMinutes;
 
       case 'all_operations_used':
         // Check if all 4 operations were used in a solution
-        // This is tracked during gameplay
-        return false;
+        // This is tracked in user_statistics.all_operations_rounds
+        return (stats.allOperationsRounds || 0) >= 1;
 
       case 'minimal_operations_win':
         // Win using only addition and subtraction
-        // This is tracked during gameplay
-        return false;
+        // This is tracked in user_statistics.minimal_operations_wins
+        return (stats.minimalOperationsWins || 0) >= 1;
 
       case 'multiple_languages':
         // Check if player has used both English and Chinese
-        // This would require language usage tracking
-        return false;
+        const languages = stats.languagesUsed || [];
+        return languages.includes('en') && languages.includes('zh');
 
       case 'launch_week_player':
         // Check if player joined during launch week
-        const launchDate = new Date('2025-01-01'); // TODO: Update with actual launch date
+        const launchDate = new Date('2025-01-01'); // Update with actual launch date when known
         const joinDate = stats.createdAt;
         const weekLater = new Date(launchDate);
         weekLater.setDate(weekLater.getDate() + 7);
@@ -524,6 +533,44 @@ export class BadgeDetectionService {
                 badge: minBadge,
                 earnedAt: new Date()
               });
+            }
+          }
+          break;
+          
+        case 'session_start':
+          // Track session start time
+          await this.supabase?.rpc('update_session_tracking', {
+            p_user_id: userId,
+            p_action: 'start'
+          });
+          break;
+          
+        case 'session_end':
+          // Track session end and check for marathon badge
+          await this.supabase?.rpc('update_session_tracking', {
+            p_user_id: userId,
+            p_action: 'end'
+          });
+          
+          // Check if this qualifies for marathon badge
+          const stats = await statisticsService.getUserStats(userId);
+          if (stats && stats.longestSessionMinutes && stats.longestSessionMinutes >= 180) {
+            const marathonBadge = BADGE_DEFINITIONS.find(b => b.id === 'marathon_runner');
+            if (marathonBadge) {
+              const { data: hasBadge } = await this.supabase
+                .from('user_badges')
+                .select('badge_id')
+                .eq('user_id', userId)
+                .eq('badge_id', marathonBadge.id)
+                .single();
+
+              if (!hasBadge) {
+                await this.awardBadge(userId, marathonBadge.id);
+                newBadges.push({
+                  badge: marathonBadge,
+                  earnedAt: new Date()
+                });
+              }
             }
           }
           break;

@@ -88,6 +88,15 @@ export interface UserStatistics {
   totalCardsWon: number;
   totalCardsLost: number;
   
+  // Extended tracking for complete badge system
+  longestSessionMinutes?: number;
+  totalSubSecondSolves?: number;
+  allOperationsRounds?: number;
+  minimalOperationsWins?: number;
+  languagesUsed?: string[];
+  highCardRounds?: number;
+  totalCardsDrawn?: number;
+  
   createdAt: Date;
   updatedAt: Date;
 }

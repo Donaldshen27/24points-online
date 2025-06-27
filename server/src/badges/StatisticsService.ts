@@ -244,13 +244,46 @@ export class StatisticsService {
    * Update social statistics
    */
   private async updateSocialStats(player1Id: string, player2Id: string): Promise<void> {
-    // Track unique opponents
-    // This would require a separate table or JSON field to track opponent history
-    // For now, we'll increment the unique opponents counter
-    // In a real implementation, you'd check if this opponent is new
+    if (!this.supabase) return;
     
-    await this.incrementStat(player1Id, 'unique_opponents');
-    await this.incrementStat(player2Id, 'unique_opponents');
+    try {
+      // Track opponent history for both players
+      await this.supabase.rpc('track_opponent_game', {
+        p_user_id: player1Id,
+        p_opponent_id: player2Id
+      });
+      
+      await this.supabase.rpc('track_opponent_game', {
+        p_user_id: player2Id,
+        p_opponent_id: player1Id
+      });
+      
+      // Check if this is a new opponent for each player
+      const { data: existingOpponent1 } = await this.supabase
+        .from('user_opponent_history')
+        .select('games_played')
+        .eq('user_id', player1Id)
+        .eq('opponent_id', player2Id)
+        .single();
+      
+      const { data: existingOpponent2 } = await this.supabase
+        .from('user_opponent_history')
+        .select('games_played')
+        .eq('user_id', player2Id)
+        .eq('opponent_id', player1Id)
+        .single();
+      
+      // If this is the first game between these players, increment unique opponents
+      if (!existingOpponent1 || existingOpponent1.games_played === 1) {
+        await this.incrementStat(player1Id, 'unique_opponents');
+      }
+      
+      if (!existingOpponent2 || existingOpponent2.games_played === 1) {
+        await this.incrementStat(player2Id, 'unique_opponents');
+      }
+    } catch (error) {
+      console.error('Failed to update social stats:', error);
+    }
   }
 
 
@@ -349,6 +382,37 @@ export class StatisticsService {
       p_increment: 1
     });
   }
+  
+  /**
+   * Update language usage for a user
+   */
+  async updateLanguageUsage(userId: string, language: string): Promise<void> {
+    if (!this.supabase) return;
+    
+    try {
+      // Get current languages used
+      const { data: stats } = await this.supabase
+        .from('user_statistics')
+        .select('languages_used')
+        .eq('user_id', userId)
+        .single();
+      
+      const currentLanguages = stats?.languages_used || [];
+      
+      // Add language if not already tracked
+      if (!currentLanguages.includes(language)) {
+        await this.supabase
+          .from('user_statistics')
+          .update({ 
+            languages_used: [...currentLanguages, language],
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', userId);
+      }
+    } catch (error) {
+      console.error('Failed to update language usage:', error);
+    }
+  }
 
   /**
    * Get user statistics
@@ -411,6 +475,14 @@ export class StatisticsService {
       flawlessVictories: dbStats.flawless_victories,
       totalCardsWon: dbStats.total_cards_won,
       totalCardsLost: dbStats.total_cards_lost,
+      // New fields for complete badge tracking
+      longestSessionMinutes: dbStats.longest_session_minutes,
+      totalSubSecondSolves: dbStats.total_sub_second_solves,
+      allOperationsRounds: dbStats.all_operations_rounds,
+      minimalOperationsWins: dbStats.minimal_operations_wins,
+      languagesUsed: dbStats.languages_used || [],
+      highCardRounds: dbStats.high_card_rounds,
+      totalCardsDrawn: dbStats.total_cards_drawn,
       createdAt: new Date(dbStats.created_at),
       updatedAt: new Date(dbStats.updated_at)
     };

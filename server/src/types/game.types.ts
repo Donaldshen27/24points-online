@@ -47,6 +47,10 @@ export interface GameRoom {
   ratingUpdates?: {
     [playerId: string]: any; // RatingUpdatePayload
   };
+  // Badge tracking
+  lastMinimalOperationsSolver?: string; // Track who solved with minimal operations last
+  scoreHistory?: { round: number; scores: { [playerId: string]: number } }[]; // Track score progression
+  lowestScoreByPlayer?: { [playerId: string]: number }; // Track lowest score each player reached
 }
 
 export const GameState = {

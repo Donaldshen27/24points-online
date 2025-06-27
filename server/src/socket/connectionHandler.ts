@@ -8,6 +8,10 @@ import { setupRankedHandlers } from './rankedHandler';
 import { registerMatchAnalyticsHandlers } from './handlers/matchAnalytics';
 import { registerMatchReplayHandlers } from './handlers/matchReplay';
 
+// Rate limiting for claims
+const claimCooldowns = new Map<string, number>();
+const CLAIM_COOLDOWN_MS = 100;
+
 // Helper function to broadcast game state to spectators
 function broadcastToSpectators(io: Server, roomId: string, event: string, data: any) {
   const spectatorRoomId = `spectators-${roomId}`;
@@ -362,6 +366,15 @@ export const handleConnection = (io: Server, socket: Socket) => {
 
     const player = room.players.find(p => p.socketId === socket.id);
     if (!player) return;
+    
+    // Rate limit claim attempts
+    const now = Date.now();
+    const lastClaimTime = claimCooldowns.get(player.id) || 0;
+    if (now - lastClaimTime < CLAIM_COOLDOWN_MS) {
+      socket.emit('claim-error', { message: 'Too many claim attempts. Please wait.' });
+      return;
+    }
+    claimCooldowns.set(player.id, now);
 
     if (roomManager.claimSolution(room.id, player.id)) {
       io.to(room.id).emit('solution-claimed', { playerId: player.id, playerName: player.name });
@@ -1325,6 +1338,11 @@ export const handleConnection = (io: Server, socket: Socket) => {
     
     // Now leave the room
     const { room } = roomManager.leaveRoom(socket.id);
+    
+    // Clean up rate limiting data
+    if (disconnectedPlayer) {
+      claimCooldowns.delete(disconnectedPlayer.id);
+    }
     
     if (roomId && room) {
       io.to(roomId).emit('room-updated', room);

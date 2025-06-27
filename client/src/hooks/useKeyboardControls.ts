@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import type { Card } from '../types/game.types';
 
 interface UseKeyboardControlsProps {
@@ -21,6 +21,8 @@ export const useKeyboardControls = ({
   enabled = true
 }: UseKeyboardControlsProps) => {
   const [showHelp, setShowHelp] = useState(false);
+  const lastKeyPressTime = useRef<number>(0);
+  const debounceDelay = 50; // 50ms debounce
   
   // Map cards to keyboard numbers
   const cardNumberMap = new Map<number, Card>();
@@ -50,6 +52,13 @@ export const useKeyboardControls = ({
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (!enabled) return;
+    
+    // Debounce rapid key presses
+    const now = Date.now();
+    if (now - lastKeyPressTime.current < debounceDelay) {
+      return;
+    }
+    lastKeyPressTime.current = now;
     
     // Prevent default for our keys
     if (['/', '+', '-', '*', '=', ' '].includes(event.key)) {
@@ -109,7 +118,7 @@ export const useKeyboardControls = ({
     } else if (key.toLowerCase() === 'h') {
       setShowHelp(prev => !prev);
     }
-  }, [cards, enabled, onCardSelect, onOperatorSelect, onConfirm, onUndo, onReset]);
+  }, [cards, enabled, onCardSelect, onOperatorSelect, onConfirm, onUndo, onReset, debounceDelay]);
 
   useEffect(() => {
     if (enabled) {

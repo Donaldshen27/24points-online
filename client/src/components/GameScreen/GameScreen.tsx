@@ -32,6 +32,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
     players: room?.players?.map(p => ({ id: p.id, name: p.name, isReady: p.isReady }))
   });
   
+  const lastClaimTime = React.useRef<number>(0);
+  const claimCooldown = 100; // 100ms cooldown
+  const [isSubmittingSolution, setIsSubmittingSolution] = useState(false);
+  
   const {
     gameState,
     currentRound,
@@ -82,30 +86,45 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
 
 
   // Handle direct solution from interactive table
-  const handleDirectSolution = (expression: string, result: number, usedCards: Card[], operations: Operation[]) => {
+  const handleDirectSolution = React.useCallback((expression: string, result: number, usedCards: Card[], operations: Operation[]) => {
     console.log(t('gameScreen.console.solutionFound'), { expression, result, usedCards, operations });
     
     // Check if it's exactly 24
-    if (Math.abs(result - 24) < 0.0001 && gameState?.state === GameState.PLAYING) {
-      // First claim the solution
+    if (Math.abs(result - 24) < 0.0001 && gameState?.state === GameState.PLAYING && !isSubmittingSolution) {
+      // Rate limit claim attempts
+      const now = Date.now();
+      if (now - lastClaimTime.current < claimCooldown) {
+        console.log('Claim cooldown active, ignoring rapid claim');
+        return;
+      }
+      lastClaimTime.current = now;
+      setIsSubmittingSolution(true);
+      
       const socket = socketService.getSocket();
-      if (!socket) return;
+      if (!socket) {
+        setIsSubmittingSolution(false);
+        return;
+      }
       
-      // Emit claim and solution together
+      // Prepare solution first
+      const solution: Solution = {
+        cards: usedCards,
+        operations: operations,
+        result: 24
+      };
+      
+      // Send claim and solution as a single transaction
       socket.emit('claim-solution');
+      console.log(t('gameScreen.console.submittingSolution'), solution);
       
-      // Small delay to ensure claim is processed
-      setTimeout(() => {
-        const solution: Solution = {
-          cards: usedCards,
-          operations: operations,
-          result: 24
-        };
-        console.log(t('gameScreen.console.submittingSolution'), solution);
+      // Use Promise to ensure solution is sent after claim
+      Promise.resolve().then(() => {
         socket.emit('submit-solution', { solution });
-      }, 50);
+        // Reset submission state after a short delay
+        setTimeout(() => setIsSubmittingSolution(false), 1000);
+      });
     }
-  };
+  }, [gameState?.state, t, claimCooldown, isSubmittingSolution]);
 
 
   // Get status message
@@ -147,6 +166,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ room, playerId, onLeaveG
       }
     }
   }, [gameState?.state, replaySolution, showingSolutionReplay, replayCompleting]);
+
+  // Reset submission state when game state changes
+  useEffect(() => {
+    if (gameState?.state !== GameState.PLAYING) {
+      setIsSubmittingSolution(false);
+    }
+  }, [gameState?.state]);
 
   // Listen for solution results
   useEffect(() => {

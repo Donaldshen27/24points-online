@@ -31,6 +31,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
   const [operationMenuPosition, setOperationMenuPosition] = useState<{ x: number; y: number } | null>(null);
   const [history, setHistory] = useState<{ cards: (CardType | MergedCard)[], expression: string }[]>([]);
   const [operationHistory, setOperationHistory] = useState<Operation[]>([]);
+  const [isMerging, setIsMerging] = useState(false);
 
   // Reset cards when initial cards change
   useEffect(() => {
@@ -43,7 +44,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
   }, [initialCards]);
 
   const handleCardClick = (card: CardType | MergedCard, event?: React.MouseEvent) => {
-    if (disabled || !allowInteraction) return;
+    if (disabled || !allowInteraction || isMerging) return;
 
     // If clicking on already selected card, deselect
     if (selectedCard?.id === card.id) {
@@ -82,7 +83,18 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
   };
 
   const handleOperationSelect = (operator: '+' | '-' | '*' | '/') => {
-    if (!selectedCard || !secondCard) return;
+    if (!selectedCard || !secondCard || isMerging) return;
+    
+    // Validate cards still exist
+    const card1Exists = cards.some(c => c.id === selectedCard.id);
+    const card2Exists = cards.some(c => c.id === secondCard.id);
+    if (!card1Exists || !card2Exists) {
+      closeOperationMenu();
+      return;
+    }
+    
+    // Set merging flag to prevent further interactions
+    setIsMerging(true);
 
     // Calculate result
     const value1 = selectedCard.value;
@@ -155,26 +167,55 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
       mergeElement1.style.setProperty('--merge-y', `${centerY - rect1.top - rect1.height / 2}px`);
       mergeElement2.style.setProperty('--merge-x', `${centerX - rect2.left - rect2.width / 2}px`);
       mergeElement2.style.setProperty('--merge-y', `${centerY - rect2.top - rect2.height / 2}px`);
-    }
-    
-    // Calculate new cards array
-    const newCards = cards.filter(c => c.id !== selectedCard.id && c.id !== secondCard.id);
-    newCards.push(mergedCard);
-    
-    // Wait for animation then update cards
-    setTimeout(() => {
-      setCards(newCards);
       
-      // Check if we have a solution (only one card left with value 24)
+      // Listen for animation end instead of using setTimeout
+      const handleAnimationEnd = () => {
+        mergeElement1.removeEventListener('animationend', handleAnimationEnd);
+        mergeElement2.removeEventListener('animationend', handleAnimationEnd);
+        
+        // Calculate new cards array
+        const newCards = cards.filter(c => c.id !== selectedCard.id && c.id !== secondCard.id);
+        newCards.push(mergedCard);
+        
+        setCards(newCards);
+        setIsMerging(false);
+        
+        // Check if we have a solution (only one card left with value 24)
+        if (newCards.length === 1 && Math.abs(newCards[0].value - 24) < 0.0001) {
+          // Collect all used cards from the merged card
+          const usedCardIds = mergedCard.sourceCards;
+          const usedCards = initialCards.filter(card => usedCardIds.includes(card.id));
+          const allOperations = [...operationHistory, operation];
+          
+          onSolutionFound(mergedCard.expression, result, usedCards, allOperations);
+        }
+      };
+      
+      mergeElement1.addEventListener('animationend', handleAnimationEnd);
+      mergeElement2.addEventListener('animationend', handleAnimationEnd);
+      
+      // Fallback timeout in case animation doesn't fire (animation is 200ms)
+      setTimeout(() => {
+        if (isMerging) {
+          handleAnimationEnd();
+        }
+      }, 250);
+    } else {
+      // If elements not found, update state immediately
+      const newCards = cards.filter(c => c.id !== selectedCard.id && c.id !== secondCard.id);
+      newCards.push(mergedCard);
+      setCards(newCards);
+      setIsMerging(false);
+      
+      // Check if we have a solution
       if (newCards.length === 1 && Math.abs(newCards[0].value - 24) < 0.0001) {
-        // Collect all used cards from the merged card
         const usedCardIds = mergedCard.sourceCards;
         const usedCards = initialCards.filter(card => usedCardIds.includes(card.id));
         const allOperations = [...operationHistory, operation];
         
         onSolutionFound(mergedCard.expression, result, usedCards, allOperations);
       }
-    }, 300);
+    }
 
     closeOperationMenu();
   };
@@ -186,7 +227,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
   };
 
   const handleReset = () => {
-    if (history.length > 0) {
+    if (history.length > 0 && !isMerging) {
       const previousState = history[history.length - 1];
       setCards(previousState.cards);
       setHistory(history.slice(0, -1));
@@ -219,7 +260,7 @@ export const InteractiveCenterTable: React.FC<InteractiveCenterTableProps> = ({
       setSecondCard(null);
       setOperationMenuPosition(null);
     },
-    enabled: allowInteraction && !disabled
+    enabled: allowInteraction && !disabled && !isMerging
   });
 
   return (

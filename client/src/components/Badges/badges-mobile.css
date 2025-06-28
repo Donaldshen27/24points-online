@@ -1,0 +1,91 @@
+/* Mobile Badges Auth Required Styles */
+@media (max-width: 768px) {
+  .auth-required-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    min-height: calc(100vh - 200px); /* Account for headers */
+  }
+
+  .auth-required-message h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--color-text-primary);
+  }
+
+  .auth-required-message p {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+    margin-bottom: 32px;
+    line-height: 1.5;
+    max-width: 320px;
+  }
+
+  .auth-required-message .sign-in-button {
+    width: 100%;
+    max-width: 280px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+    color: var(--color-bg-primary);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .auth-required-message .sign-in-button:active {
+    transform: scale(0.95);
+  }
+
+  /* Add an icon or illustration */
+  .auth-required-message::before {
+    content: '🎖️';
+    font-size: 64px;
+    margin-bottom: 24px;
+    opacity: 0.8;
+  }
+}
+
+/* Badge notification mobile styles */
+@media (max-width: 768px) {
+  .badge-notification {
+    right: 16px;
+    left: 16px;
+    bottom: 80px; /* Above tab bar */
+    max-width: none;
+    border-radius: 16px;
+  }
+
+  .badge-notification-content {
+    padding: 16px;
+  }
+
+  .badge-notification-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+
+  .badge-notification-title {
+    font-size: 16px;
+  }
+
+  .badge-notification-name {
+    font-size: 18px;
+  }
+
+  .badge-notification-description {
+    font-size: 13px;
+  }
+
+  .badge-notification-points {
+    font-size: 14px;
+  }
+}

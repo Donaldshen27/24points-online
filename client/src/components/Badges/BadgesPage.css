@@ -12,7 +12,15 @@
 /* Ensure proper spacing on mobile */
 @media (max-width: 768px) {
   .badges-page {
-    padding: var(--space-2);
-    gap: var(--space-4);
+    padding: 0;
+    gap: 0;
+    min-height: calc(100vh - 112px); /* Account for mobile header and tab bar */
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  
+  /* Add safe area padding for iOS devices */
+  .badges-page {
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 }

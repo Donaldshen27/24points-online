@@ -28,6 +28,7 @@ import { guestService } from './services/guestService'
 import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
 import './App.css'
+import './components/Badges/badges-mobile.css'
 
 const AppState = {
   CONNECTING: 'connecting',

@@ -15,6 +15,7 @@ import BadgeDetailModal from './BadgeDetailModal';
 import { CLIENT_BADGE_DEFINITIONS } from '../../../data/badgeDefinitions';
 import { LevelIndicator } from '../BadgeProgress';
 import './BadgeGallery.css';
+import './BadgeGallery.mobile.css';
 
 interface BadgeGalleryProps {
   userId: string;

@@ -1,0 +1,396 @@
+/* Mobile-Optimized Badge Gallery Styles */
+@media (max-width: 768px) {
+  /* Container adjustments for mobile */
+  .badge-gallery-container {
+    padding: 16px;
+    padding-bottom: 80px; /* Space for bottom nav */
+  }
+
+  /* Header - Stacked layout on mobile */
+  .badge-gallery-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .gallery-title {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .player-level-info {
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .level-badge {
+    padding: 8px 16px;
+    border-radius: 10px;
+  }
+
+  .level-label {
+    font-size: 11px;
+  }
+
+  .level-number {
+    font-size: 20px;
+  }
+
+  .points-info {
+    align-items: center;
+  }
+
+  .points-value {
+    font-size: 18px;
+  }
+
+  .points-label {
+    font-size: 12px;
+  }
+
+  /* Search and Filter Section */
+  .badge-filter-container {
+    margin-bottom: 20px;
+  }
+
+  .badge-search {
+    margin-bottom: 12px;
+  }
+
+  .badge-search-input {
+    padding: 12px 12px 12px 36px;
+    font-size: 16px; /* Prevent iOS zoom */
+    border-radius: 10px;
+    background: var(--color-surface-1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text-primary);
+  }
+
+  .search-icon {
+    left: 12px;
+    font-size: 18px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Category Filters - Horizontal scroll */
+  .badge-categories {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    margin: 0 -16px;
+    padding: 0 16px 8px;
+  }
+
+  .badge-categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-button {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    scroll-snap-align: start;
+    min-width: fit-content;
+  }
+
+  .category-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .category-name {
+    font-size: 12px;
+  }
+
+  .category-count {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+
+  /* Toggle Options */
+  .toggle-options {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .toggle-option {
+    width: 100%;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--color-surface-1);
+    border-radius: 10px;
+    font-size: 14px;
+  }
+
+  /* Badge Grid - 2 columns on mobile */
+  .badge-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  /* Badge Cards - Compact on mobile */
+  .badge-card {
+    border-radius: 12px;
+    padding: 12px;
+    min-height: auto;
+    position: relative;
+    overflow: visible;
+  }
+
+  .badge-card-header {
+    padding: 8px;
+    margin: -12px -12px 8px;
+  }
+
+  .badge-tier {
+    padding: 4px 8px;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 8px;
+  }
+
+  .badge-icon {
+    font-size: 32px;
+  }
+
+  .badge-name {
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    min-height: auto;
+  }
+
+  .badge-description {
+    font-size: 11px;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    min-height: auto;
+    -webkit-line-clamp: 2;
+  }
+
+  .badge-footer {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .badge-points {
+    justify-content: center;
+  }
+
+  .badge-points .points-value {
+    font-size: 14px;
+  }
+
+  .badge-points .points-label {
+    font-size: 10px;
+  }
+
+  /* Progress Bar - Compact */
+  .progress-bar.compact {
+    width: 100%;
+  }
+
+  .progress-bar.compact .progress-track {
+    height: 4px;
+  }
+
+  .progress-label {
+    font-size: 10px;
+    justify-content: center;
+  }
+
+  /* Badge Detail Modal - Full screen on mobile */
+  .badge-detail-modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .badge-detail-modal {
+    max-width: 100%;
+    width: 100%;
+    max-height: 95vh;
+    border-radius: 24px 24px 0 0;
+    margin: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .badge-detail-header {
+    padding: 20px 20px 16px;
+  }
+
+  .detail-badge-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 48px;
+  }
+
+  .badge-detail-content {
+    padding: 0 20px 20px;
+  }
+
+  .detail-section {
+    margin-bottom: 20px;
+  }
+
+  .detail-section-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .requirement-item {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+
+  .requirement-icon {
+    font-size: 16px;
+  }
+
+  /* Loading State */
+  .badge-gallery-loading {
+    min-height: 300px;
+  }
+
+  /* No Badges Message */
+  .no-badges-message {
+    padding: 40px 20px;
+    font-size: 14px;
+  }
+
+  .no-badges-message h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  /* Stats Grid - Single column on mobile */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .stat-item {
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--color-surface-1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
+
+  .stat-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-accent-primary);
+  }
+}
+
+/* Ultra small devices */
+@media (max-width: 360px) {
+  .badge-gallery-container {
+    padding: 12px;
+  }
+
+  .gallery-title {
+    font-size: 20px;
+  }
+
+  .badge-grid {
+    gap: 10px;
+  }
+
+  .badge-card {
+    padding: 10px;
+  }
+
+  .badge-icon-wrapper {
+    width: 50px;
+    height: 50px;
+  }
+
+  .badge-icon {
+    font-size: 28px;
+  }
+
+  .badge-name {
+    font-size: 12px;
+  }
+
+  .badge-description {
+    font-size: 10px;
+  }
+}
+
+/* Landscape adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  .badge-gallery-header {
+    flex-direction: row;
+    margin-bottom: 16px;
+  }
+
+  .badge-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .badge-detail-modal {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+
+/* Touch-friendly interactions */
+@media (hover: none) {
+  .badge-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  .category-button:active {
+    transform: scale(0.95);
+  }
+
+  .toggle-option:active {
+    background: var(--color-surface-2);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .badge-card {
+    border: 2px solid var(--color-border-strong);
+  }
+
+  .category-button.active {
+    border-width: 3px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .badge-card,
+  .category-button,
+  .progress-fill {
+    transition: none;
+  }
+}

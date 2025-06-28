@@ -14,10 +14,12 @@
 
 /* Mobile-specific adjustments */
 .App.mobile {
-  padding-top: 56px; /* Mobile header height */
-  padding-bottom: 56px; /* Mobile tab bar height */
-  padding-top: calc(56px + env(safe-area-inset-top, 0));
-  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
 }
 
 .App.mobile .status-bar {
@@ -25,9 +27,15 @@
 }
 
 .App.mobile .app-main {
-  flex: 1;
+  position: absolute;
+  top: 56px; /* Mobile header height */
+  bottom: 56px; /* Mobile tab bar height */
+  left: 0;
+  right: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 /* Prevent scrolling only when in game */

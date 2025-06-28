@@ -210,15 +210,24 @@
 
 @media (max-width: 480px) {
   .auth-modal-backdrop {
-    padding: var(--space-2);
-    align-items: center;
+    padding: 0;
+    align-items: flex-start;
   }
   
   .auth-modal {
-    max-height: calc(100vh - var(--space-4));
-    max-width: calc(100vw - var(--space-4));
-    border-radius: var(--radius-xl);
-    margin: 0;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
   }
   
   .modal-close {
@@ -228,10 +237,18 @@
   
   .modal-content {
     padding: var(--space-4) var(--space-4) var(--space-3);
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .modal-tabs {
     padding-top: var(--space-4);
+    flex-shrink: 0;
+  }
+  
+  .social-auth {
+    padding-bottom: env(safe-area-inset-bottom, var(--space-4));
   }
   
   .form-group {

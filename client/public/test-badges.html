@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Badge Testing</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>24 Points Badge Testing</h1>
+    <div id="status">Connecting...</div>
+    <div id="controls" style="display:none;">
+        <h2>Test Controls</h2>
+        <button onclick="signIn()">Sign In as Test User</button>
+        <button onclick="createSoloPractice()">Start Solo Practice</button>
+        <button onclick="solveFast()">Solve in < 1 second</button>
+        <button onclick="solveWithAllOps()">Solve with all 4 operations</button>
+        <button onclick="solveMinimalOps()">Solve with only +/-</button>
+        <button onclick="changeLanguage('zh')">Switch to Chinese</button>
+        <button onclick="changeLanguage('en')">Switch to English</button>
+    </div>
+    <div id="log" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto;"></div>
+
+    <script>
+        const serverUrl = 'http://172.29.240.200:3024';
+        let socket;
+        let currentRoom = null;
+        let playerId = null;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function connect() {
+            socket = io(serverUrl, {
+                transports: ['websocket', 'polling'],
+                reconnection: true
+            });
+
+            socket.on('connect', () => {
+                log('Connected to server');
+                document.getElementById('status').textContent = 'Connected';
+                document.getElementById('controls').style.display = 'block';
+            });
+
+            socket.on('disconnect', () => {
+                log('Disconnected from server');
+                document.getElementById('status').textContent = 'Disconnected';
+            });
+
+            socket.on('room-created', (data) => {
+                log(`Room created: ${data.room.id}`);
+                currentRoom = data.room;
+                playerId = data.playerId;
+            });
+
+            socket.on('game-started', (room) => {
+                log('Game started!');
+                currentRoom = room;
+            });
+
+            socket.on('round-started', (data) => {
+                log(`Round started with cards: ${data.centerCards.map(c => c.value).join(', ')}`);
+            });
+
+            socket.on('badge-unlocked', (badges) => {
+                log(`BADGE UNLOCKED: ${badges.map(b => b.badge.name).join(', ')}`);
+            });
+
+            socket.on('error', (error) => {
+                log(`Error: ${error}`);
+            });
+        }
+
+        function signIn() {
+            // For testing, we'll use a guest account
+            const testUser = 'BadgeTest_' + Math.random().toString(36).substr(2, 9);
+            log(`Creating test user: ${testUser}`);
+            
+            // Emit track language for testing
+            socket.emit('track-language-usage', {
+                userId: playerId || 'test-user',
+                language: 'en'
+            });
+        }
+
+        function createSoloPractice() {
+            socket.emit('create-room', {
+                playerName: 'BadgeTest_' + Math.random().toString(36).substr(2, 9),
+                roomType: 'classic',
+                isSoloPractice: true
+            });
+            log('Creating solo practice room...');
+        }
+
+        function solveFast() {
+            if (!currentRoom) {
+                log('No active game');
+                return;
+            }
+            
+            socket.emit('claim-solution', { roomId: currentRoom.id, playerId });
+            
+            setTimeout(() => {
+                // Submit a simple solution quickly
+                const solution = {
+                    cards: currentRoom.centerCards,
+                    operations: [
+                        { operator: '*', left: 6, right: 4, result: 24 }
+                    ],
+                    result: 24
+                };
+                
+                socket.emit('submit-solution', {
+                    roomId: currentRoom.id,
+                    playerId,
+                    solution,
+                    solveTime: 0.5 // 500ms
+                });
+                log('Submitted fast solution (0.5s)');
+            }, 100);
+        }
+
+        function solveWithAllOps() {
+            if (!currentRoom) {
+                log('No active game');
+                return;
+            }
+            
+            socket.emit('claim-solution', { roomId: currentRoom.id, playerId });
+            
+            setTimeout(() => {
+                // Solution using all 4 operations: (8 + 2) * 3 - 6 / 1 = 24
+                const solution = {
+                    cards: currentRoom.centerCards,
+                    operations: [
+                        { operator: '+', left: 8, right: 2, result: 10 },
+                        { operator: '*', left: 10, right: 3, result: 30 },
+                        { operator: '/', left: 6, right: 1, result: 6 },
+                        { operator: '-', left: 30, right: 6, result: 24 }
+                    ],
+                    result: 24
+                };
+                
+                socket.emit('submit-solution', {
+                    roomId: currentRoom.id,
+                    playerId,
+                    solution,
+                    solveTime: 2.0
+                });
+                log('Submitted solution with all 4 operations');
+            }, 100);
+        }
+
+        function solveMinimalOps() {
+            if (!currentRoom) {
+                log('No active game');
+                return;
+            }
+            
+            socket.emit('claim-solution', { roomId: currentRoom.id, playerId });
+            
+            setTimeout(() => {
+                // Solution using only + and -
+                const solution = {
+                    cards: currentRoom.centerCards,
+                    operations: [
+                        { operator: '+', left: 10, right: 10, result: 20 },
+                        { operator: '+', left: 20, right: 5, result: 25 },
+                        { operator: '-', left: 25, right: 1, result: 24 }
+                    ],
+                    result: 24
+                };
+                
+                socket.emit('submit-solution', {
+                    roomId: currentRoom.id,
+                    playerId,
+                    solution,
+                    solveTime: 1.5
+                });
+                log('Submitted solution with only +/- operations');
+            }, 100);
+        }
+
+        function changeLanguage(lang) {
+            if (!playerId) {
+                log('No player ID - create a game first');
+                return;
+            }
+            
+            socket.emit('track-language-usage', {
+                userId: playerId,
+                language: lang
+            });
+            log(`Changed language to: ${lang}`);
+        }
+
+        // Connect on load
+        connect();
+    </script>
+</body>
+</html>

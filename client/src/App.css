@@ -34,8 +34,8 @@
   right: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-top: env(safe-area-inset-top, 0);
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  display: flex;
+  flex-direction: column;
 }
 
 /* Prevent scrolling only when in game */

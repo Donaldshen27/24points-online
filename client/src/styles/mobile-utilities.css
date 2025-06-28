@@ -1,0 +1,266 @@
+/**
+ * Mobile-First Utility Classes
+ * Import this in components that need mobile optimization
+ */
+
+/* Custom Properties for Mobile */
+:root {
+  /* Dynamic viewport height */
+  --vh: 1vh;
+  
+  /* Touch-friendly sizes */
+  --touch-min: 44px;
+  --touch-target: 48px;
+  --touch-large: 52px;
+  
+  /* Mobile spacing */
+  --mobile-padding: 16px;
+  --mobile-gap-xs: 4px;
+  --mobile-gap-sm: 8px;
+  --mobile-gap-md: 16px;
+  --mobile-gap-lg: 24px;
+  
+  /* Safe areas */
+  --safe-top: env(safe-area-inset-top);
+  --safe-right: env(safe-area-inset-right);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --safe-left: env(safe-area-inset-left);
+}
+
+/* Base Mobile Reset */
+.mobile-optimized {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* Prevent iOS Input Zoom */
+.mobile-input {
+  font-size: 16px !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Touch-Friendly Buttons */
+.mobile-button {
+  min-height: var(--touch-target);
+  min-width: var(--touch-target);
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.mobile-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Bottom Sheet Pattern */
+.mobile-bottom-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-surface-1);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+  max-height: calc(100vh - var(--safe-top) - 20px);
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.mobile-sheet-handle {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  cursor: grab;
+}
+
+.mobile-sheet-handle::before {
+  content: '';
+  width: 36px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.mobile-sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 0 var(--mobile-padding) var(--mobile-padding);
+  padding-bottom: max(var(--mobile-padding), var(--safe-bottom));
+}
+
+/* Full Screen Modal Pattern */
+.mobile-fullscreen-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-surface-1);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--mobile-padding);
+  padding-top: max(var(--mobile-padding), var(--safe-top));
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+/* Floating Action Button */
+.mobile-fab {
+  position: fixed;
+  bottom: calc(var(--mobile-padding) + var(--safe-bottom));
+  right: calc(var(--mobile-padding) + var(--safe-right));
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-accent-primary);
+  color: var(--color-surface-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  z-index: 1000;
+}
+
+.mobile-fab:active {
+  transform: scale(0.95);
+}
+
+/* Mobile Card Pattern */
+.mobile-card {
+  background: var(--color-surface-2);
+  border-radius: 16px;
+  padding: var(--mobile-padding);
+  margin-bottom: var(--mobile-gap-md);
+  transition: transform 0.2s ease;
+}
+
+.mobile-card:active {
+  transform: scale(0.98);
+}
+
+/* Safe Area Padding */
+.safe-area-top {
+  padding-top: var(--safe-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--safe-bottom);
+}
+
+.safe-area-sides {
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+/* Keyboard Avoidance */
+.keyboard-avoid {
+  transition: transform 0.3s ease;
+}
+
+/* One-Handed Operation Zone */
+.thumb-zone {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  pointer-events: none;
+}
+
+.thumb-zone > * {
+  pointer-events: auto;
+}
+
+/* Mobile-First Typography */
+@media (max-width: 600px) {
+  .mobile-h1 {
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+  }
+  
+  .mobile-h2 {
+    font-size: 24px;
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+  }
+  
+  .mobile-body {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .mobile-small {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
+
+/* Landscape Adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-bottom-sheet {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .mobile-sheet-handle {
+    display: none;
+  }
+  
+  .mobile-padding-landscape {
+    padding: var(--mobile-gap-sm);
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-button,
+  .mobile-card,
+  .mobile-fab {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .mobile-card,
+  .mobile-bottom-sheet {
+    border: 2px solid var(--color-border-strong);
+  }
+  
+  .mobile-button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Dark Mode Optimizations */
+@media (prefers-color-scheme: dark) {
+  .mobile-bottom-sheet,
+  .mobile-fullscreen-modal {
+    background: #000;
+  }
+  
+  .mobile-card {
+    background: #1a1a1a;
+  }
+}

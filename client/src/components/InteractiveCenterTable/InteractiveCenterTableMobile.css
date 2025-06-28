@@ -1,0 +1,309 @@
+/* Mobile-First Interactive Center Table */
+
+.mobile-center-table {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+/* Expression Display */
+.mobile-expression-display {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-surface-2, #2a2a2a);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-accent-primary, #81c784);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+/* Cards Container */
+.mobile-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  margin: 40px 0;
+  place-items: center;
+}
+
+/* Card Wrapper */
+.mobile-card-wrapper {
+  position: relative;
+  cursor: grab;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 12px;
+  transition: transform 0.2s;
+}
+
+.mobile-card-wrapper.selected {
+  transform: scale(1.05);
+}
+
+.mobile-card-wrapper.selected::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: var(--color-accent-primary, #81c784);
+  border-radius: 16px;
+  opacity: 0.3;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.05); }
+}
+
+/* Card */
+.mobile-card {
+  width: 80px;
+  height: 112px;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  border: 2px solid var(--color-border-default, #444);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+}
+
+.mobile-card-wrapper.selected .mobile-card {
+  border-color: var(--color-accent-primary, #81c784);
+  box-shadow: 0 6px 20px rgba(129, 199, 132, 0.3);
+}
+
+.mobile-card-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text-primary, #fff);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.mobile-card-expression {
+  font-size: 12px;
+  color: var(--color-text-secondary, #999);
+  text-align: center;
+  padding: 0 8px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Operations Panel */
+.mobile-operations {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  background: var(--color-surface-1, #1a1a1a);
+  padding: 12px;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 20;
+}
+
+.mobile-operation-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-surface-2, #2a2a2a);
+  border: 2px solid var(--color-border-subtle, #333);
+  color: var(--color-text-primary, #fff);
+  font-size: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-operation-btn:active {
+  background: var(--color-accent-primary, #81c784);
+  color: var(--color-surface-1, #1a1a1a);
+  border-color: var(--color-accent-primary, #81c784);
+}
+
+/* Undo Button */
+.mobile-undo-btn {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  padding: 10px 16px;
+  background: var(--color-surface-2, #2a2a2a);
+  border: 1px solid var(--color-border-subtle, #333);
+  border-radius: 20px;
+  color: var(--color-text-secondary, #999);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mobile-undo-btn:active {
+  background: var(--color-surface-3, #333);
+  color: var(--color-text-primary, #fff);
+}
+
+/* Instructions */
+.mobile-instructions {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: var(--color-text-muted, #666);
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 0 20px;
+  pointer-events: none;
+}
+
+/* Drag State */
+.mobile-card-wrapper:active {
+  cursor: grabbing;
+}
+
+/* Drop Zone Indicator */
+.mobile-card-wrapper.drop-ready {
+  animation: dropReady 0.5s infinite alternate;
+}
+
+@keyframes dropReady {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+/* Landscape Adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-center-table {
+    min-height: 250px;
+    padding: 10px;
+  }
+
+  .mobile-cards-container {
+    margin: 20px 0;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 500px;
+  }
+
+  .mobile-card {
+    width: 70px;
+    height: 98px;
+  }
+
+  .mobile-card-value {
+    font-size: 28px;
+  }
+
+  .mobile-operations {
+    bottom: 10px;
+  }
+
+  .mobile-operation-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+/* Small Devices */
+@media (max-width: 360px) {
+  .mobile-card {
+    width: 70px;
+    height: 98px;
+  }
+
+  .mobile-card-value {
+    font-size: 28px;
+  }
+
+  .mobile-operation-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .mobile-cards-container {
+    gap: 12px;
+  }
+}
+
+/* Large Cards Mode (for accessibility) */
+@media (prefers-contrast: high) {
+  .mobile-card {
+    border-width: 3px;
+  }
+
+  .mobile-card-wrapper.selected::before {
+    opacity: 0.5;
+  }
+
+  .mobile-operation-btn {
+    border-width: 3px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-card-wrapper,
+  .mobile-card,
+  .mobile-operation-btn,
+  .mobile-undo-btn {
+    transition: none;
+  }
+
+  .mobile-card-wrapper.selected::before {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+/* Touch Feedback */
+.mobile-card::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+}
+
+.mobile-card-wrapper:active .mobile-card::after {
+  width: 100px;
+  height: 100px;
+  opacity: 1;
+}

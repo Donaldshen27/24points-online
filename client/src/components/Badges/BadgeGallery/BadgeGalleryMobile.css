@@ -1,0 +1,451 @@
+/* Mobile-First Badge Gallery */
+
+.mobile-badge-gallery {
+  min-height: 100vh;
+  background: var(--color-bg-primary, #0a0a0a);
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* Loading State */
+.mobile-badge-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 16px;
+}
+
+.mobile-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--color-accent-primary, #81c784);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Header */
+.mobile-badge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.mobile-badge-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.mobile-level-display,
+.mobile-points-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mobile-level-label,
+.mobile-points-label {
+  font-size: 12px;
+  color: var(--color-text-muted, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mobile-level-value {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mobile-points-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #F59E0B;
+}
+
+.mobile-filter-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--color-surface-1, #1a1a1a);
+  border: none;
+  color: var(--color-text-secondary, #999);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Category Pills */
+.mobile-category-scroll {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mobile-category-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-category-pill {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 2px solid;
+  background: transparent;
+  color: var(--color-text-primary, #fff);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.mobile-category-pill.active {
+  color: white !important;
+}
+
+/* Filter Panel */
+.mobile-filter-panel {
+  background: var(--color-surface-1, #1a1a1a);
+  margin: 0 16px 16px;
+  padding: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mobile-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  color: var(--color-text-primary, #fff);
+  cursor: pointer;
+}
+
+.mobile-filter-option input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Badge Grid */
+.mobile-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+
+/* Badge Card */
+.mobile-badge-card {
+  background: var(--color-surface-1, #1a1a1a);
+  border: 2px solid;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 180px;
+}
+
+.mobile-badge-card.earned {
+  background: var(--color-surface-2, #2a2a2a);
+}
+
+.mobile-badge-card.locked {
+  opacity: 0.6;
+}
+
+.mobile-badge-card.locked::before {
+  content: '🔒';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 16px;
+  opacity: 0.5;
+}
+
+/* Badge Icon */
+.mobile-badge-icon {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  margin-bottom: 4px;
+}
+
+.mobile-badge-emoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.mobile-tier-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  background: #FFD700;
+  color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Badge Info */
+.mobile-badge-name {
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-text-primary, #fff);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.mobile-badge-progress {
+  width: 100%;
+  margin-top: auto;
+}
+
+.mobile-progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.mobile-progress-fill {
+  height: 100%;
+  background: var(--color-accent-primary, #81c784);
+  transition: width 0.3s ease;
+}
+
+.mobile-progress-text {
+  font-size: 11px;
+  color: var(--color-text-muted, #666);
+  text-align: center;
+  display: block;
+}
+
+.mobile-badge-points {
+  font-size: 12px;
+  font-weight: 600;
+  color: #F59E0B;
+  margin-top: auto;
+}
+
+/* Badge Detail Modal */
+.mobile-badge-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+}
+
+.mobile-badge-detail {
+  background: var(--color-surface-1, #1a1a1a);
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-detail-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  margin: -12px auto 20px;
+}
+
+.mobile-detail-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.mobile-detail-icon {
+  font-size: 64px;
+  margin-bottom: 12px;
+}
+
+.mobile-detail-name {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--color-text-primary, #fff);
+}
+
+.mobile-detail-rarity {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mobile-detail-description {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text-secondary, #999);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.mobile-detail-requirements,
+.mobile-detail-tiers {
+  margin-bottom: 24px;
+}
+
+.mobile-detail-requirements h3,
+.mobile-detail-tiers h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: var(--color-text-primary, #fff);
+}
+
+.mobile-detail-requirements p {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--color-text-secondary, #999);
+  margin: 0;
+}
+
+.mobile-tier-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-tier-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.mobile-tier-level {
+  font-weight: 600;
+  color: var(--color-text-primary, #fff);
+}
+
+.mobile-tier-requirement {
+  font-size: 14px;
+  color: var(--color-text-secondary, #999);
+  flex: 1;
+  margin: 0 12px;
+}
+
+.mobile-tier-points {
+  font-weight: 600;
+  color: #F59E0B;
+}
+
+.mobile-detail-close {
+  width: 100%;
+  padding: 16px;
+  background: var(--color-accent-primary, #81c784);
+  color: var(--color-surface-1, #1a1a1a);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Small Devices */
+@media (max-width: 360px) {
+  .mobile-badge-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 0 8px 16px;
+  }
+
+  .mobile-badge-card {
+    padding: 12px;
+    min-height: 160px;
+  }
+
+  .mobile-badge-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .mobile-badge-emoji {
+    font-size: 28px;
+  }
+
+  .mobile-badge-name {
+    font-size: 13px;
+  }
+}
+
+/* Animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .mobile-badge-card {
+    border-width: 3px;
+  }
+
+  .mobile-filter-button,
+  .mobile-detail-close {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-badge-card,
+  .mobile-category-pill {
+    transition: none;
+  }
+
+  .mobile-progress-fill {
+    transition: none;
+  }
+}

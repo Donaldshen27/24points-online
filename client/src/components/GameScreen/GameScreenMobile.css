@@ -1,0 +1,416 @@
+/* Mobile-First Game Screen with Modern Patterns */
+
+.mobile-game-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-bg-primary, #0a0a0a);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Compact Header */
+.mobile-game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+  height: 44px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.mobile-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-room-code {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-secondary, #999);
+}
+
+.mobile-round {
+  font-size: 12px;
+  padding: 2px 8px;
+  background: rgba(129, 199, 132, 0.15);
+  color: var(--color-accent-primary, #81c784);
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.mobile-spectator-badge {
+  font-size: 12px;
+}
+
+.mobile-score-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.mobile-player-score {
+  color: var(--color-accent-primary, #81c784);
+}
+
+.mobile-score-separator {
+  color: var(--color-text-muted, #666);
+}
+
+.mobile-opponent-score {
+  color: var(--color-text-primary, #fff);
+}
+
+.mobile-menu-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #999);
+  padding: 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Tug of War Container */
+.mobile-tug-container {
+  padding: 8px 16px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Main Game Area */
+.mobile-game-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  padding-bottom: 120px; /* Space for control sheet */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Player Sections */
+.mobile-opponent-section,
+.mobile-player-section {
+  flex-shrink: 0;
+}
+
+.mobile-player-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--color-surface-1, #1a1a1a);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.mobile-player-info.opponent {
+  background: var(--color-surface-2, #2a2a2a);
+}
+
+.mobile-player-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary, #fff);
+}
+
+.mobile-card-count {
+  font-size: 14px;
+  color: var(--color-text-secondary, #999);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Center Area */
+.mobile-center-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  position: relative;
+}
+
+/* Override InteractiveCenterTable for mobile */
+.mobile-center-area .center-table {
+  max-width: 100%;
+  padding: 0;
+}
+
+.mobile-center-area .card {
+  width: 70px !important;
+  height: 100px !important;
+  font-size: 24px !important;
+}
+
+/* Bottom Control Sheet */
+.mobile-control-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-surface-1, #1a1a1a);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  touch-action: pan-y;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-sheet-handle-container {
+  padding: 12px 0 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.mobile-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.mobile-control-content {
+  padding: 0 24px 24px;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Control Buttons */
+.mobile-claim-btn {
+  width: 100%;
+  padding: 20px;
+  background: var(--color-accent-primary, #81c784);
+  color: var(--color-surface-1, #1a1a1a);
+  border: none;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 16px rgba(129, 199, 132, 0.3);
+}
+
+.mobile-claim-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.mobile-claim-btn:disabled {
+  opacity: 0.5;
+  transform: none;
+}
+
+.mobile-skip-btn {
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  color: var(--color-text-secondary, #999);
+  border: 2px solid var(--color-border-subtle, #333);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
+}
+
+.mobile-skip-btn:active {
+  transform: scale(0.98);
+  background: var(--color-surface-2, #2a2a2a);
+}
+
+.mobile-waiting-message {
+  text-align: center;
+  font-size: 16px;
+  color: var(--color-text-secondary, #999);
+  padding: 40px 20px;
+  line-height: 1.5;
+}
+
+/* Loading State */
+.mobile-game-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 18px;
+  color: var(--color-text-secondary, #999);
+}
+
+/* Landscape Adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-game-header {
+    height: 36px;
+    padding: 4px 12px;
+  }
+
+  .mobile-tug-container {
+    display: none;
+  }
+
+  .mobile-game-area {
+    padding: 8px;
+    padding-bottom: 80px;
+  }
+
+  .mobile-control-sheet {
+    height: 60%;
+  }
+
+  .mobile-center-area .card {
+    width: 60px !important;
+    height: 85px !important;
+    font-size: 20px !important;
+  }
+}
+
+/* Small Devices */
+@media (max-width: 360px) {
+  .mobile-game-header {
+    padding: 6px 8px;
+  }
+
+  .mobile-score-display {
+    font-size: 18px;
+  }
+
+  .mobile-room-code {
+    font-size: 12px;
+  }
+
+  .mobile-center-area .card {
+    width: 60px !important;
+    height: 85px !important;
+    font-size: 20px !important;
+  }
+
+  .mobile-claim-btn {
+    padding: 16px;
+    font-size: 16px;
+  }
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(129, 199, 132, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(129, 199, 132, 0.5);
+  }
+}
+
+.mobile-claim-btn:not(:disabled) {
+  animation: pulseGlow 2s infinite;
+}
+
+/* Override Modal Styles for Mobile */
+.mobile-game-screen .game-over-modal,
+.mobile-game-screen .solution-replay-overlay {
+  padding: 16px;
+}
+
+.mobile-game-screen .game-over-content,
+.mobile-game-screen .solution-replay-container {
+  max-width: 100%;
+  margin: 0;
+  border-radius: 16px;
+  padding: 24px 16px;
+}
+
+/* Touch Feedback */
+.mobile-claim-btn,
+.mobile-skip-btn,
+.mobile-menu-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-claim-btn::after,
+.mobile-skip-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.mobile-claim-btn:active::after,
+.mobile-skip-btn:active::after {
+  width: 200px;
+  height: 200px;
+}
+
+/* Safe Area Support */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .mobile-game-screen {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .mobile-control-sheet {
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Dark Mode Optimization */
+@media (prefers-color-scheme: dark) {
+  .mobile-game-header {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .mobile-control-sheet {
+    background: #000;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .mobile-player-info,
+  .mobile-control-sheet {
+    border: 2px solid var(--color-border-strong, #fff);
+  }
+
+  .mobile-claim-btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-claim-btn {
+    animation: none;
+  }
+
+  .mobile-claim-btn::after,
+  .mobile-skip-btn::after {
+    transition: none;
+  }
+}

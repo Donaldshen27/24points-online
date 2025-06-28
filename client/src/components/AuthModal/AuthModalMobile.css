@@ -1,0 +1,447 @@
+/* Mobile-First Auth Modal with Bottom Sheet Pattern */
+
+.mobile-auth-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9998;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-auth-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-surface-1, #1a1a1a);
+  border-radius: 24px 24px 0 0;
+  z-index: 9999;
+  max-height: 85vh;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+  transform: translateY(0) !important;
+}
+
+/* Drag Handle */
+.mobile-auth-handle-container {
+  padding: 12px 0 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.mobile-auth-handle-container:active {
+  cursor: grabbing;
+}
+
+.mobile-auth-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+
+.mobile-auth-handle-container:hover .mobile-auth-handle {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Header */
+.mobile-auth-header {
+  padding: 0 24px 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.mobile-auth-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-primary, #fff);
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.mobile-auth-subtitle {
+  font-size: 16px;
+  color: var(--color-text-secondary, #999);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Tab Switcher */
+.mobile-auth-tabs {
+  position: relative;
+  display: flex;
+  margin: 0 24px 16px;
+  background: var(--color-surface-2, #2a2a2a);
+  border-radius: 12px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.mobile-auth-tab-indicator {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: var(--color-accent-primary, #81c784);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(129, 199, 132, 0.3);
+}
+
+.mobile-auth-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #999);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.mobile-auth-tab.active {
+  color: var(--color-surface-1, #1a1a1a);
+}
+
+/* Content Area */
+.mobile-auth-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 24px 24px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  min-height: 0;
+}
+
+/* Form Overrides for Mobile */
+.mobile-auth-content .signin-form,
+.mobile-auth-content .signup-form {
+  max-width: 100%;
+  padding: 0;
+}
+
+.mobile-auth-content .form-title {
+  display: none; /* Hide redundant title */
+}
+
+.mobile-auth-content .form-group {
+  margin-bottom: 16px;
+}
+
+.mobile-auth-content .form-label {
+  font-size: 14px;
+  color: var(--color-text-secondary, #999);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.mobile-auth-content .form-input {
+  padding: 16px;
+  font-size: 16px; /* Prevent iOS zoom */
+  background: var(--color-surface-2, #2a2a2a);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  color: var(--color-text-primary, #fff);
+  transition: all 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mobile-auth-content .form-input:focus {
+  border-color: var(--color-accent-primary, #81c784);
+  box-shadow: 0 0 0 4px rgba(129, 199, 132, 0.1);
+  outline: none;
+}
+
+.mobile-auth-content .form-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Form Submit Button */
+.mobile-auth-content .form-submit {
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 600;
+  background: var(--color-accent-primary, #81c784);
+  color: var(--color-surface-1, #1a1a1a);
+  border: none;
+  border-radius: 12px;
+  margin: 24px 0 16px;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.mobile-auth-content .form-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.mobile-auth-content .form-submit:disabled {
+  opacity: 0.5;
+  transform: none;
+}
+
+/* Form Options */
+.mobile-auth-content .form-options {
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+
+.mobile-auth-content .checkbox-label {
+  font-size: 14px;
+}
+
+.mobile-auth-content .form-link {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Form Footer */
+.mobile-auth-content .form-footer {
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+/* Social Auth */
+.mobile-auth-divider {
+  text-align: center;
+  margin: 24px 0;
+  position: relative;
+  font-size: 14px;
+  color: var(--color-text-muted, #666);
+}
+
+.mobile-auth-divider::before,
+.mobile-auth-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 24px);
+  height: 1px;
+  background: var(--color-border-subtle, #333);
+}
+
+.mobile-auth-divider::before {
+  left: 0;
+}
+
+.mobile-auth-divider::after {
+  right: 0;
+}
+
+.mobile-auth-social {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-auth-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  width: 100%;
+  border: none;
+}
+
+.mobile-auth-social-btn.google {
+  background: #fff;
+  color: #3c4043;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-auth-social-btn.google:active:not(:disabled) {
+  transform: scale(0.98);
+  background: #f8f9fa;
+}
+
+.mobile-auth-social-btn.guest {
+  background: var(--color-surface-2, #2a2a2a);
+  color: var(--color-text-secondary, #999);
+  border: 1px solid var(--color-border-subtle, #444);
+}
+
+.mobile-auth-social-btn.guest:active {
+  transform: scale(0.98);
+  background: var(--color-surface-3, #333);
+}
+
+.mobile-auth-social-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Error Styles */
+.mobile-auth-content .form-error-banner,
+.mobile-auth-content .form-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: left;
+}
+
+.mobile-auth-content .field-error {
+  font-size: 13px;
+  color: #ef4444;
+  margin-top: 6px;
+}
+
+/* Keyboard Adjustments */
+@supports (height: 100dvh) {
+  .mobile-auth-sheet {
+    max-height: 90dvh;
+  }
+}
+
+/* Safe Area Insets */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-auth-sheet {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .mobile-auth-content {
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Landscape Mode */
+@media (orientation: landscape) and (max-height: 500px) {
+  .mobile-auth-sheet {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .mobile-auth-handle-container {
+    display: none;
+  }
+
+  .mobile-auth-header {
+    padding: 16px 24px 8px;
+  }
+
+  .mobile-auth-title {
+    font-size: 20px;
+  }
+
+  .mobile-auth-subtitle {
+    font-size: 14px;
+  }
+
+  .mobile-auth-tabs {
+    margin-bottom: 16px;
+  }
+
+  .mobile-auth-content {
+    padding: 0 24px 16px;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .mobile-auth-sheet {
+    border: 2px solid var(--color-border-strong, #fff);
+  }
+
+  .mobile-auth-content .form-input {
+    border-width: 2px;
+    border-color: var(--color-border-default, #666);
+  }
+
+  .mobile-auth-social-btn {
+    border: 2px solid var(--color-border-default, #666);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-auth-tab-indicator {
+    transition: none;
+  }
+
+  .mobile-auth-tab,
+  .mobile-auth-content .form-input,
+  .mobile-auth-content .form-submit,
+  .mobile-auth-social-btn {
+    transition: none;
+  }
+}
+
+/* Simple version without animations */
+.mobile-auth-sheet-simple {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 20vh; /* Ensure it doesn't go too high */
+  background: var(--color-surface-1, #1a1a1a);
+  border-radius: 24px 24px 0 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* Ensure proper layout for simple version */
+.mobile-auth-sheet-simple .mobile-auth-header {
+  flex-shrink: 0;
+}
+
+.mobile-auth-sheet-simple .mobile-auth-tabs {
+  flex-shrink: 0;
+}
+
+.mobile-auth-sheet-simple .mobile-auth-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Touch Target Sizes */
+.mobile-auth-tab,
+.mobile-auth-content .form-input,
+.mobile-auth-content .form-submit,
+.mobile-auth-social-btn,
+.mobile-auth-content .checkbox-label input[type="checkbox"] {
+  min-height: 44px;
+}
+
+/* Focus Visible */
+.mobile-auth-tab:focus-visible,
+.mobile-auth-content .form-submit:focus-visible,
+.mobile-auth-social-btn:focus-visible {
+  outline: 2px solid var(--color-accent-primary, #81c784);
+  outline-offset: 2px;
+}

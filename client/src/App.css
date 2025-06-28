@@ -20,6 +20,7 @@
   right: 0;
   bottom: 0;
   overflow: hidden;
+  background: var(--color-bg-primary) !important;
 }
 
 .App.mobile .status-bar {
@@ -36,6 +37,9 @@
   -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: var(--color-bg-primary);
 }
 
 /* Prevent scrolling only when in game */

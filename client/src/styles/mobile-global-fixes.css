@@ -4,6 +4,7 @@
   html, body {
     overflow-x: hidden !important;
     max-width: 100vw !important;
+    background: var(--color-bg-primary) !important;
   }
 
   /* Ensure all containers respect viewport width */

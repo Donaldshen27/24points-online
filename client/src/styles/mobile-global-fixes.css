@@ -33,8 +33,24 @@
   button,
   input,
   textarea,
-    select {
+  select {
     max-width: 100% !important;
+  }
+
+  /* Remove unwanted borders on buttons */
+  button {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  /* Specific fix for mobile FAB and action buttons */
+  .mobile-fab,
+  .mobile-action-btn,
+  .mobile-tab {
+    border: none !important;
+    outline: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
   }
 
   /* Fix badge gallery specific elements */

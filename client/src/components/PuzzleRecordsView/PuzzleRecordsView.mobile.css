@@ -1,0 +1,301 @@
+/* Mobile-Optimized Puzzle Records Styles */
+@media (max-width: 768px) {
+  .puzzle-records-view {
+    padding: 16px;
+    padding-bottom: 80px; /* Space for bottom nav */
+    min-height: auto;
+  }
+
+  .puzzle-records-view h2 {
+    font-size: 24px;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+
+  /* Compact Sort Controls */
+  .sort-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 0 8px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .sort-controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sort-label {
+    display: none; /* Hide label on mobile */
+  }
+
+  .sort-btn {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    font-size: 13px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
+  /* Single Column Layout */
+  .records-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Compact Record Cards */
+  .record-item {
+    padding: 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--color-surface-1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .record-item:hover {
+    transform: none; /* Disable hover transform on mobile */
+    box-shadow: none;
+  }
+
+  .record-item:active {
+    transform: scale(0.98);
+    background: var(--color-surface-2);
+  }
+
+  /* Rank Badge - Smaller and inline */
+  .rank {
+    position: static;
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Compact Cards Display */
+  .cards-display {
+    flex: 1;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    width: 32px;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 6px;
+    border-width: 1px;
+  }
+
+  /* Info Section - Inline */
+  .record-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 0;
+  }
+
+  .occurrence-count {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  .occurrence-count .count {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-accent-primary);
+  }
+
+  /* Best Record - Compact */
+  .best-record {
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(129, 199, 132, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(129, 199, 132, 0.2);
+  }
+
+  .best-record-title {
+    font-size: 11px;
+    margin-bottom: 4px;
+    color: var(--color-text-secondary);
+  }
+
+  .record-details {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .winner-name {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .solve-time {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* Solution Preview - Hidden by default */
+  .solution-preview {
+    display: none;
+  }
+
+  /* Expanded Solution */
+  .record-item.expanded .solution-preview {
+    display: block;
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: monospace;
+    color: var(--color-text-secondary);
+    word-break: break-all;
+  }
+
+  /* Loading State */
+  .loading {
+    padding: 60px 20px;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .loading::before {
+    content: '🎯';
+    font-size: 48px;
+    opacity: 0.6;
+  }
+
+  /* Empty State */
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--color-text-secondary);
+  }
+
+  .empty-state h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: var(--color-text-primary);
+  }
+
+  .empty-state p {
+    font-size: 16px;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  /* Horizontal Layout Alternative */
+  .record-item.horizontal {
+    padding: 12px;
+  }
+
+  .record-item.horizontal .cards-display {
+    display: flex;
+    gap: 2px;
+  }
+
+  .record-item.horizontal .card {
+    width: 28px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  /* Stats Summary Card */
+  .stats-summary {
+    background: var(--color-surface-1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+
+  /* Simplified View Mode */
+  .view-mode-toggle {
+    position: fixed;
+    bottom: 80px;
+    right: 16px;
+    background: var(--color-accent-primary);
+    color: var(--color-bg-primary);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+  }
+}
+
+/* Ultra small devices */
+@media (max-width: 360px) {
+  .puzzle-records-view {
+    padding: 12px;
+  }
+
+  .record-item {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .rank {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .card {
+    width: 28px;
+    height: 38px;
+    font-size: 14px;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  .records-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .record-item {
+    padding: 12px;
+  }
+}

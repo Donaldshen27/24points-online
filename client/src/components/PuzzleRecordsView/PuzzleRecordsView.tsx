@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import socketService from '../../services/socketService';
 import { puzzleRecordsCache } from '../../services/puzzleRecordsCache';
 import './PuzzleRecordsView.css';
+import './PuzzleRecordsView.mobile.css';
 
 interface PuzzleRecord {
   puzzleKey: string;
@@ -22,6 +23,8 @@ export const PuzzleRecordsView: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('occurrence');
   const [rawRecords, setRawRecords] = useState<PuzzleRecord[]>([]);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const isMobile = window.innerWidth <= 768;
 
   useEffect(() => {
     // Check cache first
@@ -183,9 +186,10 @@ export const PuzzleRecordsView: React.FC = () => {
         {puzzleRecords.map((record, index) => (
           <div
             key={record.puzzleKey}
-            className={`record-item ${hoveredIndex === index ? 'hovered' : ''}`}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
+            className={`record-item ${hoveredIndex === index ? 'hovered' : ''} ${expandedIndex === index ? 'expanded' : ''}`}
+            onMouseEnter={() => !isMobile && setHoveredIndex(index)}
+            onMouseLeave={() => !isMobile && setHoveredIndex(null)}
+            onClick={() => isMobile && setExpandedIndex(expandedIndex === index ? null : index)}
           >
             <div className="rank">
               {sortMode === 'occurrence' && `#${index + 1}`}

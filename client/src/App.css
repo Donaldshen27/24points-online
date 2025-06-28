@@ -12,6 +12,24 @@
   flex-direction: column;
 }
 
+/* Mobile-specific adjustments */
+.App.mobile {
+  padding-top: 56px; /* Mobile header height */
+  padding-bottom: 56px; /* Mobile tab bar height */
+  padding-top: calc(56px + env(safe-area-inset-top, 0));
+  padding-bottom: calc(56px + env(safe-area-inset-bottom, 0));
+}
+
+.App.mobile .status-bar {
+  display: none; /* Hide status bar on mobile */
+}
+
+.App.mobile .app-main {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Prevent scrolling only when in game */
 .App.in-game {
   height: 100vh;

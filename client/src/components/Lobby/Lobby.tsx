@@ -6,6 +6,7 @@ import type { AuthUser } from '../../services/authService';
 import { guestService } from '../../services/guestService';
 import { RoomTypeSelector } from '../RoomTypeSelector/RoomTypeSelector';
 import './Lobby.css';
+import './Lobby.mobile.css';
 
 interface LobbyProps {
   onRoomJoined: (room: GameRoom, playerId: string, isReconnection?: boolean) => void;

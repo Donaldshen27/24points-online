@@ -20,6 +20,7 @@ import { BadgeImageUpload } from './components/Admin/BadgeImageUpload'
 import { SEOContent } from './components/SEO/SEOContent'
 import { DynamicSEO } from './components/SEO/DynamicSEO'
 import Navigation from './components/Navigation/Navigation'
+import { MobileNavigation } from './components/Navigation/MobileNavigation'
 import PatchNotes from './components/PatchNotes'
 import { AuthModal } from './components/AuthModal/AuthModal'
 import { puzzleRecordsCache, leaderboardCache } from './services/puzzleRecordsCache'
@@ -270,10 +271,28 @@ function App() {
     setAppState(newState)
   }
 
+  // Check if we're on mobile
+  const isMobile = window.innerWidth <= 768;
+
   return (
-    <div className={`App ${appState === AppState.IN_GAME ? 'in-game' : ''}`}>
+    <div className={`App ${appState === AppState.IN_GAME ? 'in-game' : ''} ${isMobile ? 'mobile' : ''}`}>
       <DynamicSEO />
+      {/* Desktop Navigation */}
       <Navigation 
+        username={authUser?.username || currentRoom?.players.find(p => p.id === playerId)?.name} 
+        rating={userRating}
+        onSignOut={authUser ? handleSignOut : handleLeaveRoom}
+        onAuthSuccess={handleAuthSuccess}
+        onPuzzlesClick={() => handleNavigation(AppState.PUZZLES)}
+        onPlayClick={() => handleNavigation(AppState.LOBBY)}
+        onLeaderboardClick={() => handleNavigation(AppState.LEADERBOARD)}
+        onBadgesClick={() => handleNavigation(AppState.BADGES)}
+        onProfileClick={() => handleNavigation(AppState.PROFILE)}
+        currentView={appState}
+      />
+      
+      {/* Mobile Navigation */}
+      <MobileNavigation
         username={authUser?.username || currentRoom?.players.find(p => p.id === playerId)?.name} 
         rating={userRating}
         onSignOut={authUser ? handleSignOut : handleLeaveRoom}

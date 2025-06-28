@@ -1,0 +1,295 @@
+/* Modern Mobile Lobby Styles */
+@media (max-width: 768px) {
+  .lobby {
+    padding: 16px;
+    padding-bottom: 80px; /* Space for FAB */
+    background: var(--color-bg-primary);
+  }
+
+  .lobby-header {
+    margin-bottom: 24px;
+  }
+
+  .lobby-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .lobby-subtitle {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+  }
+
+  /* Room List Cards */
+  .rooms-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .room-card {
+    background: var(--color-surface-1);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .room-card:active {
+    transform: scale(0.98);
+    background: var(--color-surface-2);
+  }
+
+  .room-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      var(--color-accent-primary) 0%, 
+      var(--color-accent-secondary) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .room-card.available::before {
+    opacity: 1;
+  }
+
+  .room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .room-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .room-status {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-secondary);
+  }
+
+  .room-status.available {
+    background: rgba(129, 199, 132, 0.2);
+    color: var(--color-accent-primary);
+  }
+
+  .room-status.in-game {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+  }
+
+  .room-players {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .player-slot {
+    flex: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .player-slot.occupied {
+    background: rgba(129, 199, 132, 0.1);
+    border-color: rgba(129, 199, 132, 0.3);
+  }
+
+  .player-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+  }
+
+  .player-rating {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  .empty-slot {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .room-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .room-action-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .join-btn {
+    background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+    color: var(--color-bg-primary);
+  }
+
+  .spectate-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-secondary);
+  }
+
+  .room-action-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+  }
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text-primary);
+  }
+
+  .empty-message {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+  }
+
+  /* Game Mode Selector */
+  .game-mode-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 4px;
+    background: var(--color-surface-1);
+    border-radius: 12px;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: none;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mode-btn.active {
+    background: var(--color-bg-primary);
+    color: var(--color-accent-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Solo Practice Card */
+  .solo-practice-card {
+    background: linear-gradient(135deg, rgba(129, 199, 132, 0.1), rgba(102, 187, 106, 0.1));
+    border: 1px solid rgba(129, 199, 132, 0.3);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .solo-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  .solo-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .solo-description {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 16px;
+  }
+
+  .solo-start-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+    color: var(--color-bg-primary);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .solo-start-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* Quick Stats */
+  .quick-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--color-surface-1);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}

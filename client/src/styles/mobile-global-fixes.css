@@ -1,0 +1,71 @@
+/* Global Mobile Fixes to Prevent Horizontal Scrolling */
+@media (max-width: 768px) {
+  /* Prevent horizontal scroll on all elements */
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+
+  /* Ensure all containers respect viewport width */
+  * {
+    max-width: 100vw !important;
+  }
+
+  /* Fix for any absolutely positioned elements */
+  .App,
+  .app-main,
+  .badges-page,
+  .badge-gallery-container,
+  .auth-required-message {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Ensure mobile navigation doesn't cause overflow */
+  .mobile-navigation,
+  .mobile-header,
+  .mobile-tab-bar {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Fix any buttons or form elements */
+  button,
+  input,
+  textarea,
+    select {
+    max-width: 100% !important;
+  }
+
+  /* Fix badge gallery specific elements */
+  .badge-grid,
+  .badge-card,
+  .badge-categories,
+  .badge-filter-container {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Ensure category buttons scroll properly without causing page overflow */
+  .badge-categories {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Fix any padding that might cause overflow */
+  .badge-gallery-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ensure modals don't cause overflow */
+  .auth-modal-backdrop,
+  .auth-modal,
+  .badge-detail-modal-backdrop,
+  .badge-detail-modal {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+}

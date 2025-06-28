@@ -29,6 +29,7 @@ import type { GameRoom } from './types/game.types'
 import { GameState } from './types/game.types'
 import './App.css'
 import './components/Badges/badges-mobile.css'
+import './styles/mobile-global-fixes.css'
 
 const AppState = {
   CONNECTING: 'connecting',

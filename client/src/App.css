@@ -23,13 +23,14 @@
   background: var(--color-bg-primary) !important;
 }
 
-.App.mobile .status-bar {
-  display: none; /* Hide status bar on mobile */
-}
+/* Status bar is now visible on mobile as well */
+/* .App.mobile .status-bar {
+  display: none;
+} */
 
 .App.mobile .app-main {
   position: absolute;
-  top: 56px; /* Mobile header height */
+  top: 115px; /* Mobile header height (56px) + status bar height (59px) */
   bottom: 56px; /* Mobile tab bar height */
   left: 0;
   right: 0;
@@ -310,6 +311,14 @@
 @media (max-width: 768px) {
   .app-main {
     padding: var(--space-4) var(--space-3);
+  }
+
+  .status-bar {
+    position: fixed;
+    top: 56px; /* Below mobile header */
+    left: 0;
+    right: 0;
+    z-index: 100;
   }
 
   .status-bar-content {

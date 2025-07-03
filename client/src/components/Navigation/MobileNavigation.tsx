@@ -149,11 +149,11 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
         </div>
       </nav>
 
-      {/* Floating Action Button for Join/Play */}
-      {currentView === 'lobby' && (
+      {/* Floating Action Button for Join/Play - Only show for non-authenticated users */}
+      {currentView === 'lobby' && !username && (
         <button className="mobile-fab extended" onClick={handleJoinClick}>
           <span className="mobile-fab-icon">➕</span>
-          <span className="mobile-fab-text">{username ? t('app.join') : t('app.getStarted')}</span>
+          <span className="mobile-fab-text">{t('app.getStarted')}</span>
         </button>
       )}
 

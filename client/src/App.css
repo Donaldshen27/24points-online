@@ -21,6 +21,8 @@
   bottom: 0;
   overflow: hidden;
   background: var(--color-bg-primary) !important;
+  /* Allow touch scrolling on mobile */
+  touch-action: pan-y;
 }
 
 /* Status bar is now visible on mobile as well */
@@ -52,6 +54,13 @@
 .App.in-game .app-main {
   flex: 1;
   overflow: hidden;
+}
+
+/* But allow scrolling on mobile game screens */
+@media (max-width: 768px) {
+  .App.in-game.mobile .app-main {
+    overflow-y: auto !important;
+  }
 }
 
 /* Status bar */

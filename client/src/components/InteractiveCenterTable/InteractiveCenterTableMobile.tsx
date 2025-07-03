@@ -238,7 +238,7 @@ export const InteractiveCenterTableMobile: React.FC<InteractiveCenterTableMobile
     (!solvingPlayer || solvingPlayer === currentUserId);
 
   return (
-    <div className="mobile-center-table" ref={tableRef}>
+    <div className="mobile-center-table" ref={tableRef} data-card-count={cards.length}>
       {/* Current Expression Display */}
       {currentExpression && (
         <motion.div 

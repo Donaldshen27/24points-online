@@ -350,6 +350,7 @@ function App() {
               setShowAuthModal(true);
               setAuthMode('signin');
             }}
+            onlineUsers={onlineUsers}
           />
         )}
 

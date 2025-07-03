@@ -466,6 +466,8 @@
     "estimatedWait": "预计等待",
     "estimatedSeconds": "约{{seconds}}秒",
     "calculating": "计算中...",
+    "onlinePlayers": "其他玩家",
+    "playerCount": "{{count}}人",
     "placementMatches": "还有{{count}}场定级赛",
     "recentMatches": "最近对局",
     "win": "胜利",

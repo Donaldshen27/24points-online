@@ -935,3 +935,92 @@
     padding: var(--space-4);
   }
 }
+
+/* Quick Game Popup */
+.quick-game-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-4);
+}
+
+.quick-game-popup {
+  background-color: var(--color-surface-2);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 600px;
+  width: 100%;
+  padding: var(--space-8);
+  position: relative;
+  animation: popupSlideIn 0.3s ease-out;
+}
+
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-close-btn {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: none;
+  border: none;
+  font-size: var(--text-2xl);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+}
+
+.popup-close-btn:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-3);
+}
+
+.popup-title {
+  text-align: center;
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-6);
+  color: var(--color-text-primary);
+}
+
+.popup-game-options {
+  display: flex;
+  justify-content: center;
+}
+
+.quick-game-popup .game-option-card {
+  margin-bottom: 0;
+  max-width: 400px;
+  width: 100%;
+}
+
+/* Mobile adjustments for popup */
+@media (max-width: 640px) {
+  .quick-game-popup {
+    padding: var(--space-6);
+  }
+
+  .popup-title {
+    font-size: var(--text-xl);
+  }
+}

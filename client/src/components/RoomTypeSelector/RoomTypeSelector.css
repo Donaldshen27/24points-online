@@ -349,6 +349,25 @@
   box-shadow: var(--shadow-sm);
 }
 
+.select-hint {
+  padding: var(--space-2) var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  text-align: center;
+}
+
+/* Hover effect for clickable current card */
+.room-type-card.current[style*="cursor: pointer"]:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-accent-primary);
+}
+
+.room-type-card.current[style*="cursor: pointer"]:hover .select-hint {
+  color: var(--color-accent-primary);
+}
+
 /* Side cards simplified view */
 .side-card .card-content,
 .side-card .card-footer {

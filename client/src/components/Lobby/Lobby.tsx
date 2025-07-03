@@ -29,6 +29,8 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser, onRankedCl
   const [selectedRoomType, setSelectedRoomType] = useState('classic');
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isSoloPractice, setIsSoloPractice] = useState(false);
+  const [showQuickGamePopup, setShowQuickGamePopup] = useState(false);
+  const [popupSelectedMode, setPopupSelectedMode] = useState('classic');
 
   useEffect(() => {
     // If user is authenticated, use their username
@@ -107,6 +109,12 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser, onRankedCl
     setIsCreating(true);
     console.log('Creating room with:', { playerName, selectedRoomType, isSoloPractice });
     socketService.createRoom(playerName, selectedRoomType, isSoloPractice);
+  };
+
+  const handleModeClick = (modeId: string) => {
+    setPopupSelectedMode(modeId);
+    setSelectedRoomType(modeId);
+    setShowQuickGamePopup(true);
   };
 
   const handleJoinRoom = (roomId: string) => {
@@ -204,8 +212,68 @@ export const Lobby: React.FC<LobbyProps> = ({ onRoomJoined, authUser, onRankedCl
           <RoomTypeSelector
             selectedType={selectedRoomType}
             onSelectType={setSelectedRoomType}
+            onModeClick={handleModeClick}
           />
         </div>
+
+        {/* Quick Game Popup */}
+        {showQuickGamePopup && (
+          <div className="quick-game-popup-overlay" onClick={() => setShowQuickGamePopup(false)}>
+            <div className="quick-game-popup" onClick={(e) => e.stopPropagation()}>
+              <button 
+                className="popup-close-btn"
+                onClick={() => setShowQuickGamePopup(false)}
+                aria-label="Close popup"
+              >
+                ✕
+              </button>
+              
+              <h3 className="popup-title">
+                {popupSelectedMode === 'classic' && t('roomTypeSelector.modes.classic.name', 'Classic Mode')}
+                {popupSelectedMode === 'super' && t('roomTypeSelector.modes.super.name', 'Super Mode')}
+                {popupSelectedMode === 'extended' && t('roomTypeSelector.modes.extended.name', 'Extended Range')}
+              </h3>
+
+              <div className="popup-game-options">
+                <div className="game-option-card">
+                  <div className="option-icon">⚡</div>
+                  <h3 className="option-title">
+                    <span className="title-full">{t('lobby.quickPlay', 'Quick Play')}</span>
+                    <span className="title-mobile">Quick</span>
+                  </h3>
+                  <p className="option-description">
+                    <span className="desc-full">{t('lobby.quickPlayDesc', 'Create a new game instantly')}</span>
+                    <span className="desc-mobile">New game</span>
+                  </p>
+                  <button 
+                    onClick={() => {
+                      setHasInteracted(true);
+                      handleCreateRoom();
+                      setShowQuickGamePopup(false);
+                    }} 
+                    disabled={!playerName.trim() || isCreating}
+                    className="quick-play-btn"
+                    aria-label="Create a new 24 Points (24points) multiplayer game room"
+                  >
+                    <span className="btn-text-full">{isCreating ? t('lobby.creating', 'Creating...') : t('lobby.createRoom')}</span>
+                    <span className="btn-text-mobile">{isCreating ? '...' : 'Create'}</span>
+                  </button>
+                  <div className="solo-practice-wrapper">
+                    <label className="solo-practice-label">
+                      <input
+                        type="checkbox"
+                        checked={isSoloPractice}
+                        onChange={(e) => setIsSoloPractice(e.target.checked)}
+                        className="solo-practice-checkbox"
+                      />
+                      <span>{t('lobby.soloPractice')}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Game Options */}
         <div className="game-options">

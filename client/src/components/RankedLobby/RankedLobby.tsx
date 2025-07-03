@@ -11,6 +11,7 @@ interface RankedLobbyProps {
   onRoomJoined: (room: GameRoom, playerId: string, isReconnection?: boolean) => void;
   authUser?: AuthUser | null;
   onAuthRequired: () => void;
+  onlineUsers?: number;
 }
 
 interface PlayerRating {
@@ -40,7 +41,7 @@ interface MatchHistory {
   gameMode: string;
 }
 
-export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser, onAuthRequired }) => {
+export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser, onAuthRequired, onlineUsers }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'ranked' | 'casual'>('ranked');
   const [selectedGameMode, setSelectedGameMode] = useState('classic');
@@ -359,10 +360,10 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
                 <span className="queue-value">±{queueStatus.searchRange}</span>
               </div>
               <div className="estimated-wait">
-                <span className="queue-label">{t('ranked.estimatedWait')}</span>
+                <span className="queue-label">{t('ranked.onlinePlayers', 'Players Online')}</span>
                 <span className="queue-value">
-                  {queueStatus.estimatedWaitTime > 0 
-                    ? t('ranked.estimatedSeconds', { seconds: queueStatus.estimatedWaitTime })
+                  {onlineUsers !== undefined && onlineUsers > 0
+                    ? t('ranked.playerCount', { count: onlineUsers - 1 }, (onlineUsers - 1).toString())
                     : t('ranked.calculating')}
                 </span>
               </div>

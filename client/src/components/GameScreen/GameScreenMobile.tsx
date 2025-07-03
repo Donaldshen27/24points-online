@@ -191,7 +191,7 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
         </div>
 
         {/* Center Table */}
-        <div className="mobile-center-area">
+        <div className="mobile-center-area" data-card-count={centerCards.length}>
           <InteractiveCenterTable
             cards={centerCards}
             onSolutionFound={handleDirectSolution}

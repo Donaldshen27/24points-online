@@ -466,6 +466,8 @@
     "estimatedWait": "Est. Wait",
     "estimatedSeconds": "~{{seconds}}s",
     "calculating": "Calculating...",
+    "onlinePlayers": "Other Players",
+    "playerCount": "{{count}}",
     "placementMatches": "{{count}} placement matches remaining",
     "recentMatches": "Recent Matches",
     "win": "Win",

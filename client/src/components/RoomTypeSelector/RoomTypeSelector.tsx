@@ -9,13 +9,15 @@ interface RoomTypeSelectorProps {
   onTypeSelect?: (typeId: string) => void;
   selectedType?: string;
   disabled?: boolean;
+  onModeClick?: (typeId: string) => void;
 }
 
 export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({ 
   onSelectType,
   onTypeSelect,
   selectedType = 'classic',
-  disabled = false
+  disabled = false,
+  onModeClick
 }) => {
   const { t } = useTranslation();
   const [roomTypes, setRoomTypes] = useState<RoomTypeInfo[]>([]);
@@ -181,7 +183,15 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
           </div>
           
           {/* Current card */}
-          <div className={`room-type-card current ${currentType.id} ${isAnimating ? 'animating' : ''}`}>
+          <div 
+            className={`room-type-card current ${currentType.id} ${isAnimating ? 'animating' : ''}`}
+            onClick={() => {
+              if (onModeClick && !isAnimating && !disabled) {
+                onModeClick(currentType.id);
+              }
+            }}
+            style={{ cursor: onModeClick && !isAnimating && !disabled ? 'pointer' : 'default' }}
+          >
             <div className="card-header">
               <div className="icon-wrapper">
                 {getIcon(currentType.id)}
@@ -202,9 +212,9 @@ export const RoomTypeSelector: React.FC<RoomTypeSelectorProps> = ({
             </div>
             
             <div className="card-footer">
-              <button className="select-button">
-                {selectedType === currentType.id ? t('roomTypeSelector.buttons.selected') : t('roomTypeSelector.buttons.selectMode')}
-              </button>
+              <div className="select-hint">
+                {t('roomTypeSelector.clickToSelect', 'Click to select')}
+              </div>
             </div>
           </div>
           

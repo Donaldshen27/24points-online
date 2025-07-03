@@ -10,7 +10,10 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  touch-action: none;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  /* Allow vertical scrolling gestures */
+  touch-action: pan-y;
 }
 
 /* Compact Header */
@@ -95,9 +98,13 @@
   display: flex;
   flex-direction: column;
   padding: 16px;
-  padding-bottom: 120px; /* Space for control sheet */
+  padding-bottom: 160px; /* Extra space for control sheet */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* Ensure scrolling works on all mobile devices */
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+  min-height: 0; /* Important for flex children to scroll properly */
 }
 
 /* Player Sections */
@@ -136,12 +143,13 @@
 
 /* Center Area */
 .mobile-center-area {
-  flex: 1;
+  flex: 0 1 auto; /* Don't force flex-grow, allow natural height */
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
   position: relative;
+  /* Remove fixed min-height to prevent excessive height */
+  padding: 20px 0;
 }
 
 /* Override InteractiveCenterTable for mobile */
@@ -151,9 +159,16 @@
 }
 
 .mobile-center-area .card {
-  width: 70px !important;
-  height: 100px !important;
-  font-size: 24px !important;
+  width: 60px !important;
+  height: 85px !important;
+  font-size: 22px !important;
+}
+
+/* Even smaller cards for super mode (8 cards) */
+.mobile-center-area[data-card-count="8"] .card {
+  width: 50px !important;
+  height: 70px !important;
+  font-size: 18px !important;
 }
 
 /* Bottom Control Sheet */
@@ -170,6 +185,9 @@
   flex-direction: column;
   touch-action: pan-y;
   padding-bottom: env(safe-area-inset-bottom);
+  /* Ensure minimum height for better visibility */
+  min-height: 100px;
+  max-height: 50vh; /* Reduce max height to show more game content */
 }
 
 .mobile-sheet-handle-container {

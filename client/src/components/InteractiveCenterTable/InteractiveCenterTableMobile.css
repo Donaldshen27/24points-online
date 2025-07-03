@@ -3,7 +3,7 @@
 .mobile-center-table {
   position: relative;
   width: 100%;
-  min-height: 400px;
+  min-height: 250px; /* Reduced min-height */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,7 +11,8 @@
   padding: 20px;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: none;
+  /* Allow scrolling but prevent pinch-zoom */
+  touch-action: pan-y;
 }
 
 /* Expression Display */
@@ -33,12 +34,19 @@
 /* Cards Container */
 .mobile-cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
+  gap: 10px;
   width: 100%;
-  max-width: 400px;
-  margin: 40px 0;
+  max-width: 350px;
+  margin: 20px 0;
   place-items: center;
+}
+
+/* Special grid for 8 cards (super mode) */
+.mobile-center-table[data-card-count="8"] .mobile-cards-container {
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 280px;
+  gap: 8px;
 }
 
 /* Card Wrapper */

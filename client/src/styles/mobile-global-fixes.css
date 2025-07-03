@@ -11,6 +11,13 @@
   * {
     max-width: 100vw !important;
   }
+  
+  /* Allow game screen to scroll vertically when needed */
+  .game-screen .game-content,
+  .mobile-game-screen .mobile-game-area {
+    max-height: none !important;
+    overflow-y: auto !important;
+  }
 
   /* Fix for any absolutely positioned elements */
   .App,

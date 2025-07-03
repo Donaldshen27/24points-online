@@ -552,6 +552,28 @@
     display: flex;
     flex-direction: column;
   }
+  
+  /* Allow scrolling on game content for mobile */
+  .game-content {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    min-height: 0;
+  }
+  
+  /* Fix center area height on mobile */
+  .center-area {
+    flex: 0 0 auto; /* Don't force grow */
+    max-height: none;
+    overflow: visible;
+  }
+  
+  /* Ensure game board doesn't force height */
+  .game-board {
+    flex: 0 1 auto;
+    overflow: visible;
+    min-height: auto;
+  }
 
   /* Minimal header for mobile */
   .game-header.minimal {

@@ -12,10 +12,10 @@ interface AuthModalSimpleProps {
 export const AuthModalSimple: React.FC<AuthModalSimpleProps> = ({ 
   isOpen, 
   onClose, 
-  onSuccess, 
+  onSuccess: _onSuccess, 
   defaultTab = 'signin' 
 }) => {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'signin' | 'signup'>(defaultTab);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

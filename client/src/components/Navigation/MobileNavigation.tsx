@@ -19,8 +19,8 @@ interface MobileNavigationProps {
 
 export const MobileNavigation: React.FC<MobileNavigationProps> = ({
   username,
-  rating,
-  onSignOut,
+  rating: _rating,
+  onSignOut: _onSignOut,
   onAuthSuccess,
   onPuzzlesClick,
   onPlayClick,

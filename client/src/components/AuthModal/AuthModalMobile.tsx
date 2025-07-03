@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { PanInfo } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { SignInForm } from '../SignInForm';
 import { SignUpForm } from '../SignUpForm';

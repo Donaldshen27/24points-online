@@ -363,7 +363,7 @@ export const RankedLobby: React.FC<RankedLobbyProps> = ({ onRoomJoined, authUser
                 <span className="queue-label">{t('ranked.onlinePlayers', 'Players Online')}</span>
                 <span className="queue-value">
                   {onlineUsers !== undefined && onlineUsers > 0
-                    ? t('ranked.playerCount', { count: onlineUsers - 1 }, (onlineUsers - 1).toString())
+                    ? t('ranked.playerCount', { count: onlineUsers - 1 })
                     : t('ranked.calculating')}
                 </span>
               </div>

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { PanInfo } from 'framer-motion';
 import type { Card as CardType, Operation } from '../../types/game.types';
-import { Card } from '../Card/Card';
 import './InteractiveCenterTableMobile.css';
 
 interface InteractiveCenterTableMobileProps {
@@ -10,7 +9,6 @@ interface InteractiveCenterTableMobileProps {
   onSolutionFound: (expression: string, result: number, usedCards: CardType[], operations: Operation[]) => void;
   disabled?: boolean;
   allowInteraction?: boolean;
-  gameMode?: string;
   solvingPlayer?: string | null;
   currentUserId?: string;
 }
@@ -32,7 +30,6 @@ export const InteractiveCenterTableMobile: React.FC<InteractiveCenterTableMobile
   onSolutionFound,
   disabled = false,
   allowInteraction = true,
-  gameMode,
   solvingPlayer,
   currentUserId
 }) => {
@@ -163,7 +160,6 @@ export const InteractiveCenterTableMobile: React.FC<InteractiveCenterTableMobile
     const mergedCard: MergedCard = {
       id: `merged-${Date.now()}`,
       value: result,
-      deck: 'center',
       expression: expression,
       sourceCards: [card1.id, card2.id],
       owner: 'player1'
@@ -176,11 +172,10 @@ export const InteractiveCenterTableMobile: React.FC<InteractiveCenterTableMobile
     // Save to history
     setHistory([...history, { cards: [...cards], expression }]);
     setOperationHistory([...operationHistory, {
-      card1: card1.id,
-      card2: card2.id,
       operator,
-      result,
-      expression
+      left: value1,
+      right: value2,
+      result
     }]);
 
     // Update state
@@ -193,27 +188,18 @@ export const InteractiveCenterTableMobile: React.FC<InteractiveCenterTableMobile
     if (newCards.length === 1 && Math.abs(result - 24) < 0.0001) {
       navigator.vibrate?.([100, 50, 100]); // Success vibration
       
-      // Get all used cards from the operation history
-      const usedCardIds = new Set<string>();
-      operationHistory.forEach(op => {
-        usedCardIds.add(op.card1);
-        usedCardIds.add(op.card2);
-      });
-      usedCardIds.add(card1.id);
-      usedCardIds.add(card2.id);
-
-      const usedCards = initialCards.filter(c => usedCardIds.has(c.id));
+      // Get all used cards from initial cards
+      const usedCards = initialCards;
       
       onSolutionFound(
         expression,
         result,
         usedCards,
         [...operationHistory, {
-          card1: card1.id,
-          card2: card2.id,
           operator,
-          result,
-          expression
+          left: value1,
+          right: value2,
+          result
         }]
       );
     } else {

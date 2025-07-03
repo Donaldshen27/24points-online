@@ -5,7 +5,6 @@ import {
   Navbar,
   NavLeft,
   NavTitle,
-  NavRight,
   Link,
   Block,
   List,
@@ -15,9 +14,7 @@ import {
   Segmented,
   Sheet
 } from 'framework7-react';
-import { SignInForm } from '../SignInForm';
-import { SignUpForm } from '../SignUpForm';
-import 'framework7/css/bundle';
+// import 'framework7/css/bundle';
 import './AuthModalF7.css';
 
 interface AuthModalF7Props {
@@ -30,7 +27,7 @@ interface AuthModalF7Props {
 export const AuthModalF7: React.FC<AuthModalF7Props> = ({ 
   isOpen, 
   onClose, 
-  onSuccess, 
+  onSuccess: _onSuccess, 
   defaultTab = 'signin' 
 }) => {
   const { t } = useTranslation();

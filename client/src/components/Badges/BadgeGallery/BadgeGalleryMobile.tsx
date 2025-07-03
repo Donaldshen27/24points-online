@@ -2,11 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
-import socketService from '../../../services/socketService';
 import { badgeService } from '../../../services/badgeService';
 import type { 
   BadgeDefinition, 
-  BadgeProgress,
   BadgeCategory,
   UserBadgeCollection
 } from '../../../types/badges';
@@ -19,7 +17,7 @@ interface BadgeGalleryMobileProps {
 
 export const BadgeGalleryMobile: React.FC<BadgeGalleryMobileProps> = ({ userId }) => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<BadgeCategory | 'all'>('all');
   const [selectedBadge, setSelectedBadge] = useState<BadgeDefinition | null>(null);
@@ -34,7 +32,45 @@ export const BadgeGalleryMobile: React.FC<BadgeGalleryMobileProps> = ({ userId }
 
   const fetchBadgeData = async () => {
     try {
-      const collection = await badgeService.getUserBadges(userId);
+      const response = await badgeService.getUserBadges();
+      const collection: UserBadgeCollection = {
+        earned: response.badges,
+        inProgress: response.progress,
+        statistics: response.statistics || {
+          userId,
+          username: '',
+          gamesPlayed: 0,
+          gamesWon: 0,
+          gamesLost: 0,
+          currentWinStreak: 0,
+          longestWinStreak: 0,
+          totalRoundsPlayed: 0,
+          totalFirstSolves: 0,
+          totalCorrectSolutions: 0,
+          totalIncorrectAttempts: 0,
+          totalSolveTimeMs: 0,
+          classicWins: 0,
+          superModeWins: 0,
+          extendedRangeWins: 0,
+          soloPuzzlesCompleted: 0,
+          consecutiveDaysPlayed: 0,
+          weekendGames: 0,
+          nightGames: 0,
+          earlyGames: 0,
+          uniqueOpponents: 0,
+          gamesSpectated: 0,
+          comebackWins: 0,
+          underdogWins: 0,
+          perfectGames: 0,
+          flawlessVictories: 0,
+          totalCardsWon: 0,
+          totalCardsLost: 0,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        totalPoints: response.statistics?.totalCardsWon || 0,
+        level: badgeService.calculateLevel(response.statistics?.totalCardsWon || 0).level
+      };
       setBadgeCollection(collection);
     } catch (error) {
       console.error('Failed to fetch badges:', error);
@@ -64,20 +100,22 @@ export const BadgeGalleryMobile: React.FC<BadgeGalleryMobileProps> = ({ userId }
 
   const categories: (BadgeCategory | 'all')[] = [
     'all',
-    'achievement',
-    'social',
-    'milestone',
     'skill',
-    'special'
+    'progression',
+    'mode',
+    'social',
+    'unique',
+    'seasonal'
   ];
 
   const categoryColors = {
     all: '#666',
-    achievement: '#3B82F6',
-    social: '#10B981',
-    milestone: '#F59E0B',
     skill: '#8B5CF6',
-    special: '#EF4444'
+    progression: '#3B82F6',
+    mode: '#10B981',
+    social: '#F59E0B',
+    unique: '#EF4444',
+    seasonal: '#EC4899'
   };
 
   const getRarityColor = (rarity: string) => {
@@ -186,10 +224,9 @@ export const BadgeGalleryMobile: React.FC<BadgeGalleryMobileProps> = ({ userId }
               >
                 <div className="mobile-badge-icon">
                   <span className="mobile-badge-emoji">{badge.icon}</span>
-                  {badge.tiers && badge.tiers.length > 1 && isEarned && (
+                  {badge.tier && isEarned && (
                     <div className="mobile-tier-badge">
-                      {/* Show highest earned tier */}
-                      {badge.tiers[badge.tiers.length - 1].level}
+                      {badge.tier}
                     </div>
                   )}
                 </div>
@@ -260,26 +297,19 @@ export const BadgeGalleryMobile: React.FC<BadgeGalleryMobileProps> = ({ userId }
 
               <div className="mobile-detail-requirements">
                 <h3>{t('requirements')}</h3>
-                <p>{selectedBadge.requirement}</p>
+                <p>{JSON.stringify(selectedBadge.requirements)}</p>
               </div>
 
-              {selectedBadge.tiers && selectedBadge.tiers.length > 1 && (
+              {selectedBadge.tier && (
                 <div className="mobile-detail-tiers">
-                  <h3>{t('tiers')}</h3>
-                  <div className="mobile-tier-list">
-                    {selectedBadge.tiers.map((tier, index) => (
-                      <div key={index} className="mobile-tier-item">
-                        <span className="mobile-tier-level">
-                          {tier.name || `Tier ${tier.level}`}
-                        </span>
-                        <span className="mobile-tier-requirement">
-                          {tier.requirement}
-                        </span>
-                        <span className="mobile-tier-points">
-                          {tier.points} pts
-                        </span>
-                      </div>
-                    ))}
+                  <h3>{t('tier')}</h3>
+                  <div className="mobile-tier-info">
+                    <span className="mobile-tier-level">
+                      {selectedBadge.tier}
+                    </span>
+                    <span className="mobile-tier-points">
+                      {selectedBadge.points} pts
+                    </span>
                   </div>
                 </div>
               )}

@@ -45,7 +45,7 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
   const [showingSolutionReplay, setShowingSolutionReplay] = useState(false);
   const [replaySolution, setReplaySolution] = useState<Solution | null>(null);
   const [showVictoryCelebration, setShowVictoryCelebration] = useState<string | null>(null);
-  const [opponentDisconnected, setOpponentDisconnected] = useState(false);
+  const [opponentDisconnected] = useState(false);
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [gameOverWinnerId, setGameOverWinnerId] = useState<string | null>(null);
   const [unlockedBadges, setUnlockedBadges] = useState<any[]>([]);
@@ -69,7 +69,7 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
 
   // Handle direct solution from interactive table
   const handleDirectSolution = useCallback((
-    expression: string, 
+    _expression: string, 
     result: number, 
     usedCards: Card[], 
     operations: Operation[]
@@ -82,12 +82,12 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
       lastClaimTime.current = now;
 
       setIsSubmittingSolution(true);
-      socketService.submitSolution({ 
-        expression, 
-        result, 
-        usedCards, 
-        operations,
-        timestamp: now
+      socketService.emit('submit-solution', { 
+        solution: {
+          cards: usedCards,
+          operations,
+          result
+        }
       });
 
       // Visual feedback
@@ -141,9 +141,9 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
     }
   };
 
-  const isGameActive = gameState.state === GameState.PLAYING || 
-                      gameState.state === GameState.SOLVING ||
-                      gameState.state === GameState.ROUND_END;
+  // const isGameActive = gameState.state === GameState.PLAYING || 
+  //                     gameState.state === GameState.SOLVING ||
+  //                     gameState.state === GameState.ROUND_END;
 
   return (
     <div className="mobile-game-screen">
@@ -156,9 +156,9 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
         </div>
         
         <div className="mobile-score-display">
-          <span className="mobile-player-score">{currentPlayer.score}</span>
+          <span className="mobile-player-score">{room.scores?.[currentPlayer.id] || 0}</span>
           <span className="mobile-score-separator">:</span>
-          <span className="mobile-opponent-score">{opponent?.score || 0}</span>
+          <span className="mobile-opponent-score">{opponent ? (room.scores?.[opponent.id] || 0) : 0}</span>
         </div>
 
         <button className="mobile-menu-btn" onClick={onLeaveGame}>
@@ -171,10 +171,11 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
       {/* Tug of War Visualization */}
       <div className="mobile-tug-container">
         <TugOfWar 
-          player1Score={currentPlayer.score} 
-          player2Score={opponent?.score || 0}
-          player1Name={currentPlayer.name}
-          player2Name={opponent?.name || 'Waiting...'}
+          leftScore={room.scores?.[currentPlayer.id] || 0} 
+          rightScore={opponent ? (room.scores?.[opponent.id] || 0) : 0}
+          leftName={currentPlayer.name}
+          rightName={opponent?.name || 'Waiting...'}
+          isCurrentPlayerLeft={true}
         />
       </div>
 
@@ -195,14 +196,11 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
           <InteractiveCenterTable
             cards={centerCards}
             onSolutionFound={handleDirectSolution}
-            solvingPlayer={gameState.solvingPlayer}
-            currentUserId={playerId}
             disabled={
               isSpectator || 
               gameState.state !== GameState.PLAYING || 
               isSubmittingSolution
             }
-            gameMode={room.gameMode}
           />
         </div>
 
@@ -257,7 +255,7 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
           {room.isSoloPractice && (
             <button 
               className="mobile-skip-btn"
-              onClick={() => socketService.skipPuzzle()}
+              onClick={() => socketService.emit('skip-puzzle')}
             >
               {t('skipPuzzle')}
             </button>
@@ -279,29 +277,29 @@ export const GameScreenMobile: React.FC<GameScreenMobileProps> = ({
 
         {showVictoryCelebration && (
           <VictoryCelebration
-            winnerId={showVictoryCelebration}
+            playerName={showVictoryCelebration === playerId ? currentPlayer.name : (opponent?.name || 'Opponent')}
             onComplete={() => setShowVictoryCelebration(null)}
           />
         )}
 
         {gameOverReason && gameOverWinnerId && (
           <GameOverEnhanced
-            winner={gameState.players.find(p => p.id === gameOverWinnerId)!}
-            players={gameState.players}
-            reason={gameOverReason}
-            roundHistory={gameState.roundHistory || []}
+            gameState={room}
+            playerId={playerId}
             onRematch={resetGame}
-            onLeave={onLeaveGame}
+            onLeaveGame={onLeaveGame}
+            gameOverReason={gameOverReason}
+            gameOverWinnerId={gameOverWinnerId}
+            isSpectator={isSpectator}
             unlockedBadges={unlockedBadges}
           />
         )}
 
         {opponentDisconnected && (
           <DisconnectNotification
-            playerName={opponent?.name || 'Opponent'}
-            onWaitForReconnect={() => {}}
-            onEndGame={onLeaveGame}
-            timeRemaining={30}
+            opponentName={opponent?.name || 'Opponent'}
+            onReturnToLobby={onLeaveGame}
+            timeoutSeconds={30}
           />
         )}
       </AnimatePresence>

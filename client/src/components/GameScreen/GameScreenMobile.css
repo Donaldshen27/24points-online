@@ -158,18 +158,7 @@
   padding: 0;
 }
 
-.mobile-center-area .card {
-  width: 60px !important;
-  height: 85px !important;
-  font-size: 22px !important;
-}
-
-/* Even smaller cards for super mode (8 cards) */
-.mobile-center-area[data-card-count="8"] .card {
-  width: 50px !important;
-  height: 70px !important;
-  font-size: 18px !important;
-}
+/* Remove the card size overrides to let mobile-specific styles take effect */
 
 /* Bottom Control Sheet */
 .mobile-control-sheet {

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import socketService from '../../services/socketService';
 import { leaderboardCache } from '../../services/puzzleRecordsCache';
 import { RankBadge } from '../Rank/RankBadge';
+import type { AuthUser } from '../../services/authService';
 import './Leaderboard.css';
 
 interface LeaderboardEntry {
@@ -37,7 +38,11 @@ type ViewMode = 'records' | 'elo' | 'badges';
 type BadgeSortMode = 'points' | 'count' | 'legendary' | 'epic' | 'rare';
 type RankedRegion = 'global' | 'na' | 'eu' | 'asia';
 
-export const Leaderboard: React.FC = () => {
+interface LeaderboardProps {
+  authUser?: AuthUser | null;
+}
+
+export const Leaderboard: React.FC<LeaderboardProps> = ({ authUser }) => {
   const { t } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>('records');
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardData | null>(null);
@@ -352,6 +357,11 @@ export const Leaderboard: React.FC = () => {
             <p className="total-puzzles">
               {t('leaderboard.rankedLeaderboard')}
             </p>
+            {!authUser && (
+              <p className="elo-signup-prompt">
+                {t('leaderboard.signUpForElo')}
+              </p>
+            )}
             <div className="region-filter">
               <label>{t('leaderboard.region')}:</label>
               <select 

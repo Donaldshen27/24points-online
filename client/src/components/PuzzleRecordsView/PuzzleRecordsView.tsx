@@ -186,10 +186,10 @@ export const PuzzleRecordsView: React.FC = () => {
         {puzzleRecords.map((record, index) => (
           <div
             key={record.puzzleKey}
-            className={`record-item ${hoveredIndex === index ? 'hovered' : ''} ${expandedIndex === index ? 'expanded' : ''}`}
+            className={`record-item ${hoveredIndex === index ? 'hovered' : ''} ${expandedIndex === index ? 'expanded' : ''} ${record.bestRecord ? 'has-record' : 'no-record-data'}`}
             onMouseEnter={() => !isMobile && setHoveredIndex(index)}
             onMouseLeave={() => !isMobile && setHoveredIndex(null)}
-            onClick={() => isMobile && setExpandedIndex(expandedIndex === index ? null : index)}
+            onClick={() => isMobile && record.bestRecord && setExpandedIndex(expandedIndex === index ? null : index)}
           >
             <div className="rank">
               {sortMode === 'occurrence' && `#${index + 1}`}
@@ -229,6 +229,24 @@ export const PuzzleRecordsView: React.FC = () => {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+            
+            {/* Mobile expanded view */}
+            {isMobile && expandedIndex === index && record.bestRecord && (
+              <div className="mobile-record-details">
+                <div className="record-holder">
+                  <span className="trophy">🏆</span>
+                  <span className="username">{record.bestRecord.username}</span>
+                </div>
+                <div className="record-time">
+                  {formatTime(record.bestRecord.solveTimeMs)}
+                </div>
+                {getLastOperation(record.bestRecord.solution) && (
+                  <div className="last-operation">
+                    {getLastOperation(record.bestRecord.solution)}
+                  </div>
+                )}
               </div>
             )}
             

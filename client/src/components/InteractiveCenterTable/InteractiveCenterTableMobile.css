@@ -3,12 +3,12 @@
 .mobile-center-table {
   position: relative;
   width: 100%;
-  min-height: 250px; /* Reduced min-height */
+  min-height: 300px; /* Adjusted for larger cards */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 20px 10px;
   user-select: none;
   -webkit-user-select: none;
   /* Allow scrolling but prevent pinch-zoom */
@@ -34,10 +34,10 @@
 /* Cards Container */
 .mobile-cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
   width: 100%;
-  max-width: 350px;
+  max-width: min(450px, 90vw);
   margin: 20px 0;
   place-items: center;
 }
@@ -45,8 +45,18 @@
 /* Special grid for 8 cards (super mode) */
 .mobile-center-table[data-card-count="8"] .mobile-cards-container {
   grid-template-columns: repeat(4, 1fr);
-  max-width: 280px;
-  gap: 8px;
+  max-width: 440px;
+  gap: 10px;
+}
+
+/* Smaller cards for 8-card mode */
+.mobile-center-table[data-card-count="8"] .mobile-card {
+  width: 85px;
+  height: 120px;
+}
+
+.mobile-center-table[data-card-count="8"] .mobile-card-value {
+  font-size: 32px;
 }
 
 /* Card Wrapper */
@@ -79,8 +89,8 @@
 
 /* Card */
 .mobile-card {
-  width: 80px;
-  height: 112px;
+  width: 100px;
+  height: 140px;
   background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
   border: 2px solid var(--color-border-default, #444);
   border-radius: 12px;
@@ -100,7 +110,7 @@
 }
 
 .mobile-card-value {
-  font-size: 32px;
+  font-size: 40px;
   font-weight: 700;
   color: var(--color-text-primary, #fff);
   line-height: 1;
@@ -243,15 +253,52 @@
   }
 }
 
-/* Small Devices */
-@media (max-width: 360px) {
+/* Medium to Large Mobile Devices (tablets, large phones) */
+@media (min-width: 768px) {
   .mobile-card {
-    width: 70px;
-    height: 98px;
+    width: 120px;
+    height: 168px;
   }
 
   .mobile-card-value {
-    font-size: 28px;
+    font-size: 48px;
+  }
+  
+  .mobile-cards-container {
+    max-width: 600px;
+    gap: 16px;
+  }
+  
+  /* 8-card mode on tablets */
+  .mobile-center-table[data-card-count="8"] .mobile-card {
+    width: 100px;
+    height: 140px;
+  }
+  
+  .mobile-center-table[data-card-count="8"] .mobile-card-value {
+    font-size: 36px;
+  }
+}
+
+/* Small Devices */
+@media (max-width: 360px) {
+  .mobile-card {
+    width: 80px;
+    height: 112px;
+  }
+
+  .mobile-card-value {
+    font-size: 32px;
+  }
+  
+  /* Even smaller for 8-card mode on small devices */
+  .mobile-center-table[data-card-count="8"] .mobile-card {
+    width: 70px;
+    height: 98px;
+  }
+  
+  .mobile-center-table[data-card-count="8"] .mobile-card-value {
+    font-size: 26px;
   }
 
   .mobile-operation-btn {
@@ -261,7 +308,8 @@
   }
 
   .mobile-cards-container {
-    gap: 12px;
+    gap: 10px;
+    max-width: 100%;
   }
 }
 

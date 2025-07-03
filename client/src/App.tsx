@@ -437,7 +437,7 @@ function App() {
         )}
 
         {appState === AppState.LEADERBOARD && (
-          <Leaderboard />
+          <Leaderboard authUser={authUser} />
         )}
 
         {appState === AppState.BADGES && (

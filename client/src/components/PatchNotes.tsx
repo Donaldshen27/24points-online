@@ -45,7 +45,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-23',
+    date: '2025-06-23',
     version: '2.0.2',
     changes: [
       { type: 'fix', description: 'Fixed authentication API URL issue preventing signup/login on production' },
@@ -54,7 +54,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-22',
+    date: '2025-06-22',
     version: '2.0.1',
     changes: [
       { type: 'feature', description: 'Automatic JWT token refresh - Stay logged in without interruption' },
@@ -64,7 +64,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-22',
+    date: '2025-06-22',
     version: '2.0.0',
     changes: [
       { type: 'feature', description: '🏆 NEW: Achievement & Badge System - Collect 50+ unique badges across multiple categories!' },
@@ -83,7 +83,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-21',
+    date: '2025-06-21',
     version: '1.4.4',
     changes: [
       { type: 'fix', description: 'Fixed Extended Range mode scoring bug - now correctly awards 1 point per win instead of fractional points' },
@@ -91,7 +91,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-21',
+    date: '2025-06-21',
     version: '1.4.3',
     changes: [
       { type: 'feature', description: 'Victory banner now shows new record information when players set or beat records' },
@@ -107,7 +107,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-20',
+    date: '2025-06-20',
     version: '1.4.2',
     changes: [
       { type: 'feature', description: 'Enhanced puzzle records display - now shows fastest solver and their time' },
@@ -120,7 +120,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-19',
+    date: '2025-06-19',
     version: '1.4.1',
     changes: [
       { type: 'feature', description: 'Guest usernames are now remembered across sessions' },
@@ -128,7 +128,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-19',
+    date: '2025-06-19',
     version: '1.4.0',
     changes: [
       { type: 'feature', description: 'New point-based scoring for Extended Range mode - first to 4 points wins!' },
@@ -138,7 +138,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-19',
+    date: '2025-06-19',
     version: '1.3.0',
     changes: [
       { type: 'feature', description: 'Added leaderboard with record holdings ranking' },
@@ -148,7 +148,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-19',
+    date: '2025-06-19',
     version: '1.2.0',
     changes: [
       { type: 'feature', description: 'Added puzzle records tracking and display system' },
@@ -160,7 +160,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-18',
+    date: '2025-06-18',
     version: '1.1.0',
     changes: [
       { type: 'feature', description: 'Added authentication UI components for user accounts' },
@@ -170,7 +170,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-17',
+    date: '2025-06-17',
     version: '1.0.0',
     changes: [
       { type: 'feature', description: 'Improved SEO for Chinese and 24points keywords' },
@@ -182,7 +182,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-16',
+    date: '2025-06-16',
     version: '0.9.0',
     changes: [
       { type: 'feature', description: 'Added Google AdSense integration' },
@@ -195,7 +195,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-15',
+    date: '2025-06-15',
     version: '0.8.0',
     changes: [
       { type: 'feature', description: 'Added Extended room type with 1-20 card range' },
@@ -210,7 +210,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-15',
+    date: '2025-06-15',
     version: '0.7.0',
     changes: [
       { type: 'feature', description: 'Added disconnect notification with 30-second auto-forfeit' },
@@ -221,7 +221,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-14',
+    date: '2025-06-14',
     version: '0.6.0',
     changes: [
       { type: 'feature', description: 'Added victory celebration message for correct answers' },
@@ -233,7 +233,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-14',
+    date: '2025-06-14',
     version: '0.5.0',
     changes: [
       { type: 'feature', description: 'Added solution replay animation system' },
@@ -246,7 +246,7 @@ const patchNotes: PatchNote[] = [
     ]
   },
   {
-    date: '2025-01-14',
+    date: '2025-06-14',
     version: '0.1.0',
     changes: [
       { type: 'feature', description: 'Initial implementation of 24 Points multiplayer arcade game' },

@@ -433,6 +433,13 @@
       "selectMode": "选择模式"
     }
   },
+  "game": {
+    "victory": {
+      "gotItRight": "{{player}} 答对了！",
+      "newRecordBeats": "新纪录 {{time}} 秒！超越旧纪录 {{difference}} 秒",
+      "setsNewRecord": "创造了新纪录 {{time}} 秒！"
+    }
+  },
   "roundResult": {
     "solution": "解决方案：",
     "finalResult": "最终结果：{{result}}",

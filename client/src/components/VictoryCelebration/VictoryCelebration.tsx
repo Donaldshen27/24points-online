@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './VictoryCelebration.css';
 
 interface VictoryCelebrationProps {
@@ -21,6 +22,7 @@ export const VictoryCelebration: React.FC<VictoryCelebrationProps> = ({
   isNewRecord = false,
   previousRecord
 }) => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(true);
   
   // Store the initial values to prevent them from changing during the celebration
@@ -57,12 +59,15 @@ export const VictoryCelebration: React.FC<VictoryCelebrationProps> = ({
       <div className="victory-message">
         <div className="message-content">
           <h1>
-            {playerName} got it right!
+            {t('game.victory.gotItRight', { player: playerName })}
             {initialIsNewRecord && initialSolveTime && initialPreviousRecord && (
-              <><br/>New record {initialSolveTime.toFixed(1)}s! Beats old record by {(initialPreviousRecord.timeSeconds - initialSolveTime).toFixed(1)}s</>
+              <><br/>{t('game.victory.newRecordBeats', { 
+                time: initialSolveTime.toFixed(1), 
+                difference: (initialPreviousRecord.timeSeconds - initialSolveTime).toFixed(1) 
+              })}</>
             )}
             {initialIsNewRecord && initialSolveTime && !initialPreviousRecord && (
-              <><br/>Sets the new record of {initialSolveTime.toFixed(1)}s!</>
+              <><br/>{t('game.victory.setsNewRecord', { time: initialSolveTime.toFixed(1) })}</>
             )}
           </h1>
         </div>

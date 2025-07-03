@@ -433,6 +433,13 @@
       "selectMode": "Select Mode"
     }
   },
+  "game": {
+    "victory": {
+      "gotItRight": "{{player}} got it right!",
+      "newRecordBeats": "New record {{time}}s! Beats old record by {{difference}}s",
+      "setsNewRecord": "Sets the new record of {{time}}s!"
+    }
+  },
   "roundResult": {
     "solution": "Solution:",
     "finalResult": "Final Result: {{result}}",

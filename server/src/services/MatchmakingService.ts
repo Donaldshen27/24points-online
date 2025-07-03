@@ -274,10 +274,13 @@ export class MatchmakingService {
       }
 
       // Check if they played recently
+      // Commented out to allow immediate rematches - uncomment to restore cooldown
+      /*
       if (this.havePlayedRecently(player.userId, candidate.userId)) {
         console.log(`  - ${candidate.username}: played recently`);
         continue;
       }
+      */
 
       // Prefer players from same region if specified
       const regionBonus = player.region && candidate.region === player.region ? 50 : 0;
@@ -314,7 +317,8 @@ export class MatchmakingService {
     queue.delete(player2.userId);
 
     // Record this match to prevent immediate rematches
-    this.recordRecentMatch(player1.userId, player2.userId, player1.queueType);
+    // Commented out to allow immediate rematches - uncomment to restore cooldown
+    // this.recordRecentMatch(player1.userId, player2.userId, player1.queueType);
 
     // Log match details
     console.log(`[MatchmakingService] ${player1.queueType} match found!`);

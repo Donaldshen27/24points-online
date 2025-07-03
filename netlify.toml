@@ -21,10 +21,43 @@
   status = 200
   force = true
 
+# Serve assets normally (must come before language redirects)
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+
+# Serve static files normally
+[[redirects]]
+  from = "/*.png"
+  to = "/:splat.png"
+  status = 200
+
+[[redirects]]
+  from = "/*.ico"
+  to = "/:splat.ico"
+  status = 200
+
+[[redirects]]
+  from = "/*.svg"
+  to = "/:splat.svg"
+  status = 200
+
+[[redirects]]
+  from = "/manifest.json"
+  to = "/manifest.json"
+  status = 200
+
 # Language-specific redirects (must come before catch-all)
 [[redirects]]
   from = "/zh"
   to = "/index-zh.html"
+  status = 200
+
+# Don't redirect assets when accessed from /zh path
+[[redirects]]
+  from = "/zh/assets/*"
+  to = "/assets/:splat"
   status = 200
 
 [[redirects]]

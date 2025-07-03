@@ -255,8 +255,16 @@ export class MatchmakingService {
       }
 
       // Check if within rating range (only for ranked)
-      if (player.queueType === 'ranked' && !canMatch(player.rating, candidate.rating, player.searchRange)) {
-        continue;
+      // Use the maximum search range between both players to allow matching if either player's range encompasses the rating difference
+      if (player.queueType === 'ranked') {
+        // Update candidate's search range based on their queue time
+        const candidateQueueTimeSeconds = (Date.now() - candidate.queueTime.getTime()) / 1000;
+        candidate.searchRange = getMatchmakingRange(candidateQueueTimeSeconds);
+        
+        const maxSearchRange = Math.max(player.searchRange, candidate.searchRange);
+        if (!canMatch(player.rating, candidate.rating, maxSearchRange)) {
+          continue;
+        }
       }
 
       // Check if they played recently

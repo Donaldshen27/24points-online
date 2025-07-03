@@ -243,6 +243,8 @@ export class MatchmakingService {
     let bestMatch: QueueEntry | null = null;
     let bestRatingDiff = Infinity;
 
+    console.log(`[MatchmakingService] Finding match for ${player.username} (${player.rating}), searchRange: ${player.searchRange}, candidates: ${candidates.length}`);
+
     for (const candidate of candidates) {
       // Skip self and already matched players
       if (candidate.userId === player.userId || excluded.has(candidate.userId)) {
@@ -251,6 +253,7 @@ export class MatchmakingService {
 
       // Must be same game mode
       if (candidate.gameMode !== player.gameMode) {
+        console.log(`  - ${candidate.username}: different game mode (${candidate.gameMode} vs ${player.gameMode})`);
         continue;
       }
 
@@ -262,13 +265,17 @@ export class MatchmakingService {
         candidate.searchRange = getMatchmakingRange(candidateQueueTimeSeconds);
         
         const maxSearchRange = Math.max(player.searchRange, candidate.searchRange);
+        const ratingDiff = Math.abs(player.rating - candidate.rating);
+        
         if (!canMatch(player.rating, candidate.rating, maxSearchRange)) {
+          console.log(`  - ${candidate.username} (${candidate.rating}): rating diff ${ratingDiff} > max range ${maxSearchRange} (player: ${player.searchRange}, candidate: ${candidate.searchRange})`);
           continue;
         }
       }
 
       // Check if they played recently
       if (this.havePlayedRecently(player.userId, candidate.userId)) {
+        console.log(`  - ${candidate.username}: played recently`);
         continue;
       }
 
@@ -278,10 +285,18 @@ export class MatchmakingService {
       // Calculate effective rating difference (lower is better)
       const ratingDiff = Math.abs(player.rating - candidate.rating) - regionBonus;
       
+      console.log(`  + ${candidate.username} (${candidate.rating}): eligible candidate, rating diff: ${ratingDiff} (with region bonus: ${regionBonus})`);
+      
       if (ratingDiff < bestRatingDiff) {
         bestRatingDiff = ratingDiff;
         bestMatch = candidate;
       }
+    }
+
+    if (bestMatch) {
+      console.log(`[MatchmakingService] Best match found: ${bestMatch.username} (${bestMatch.rating})`);
+    } else {
+      console.log(`[MatchmakingService] No match found for ${player.username}`);
     }
 
     return bestMatch;

@@ -7,7 +7,7 @@
     "dev": "vite --host",
     "prebuild": "node scripts/generate-multilang-html.js",
     "build": "tsc -b && vite build && npm run postbuild",
-    "postbuild": "cp index-zh.html dist/",
+    "postbuild": "cp index-zh.html dist/ && node scripts/postbuild-zh.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "baidu-submit": "curl -H 'Content-Type:text/plain' --data-binary @scripts/urls.txt \"http://data.zz.baidu.com/urls?site=https://twentyfourpoints.com&token=VyiB9zL3nvzREv5I\""

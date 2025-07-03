@@ -15,8 +15,10 @@ export function setupRankedHandlers(io: Server, socket: Socket) {
   matchmakingService.onMatchFound(async (match) => {
     console.log(`[RankedHandler] ${match.queueType} match found, creating room`);
     
-    // Create a room with appropriate settings
-    const room = roomManager.createRoom(match.roomId, 'classic', match.queueType === 'ranked');
+    // Create a room with appropriate settings - use the game mode from the matched players
+    const gameMode = match.player1.gameMode; // Both players have the same game mode
+    console.log(`[RankedHandler] Creating ${gameMode} room for matched players`);
+    const room = roomManager.createRoom(match.roomId, gameMode, match.queueType === 'ranked');
     
     // Verify room was created
     const createdRoom = roomManager.getRoom(match.roomId);
